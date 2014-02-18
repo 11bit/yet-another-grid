@@ -1,0 +1,83 @@
+.dt-head, .dt-body {
+	width: 100%;
+}
+.dt-frozen-head-wrapper, .dt-frozen-body-wrapper {
+	float: left;
+}
+
+.dt-frozen-head-wrapper, .dt-head-wrapper {
+	overflow: hidden;
+}
+
+.dt-frozen-body-wrapper {
+	overflow: hidden;
+}
+
+.dt-body-wrapper {
+	overflow: scroll;
+	position: relative;
+}
+
+.dt-head-table, .dt-body-table {
+	/*float: left;*/
+}
+
+.dt-body-table > thead {
+	height: 0;
+}
+
+.dt-body-table > thead tr {
+	height: 0;
+}
+
+.dt-body-table th {
+	height: 0;
+	line-height: 0;
+	border-top-width: 0 !important;
+	border-bottom-width: 0 !important;
+	padding-top: 0;
+	padding-bottom: 0;
+}
+
+.dt-table {
+	border: 0;
+	width: 1px; /* for proper work of fixed layout */
+	padding: 0;
+	margin: 0;
+}
+
+
+.dt-table td, .dt-table th {
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.dt-table th {
+	position: relative;
+}
+
+.expand-children-button {
+	font-size: 10px;
+	line-height: 10px;
+}
+
+.dt-resize-handle {
+	position: absolute;
+	font-size: 0.1px;
+	display: block;
+	cursor: col-resize;
+	width: 4px;
+	right: 0px;
+	top: 0;
+	height: 100%;
+}
+
+.dt-right-filler-wrapper {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+}
+.dt-right-filler {
+	width: 100%;
+}
