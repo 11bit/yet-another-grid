@@ -510,7 +510,6 @@
 			delete this.options.datas;
 			delete this.options.columns;
 			delete this.options.filters;
-			this.call(this.options.onInitialized);
 		},
 
 		/**
@@ -877,7 +876,6 @@
 				var filter = new Filter(filters[i]);
 				this.filters[filter.field] = filter;
 				this.checkVisibility = true;
-				this.call(this.options.onFilterAdded, filter);
 			}
 			return this;
 		},
@@ -893,13 +891,11 @@
 				fields = isArray(fields) ? fields : [fields];
 				for (var i = 0, ln = fields.length; i < ln; ++i) {
 					var field = fields[i];
-					this.call(this.options.onFilterRemoved, this.filter[field]);
 					this.filters[field] = null;
 				}
 			}
 			else {
 				this.filters = {};
-				this.call(this.options.onFilterRemoved);
 			}
 			this.checkVisibility = true;
 			return this;
@@ -926,7 +922,6 @@
 			appendChild(this.rightFiller.tbody, rightFillerBody);
 
 			this.checkVisibility = false;
-			this.call(this.options.onRendered);
 			return this;
 		},
 
@@ -1172,11 +1167,7 @@
 		summaryRowNum: 0,               // number of summary rows at the bottom which don't take part in sort
 		childrenField: 'children',      // name of a list with children in data
 		expandChildrenButton: '&#8594;',
-		collapseChildrenBUtton: '&#8595;',
-		onInitialized: noop,
-		onRendered: noop,
-		onFilterAdded: noop,
-		onFilterRemoved: noop
+		collapseChildrenBUtton: '&#8595;'
 	};
 
 	// Expose to global object
