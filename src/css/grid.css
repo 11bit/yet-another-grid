@@ -85,3 +85,7 @@
 .dt-right-filler {
 	width: 100%;
 }
+
+.dt-table td, .dt-table th {
+    white-space: nowrap;
+}
