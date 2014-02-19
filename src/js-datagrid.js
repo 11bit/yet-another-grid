@@ -588,8 +588,13 @@
 				if ($(srcElement).hasClass('dt-resize-handle'))
 					return;
 
-				var col_id = parseInt(getDataAttribute(this, ATTR_COLUMN_ID), 10),
-					column = self.columns[col_id];
+				var col_id = parseInt(getDataAttribute(this, ATTR_COLUMN_ID), 10);
+
+				if (isNaN(col_id)) {
+					return;
+				}
+
+				var	column = self.columns[col_id];
 
 				if (self.sortColumns.indexOf(col_id)!==-1) {
 					column.sortAsc = !column.sortAsc;
