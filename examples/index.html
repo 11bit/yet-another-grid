@@ -2,18 +2,22 @@
 <html lang="en" ng-app="gcsApp">
 <head>
     <meta charset="utf-8">
-    <title>Grid prototype</title>
+    <title>Grid Demo</title>
 
     <link rel="stylesheet" href="bootstrap/bootstrap.min.css">
     <link rel="stylesheet" href="../src/css/grid.css">
 
     <style type="text/css">
+        .page {
+            padding: 0 2em;
+        }
+
         #container {
             width: 800px;
             height: 400px;
             overflow: hidden;    
 
-            border: 1px red solid;        
+            border: 1px #DDD solid;        
         }
 
         .dt-frozen-body-wrapper table, .dt-frozen-head-wrapper table {
@@ -24,8 +28,12 @@
     </style>
 </head>
 <body>
+    
+    <div class="page">
+        <h2> Grid Demo</h2>
 
-    <div id="container"></div>
+        <div id="container"></div>
+    </div>    
 
 
     <script src="data.js"></script>
