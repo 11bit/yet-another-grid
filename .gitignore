@@ -1,0 +1,39 @@
+#my
+html-experiments/
+
+########################
+# Node files           #
+########################
+node_modules/
+
+########################
+# Compiled files       #
+########################
+build/
+
+########################
+# Eclipse files        #
+########################
+.buildpath
+.settings/
+.metadata/
+.classpath
+.project
+bin-debug/
+bin-release/
+
+########################
+# Intellij files       #
+########################
+.externalToolBuilders
+.idea/
+overlays/
+*.iml
+
+########################
+# OS generated files   #
+########################
+.DS_Store*
+ehthumbs.db
+Thumbs.db
+

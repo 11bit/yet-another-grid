@@ -13,7 +13,13 @@ module.exports = function(config) {
 
 		files: [
 			{
-				pattern: 'test/libs/jquery-1.10.2.js',
+				pattern: 'lib/jquery/jquery.js',
+				watched: false,
+				served: true,
+				included: true
+			},
+			{
+				pattern: 'lib/jquery.event.drag-drop/event.drag/jquery.event.drag.js',
 				watched: false,
 				served: true,
 				included: true
@@ -36,6 +42,9 @@ module.exports = function(config) {
 				served: true,
 				included: true
 			},
+
+			'src/css/grid.css',
+			'examples/bootstrap/bootstrap.min.css'
 		],
 
 		exclude: [

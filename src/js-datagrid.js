@@ -1163,7 +1163,7 @@
 		filters: [],
 		fixEmptyCell: true,
 		caseInsensitive: true,
-		frozenColumnsNum: 2,
+		frozenColumnsNum: 0,
 		summaryRowNum: 0,               // number of summary rows at the bottom which don't take part in sort
 		childrenField: 'children',      // name of a list with children in data
 		expandChildrenButton: '&#8594;',
