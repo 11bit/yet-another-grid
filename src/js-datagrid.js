@@ -548,10 +548,18 @@
 			appendChild(this.frozenHeadWrapper, this.frozenHead.table);
 			appendChild(this.frozenBodyWrapper, this.frozenBody.table);
 
+
+			// create right filler
+
 			this.rightFillerWrapper = createElement('div', 'dt-right-filler-wrapper');
 			appendChild(this.bodyWrapper, this.rightFillerWrapper);
 			this.rightFiller = createTable(this.options.tableClass + ' dt-table dt-right-filler');
 			appendChild(this.rightFillerWrapper, this.rightFiller.table);
+
+			this.rightFillerHeadWrapper = createElement('div', 'dt-right-filler-wrapper');
+			appendChild(this.headWrapper, this.rightFillerHeadWrapper);
+			this.rightHeadFiller = createTable(this.options.tableClass + ' dt-table dt-right-filler');
+			appendChild(this.rightFillerHeadWrapper, this.rightHeadFiller.table);
 
 			return this;
 		},
@@ -688,6 +696,11 @@
 			this
 				.setThead(this.head.thead, this.ordinalColumns)
 				.setBodyHead(this.body.thead, this.ordinalColumns);
+
+			// draw right filler
+			
+			this
+				.setEmptyThead(this.rightHeadFiller.thead)
 
 			return this;
 		},
@@ -1132,6 +1145,7 @@
 		invalidateRightFillerWidth: function() {
 			var margin = this.body.table.offsetWidth + 'px';
 			this.rightFillerWrapper.style.left = margin;
+			this.rightFillerHeadWrapper.style.left = margin;
 			return this;
 		},
 

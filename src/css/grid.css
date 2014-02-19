@@ -13,6 +13,10 @@
 	overflow: hidden;
 }
 
+.dt-head-wrapper {
+	position: relative;
+}
+
 .dt-body-wrapper {
 	overflow: scroll;
 	position: relative;
