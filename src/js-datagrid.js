@@ -1185,8 +1185,8 @@
 		frozenColumnsNum: 0,
 		summaryRowNum: 0,               // number of summary rows at the bottom which don't take part in sort
 		childrenField: 'children',      // name of a list with children in data
-		expandChildrenButton: '&#8594;',
-		collapseChildrenBUtton: '&#8595;'
+		expandChildrenButton: '⊞',
+		collapseChildrenBUtton: '⊟'
 	};
 
 	// Expose to global object
