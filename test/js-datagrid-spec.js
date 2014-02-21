@@ -76,11 +76,9 @@ describe("Yet another datagrid Test Suite", function() {
 			expect(dg.bodyContainer).toBeTruthy();
 			expect(dg.bodyContainer).toEqual($('#my-table > .dt-body').get()[0]);
 
-		})
+		});
 
-		return;
-
-		it("should initialize and render header", function() {
+		it('should initialize and render header', function() {
 
 			var opts = {
 				columns: [
@@ -90,37 +88,24 @@ describe("Yet another datagrid Test Suite", function() {
 			};
 
 			var dg = new Datagrid(this.tableContainer, opts);
-			expect($('#my-table .dt-head-wrapper thead').get().length).toBe(1);
-			expect(dg.thead).toBeTruthy();
-			expect(dg.thead).toEqual($('#my-table .dt-head-wrapper thead').get()[0]);
+
+			var tableHead = $('#my-table .dt-head-wrapper thead').first();
+			expect(tableHead).toBeTruthy();
 
 			// Header == 1 tr
-			expect($('#my-table .dt-head-wrapper thead tr').get().length).toBe(1);
+			expect(tableHead.find('tr').get().length).toBe(1);
 
-			var $th0 = $('#my-table .dt-head-wrapper thead tr th').eq(0);
+			var $th0 = tableHead.find('tr th').eq(0);
 			expect($th0.attr('data-col-id')).toBe('0');
-			expect($th0.html()).toBe('Identifier');
+			expect($th0.text()).toBe('Identifier');
 
-			var $th1 = $('#my-table .dt-head-wrapper thead tr th').eq(1);
+			var $th1 = tableHead.find('tr th').eq(1);
 			expect($th1.attr('data-col-id')).toBe('1');
-			expect($th1.html()).toBe('Name');
+			expect($th1.text()).toBe('Name');
 		});
 
-		it("should render header and fix empty cell", function() {
-			var opts = {
-				fixEmptyCell: true,
-				columns: [
-					{ field: 'id', title: '' },
-					{ field: 'name', title: 'Name' }
-				]
-			};
 
-			var dg = new Datagrid(this.tableContainer, opts);
-			expect(dg.thead).toBeTruthy();
-			expect($('#my-table thead tr th').html()).toBe(' ');
-		});
-
-		it("should initialize and add datas", function() {
+		it('should initialize and add datas', function() {
 			var opts = {
 				datas: [
 					{ guid: 1 },
@@ -147,7 +132,7 @@ describe("Yet another datagrid Test Suite", function() {
 			expect(dg.datas[2].obj).toBe(opts.datas[2]);
 		});
 
-		it("should set datas and return this object", function() {
+		it('should set datas and return this object', function() {
 			var datas = [
 				{ guid: 1 },
 				{ guid: 2 },
@@ -179,33 +164,7 @@ describe("Yet another datagrid Test Suite", function() {
 			expect(dg.datas[1].obj).toBe(datas[1]);
 		});
 
-		it("should set datas and return this object", function() {
-			var datas = [
-				{ guid: 1 },
-				{ guid: 2 },
-				{ guid: 3 }
-			];
-
-			var dg = new Datagrid(this.tableContainer, {
-				datas: datas
-			});
-
-			expect(dg.datas.length).toEqual(3);
-			expect(dg.length).toBe(3);
-
-			var singleData = { guid: 4 };
-			var result = dg.set(singleData);
-			expect(result).toBe(dg);
-
-			// Check datas
-			expect(dg.datas.length).toEqual(1);
-			expect(dg.length).toBe(1);
-
-			expect(dg.datas[0].id).toBe(1);
-			expect(dg.datas[0].obj).toBe(singleData);
-		});
-
-		it("should add datas and return this object", function() {
+		it('should add datas and return this object', function() {
 			var datas1 = [
 				{ guid: 1 },
 				{ guid: 2 },
@@ -243,7 +202,7 @@ describe("Yet another datagrid Test Suite", function() {
 			expect(dg.datas[4].obj).toBe(datas2[1]);
 		});
 
-		it("should add single data and return this object", function() {
+		it('should add single data and return this object', function() {
 			var datas = [
 				{ guid: 1 },
 				{ guid: 2 },
@@ -275,60 +234,69 @@ describe("Yet another datagrid Test Suite", function() {
 			expect(dg.datas[3].obj).toBe(singleData);
 		});
 
-		it("should render body of datagrid", function() {
+
+		it('should render body of datagrid', function() {
 			var dg = new Datagrid(this.tableContainer, {
 				columns: [
 					{ field: 'guid', title: 'Identifier' },
-					{ field: 'name', title: 'Name' }
+					{ field: 'name', title: 'Name' },
+					{ field: 'money', title: 'Money', renderFunction: function(item) {return '$' + item;} }
 				],
 				datas: [
-					{ guid: 1, name: 'foo' },
-					{ guid: 2, name: 'bar' },
+					{ guid: 1, name: 'foo', money: 100 },
+					{ guid: 2, name: 'bar', money: 10 },
 					{ guid: 3, name: '' }
 				]
 			});
 
 			expect(dg.datas.length).toEqual(3);
-			expect(dg.columns.length).toEqual(2);
-			expect($('#my-table tbody').get().length).toBe(1);
-			expect(dg.tbody).toBeTruthy();
-			expect(dg.tbody).toEqual($('#my-table tbody').get()[0]);
+			expect(dg.columns.length).toEqual(3);
 
+			var tbody = $(dg.body.tbody);
 			// 3 datas == 3 tr
-			expect($('#my-table tbody tr').get().length).toBe(3);
+			expect(tbody.find('tr').get().length).toBe(3);
 
-			var $tr0 = $('#my-table tbody tr').eq(0);
+			var $tr0 = tbody.find('tr').eq(0);
 			expect($tr0.attr('data-data-id')).toBe('1');
-			expect($tr0.find('td').length).toBe(2);
+			expect($tr0.find('td').length).toBe(3);
 			expect($tr0.find('td').eq(0).html()).toBe('1');
 			expect($tr0.find('td').eq(0).attr('data-col-id')).toBe('0');
 			expect($tr0.find('td').eq(0).attr('data-data-id')).toBe('1');
 			expect($tr0.find('td').eq(1).html()).toBe('foo');
 			expect($tr0.find('td').eq(1).attr('data-col-id')).toBe('1');
 			expect($tr0.find('td').eq(1).attr('data-data-id')).toBe('1');
+			expect($tr0.find('td').eq(2).html()).toBe('$100');
+			expect($tr0.find('td').eq(2).attr('data-col-id')).toBe('2');
+			expect($tr0.find('td').eq(2).attr('data-data-id')).toBe('1');
 
-			var $tr1 = $('#my-table tbody tr').eq(1);
+			var $tr1 = tbody.find('tr').eq(1);
 			expect($tr1.attr('data-data-id')).toBe('2');
-			expect($tr1.find('td').length).toBe(2);
+			expect($tr1.find('td').length).toBe(3);
 			expect($tr1.find('td').eq(0).html()).toBe('2');
 			expect($tr1.find('td').eq(0).attr('data-col-id')).toBe('0');
 			expect($tr1.find('td').eq(0).attr('data-data-id')).toBe('2');
 			expect($tr1.find('td').eq(1).html()).toBe('bar');
 			expect($tr1.find('td').eq(1).attr('data-col-id')).toBe('1');
 			expect($tr1.find('td').eq(1).attr('data-data-id')).toBe('2');
+			expect($tr1.find('td').eq(2).html()).toBe('$10');
+			expect($tr1.find('td').eq(2).attr('data-col-id')).toBe('2');
+			expect($tr1.find('td').eq(2).attr('data-data-id')).toBe('2');
 
-			var $tr2 = $('#my-table tbody tr').eq(2);
+			var $tr2 = tbody.find('tr').eq(2);
 			expect($tr2.attr('data-data-id')).toBe('3');
-			expect($tr2.find('td').length).toBe(2);
+			expect($tr2.find('td').length).toBe(3);
 			expect($tr2.find('td').eq(0).html()).toBe('3');
 			expect($tr2.find('td').eq(0).attr('data-col-id')).toBe('0');
 			expect($tr2.find('td').eq(0).attr('data-data-id')).toBe('3');
 			expect($tr2.find('td').eq(1).html()).toBe(' ');
 			expect($tr2.find('td').eq(1).attr('data-col-id')).toBe('1');
 			expect($tr2.find('td').eq(1).attr('data-data-id')).toBe('3');
+			expect($tr2.find('td').eq(2).html()).toBe('$');
+			expect($tr2.find('td').eq(2).attr('data-col-id')).toBe('2');
+			expect($tr2.find('td').eq(2).attr('data-data-id')).toBe('3');
 		});
 
-		it("should not displayed filter datas (string)", function() {
+		it('should not displayed filter datas (string)', function() {
 			var dg = new Datagrid(this.tableContainer, {
 				columns: [
 					{ field: 'firstName', title: 'First Name' },
@@ -344,28 +312,30 @@ describe("Yet another datagrid Test Suite", function() {
 				]
 			});
 
+			var tbody = $(dg.body.tbody);
+
 			expect(dg.datas.length).toEqual(3);
 			expect(dg.columns.length).toEqual(2);
-			expect($('#my-table tbody tr').get().length).toBe(2);
+			expect(tbody.find('tr').get().length).toBe(2);
 
 			expect(dg.datas[0].visible).toBe(false);
 			expect(dg.datas[1].visible).toBe(true);
 			expect(dg.datas[2].visible).toBe(true);
 
-			var $tr0 = $('#my-table tbody tr').eq(0);
+			var $tr0 = tbody.find('tr').eq(0);
 			expect($tr0.find('td').eq(0).html()).toBe('bar1');
 			expect($tr0.find('td').eq(0).attr('data-col-id')).toBe('0');
 			expect($tr0.find('td').eq(1).html()).toBe('bar2');
 			expect($tr0.find('td').eq(1).attr('data-col-id')).toBe('1');
 
-			var $tr1 = $('#my-table tbody tr').eq(1);
+			var $tr1 = tbody.find('tr').eq(1);
 			expect($tr1.find('td').eq(0).html()).toBe(' ');
 			expect($tr1.find('td').eq(0).attr('data-col-id')).toBe('0');
 			expect($tr1.find('td').eq(1).html()).toBe(' ');
 			expect($tr1.find('td').eq(1).attr('data-col-id')).toBe('1');
 		});
 
-		it("should not displayed filter datas (numbers)", function() {
+		it('should not displayed filter datas (numbers)', function() {
 			var dg = new Datagrid(this.tableContainer, {
 				columns: [
 					{ field: 'firstName', title: 'First Name' },
@@ -391,7 +361,7 @@ describe("Yet another datagrid Test Suite", function() {
 			expect(dg.datas[2].visible).toBe(true);
 		});
 
-		it("should not displayed filter datas (boolean)", function() {
+		it('should not displayed filter datas (boolean)', function() {
 			var dg = new Datagrid(this.tableContainer, {
 				columns: [
 					{ field: 'firstName', title: 'First Name' },
@@ -417,7 +387,7 @@ describe("Yet another datagrid Test Suite", function() {
 			expect(dg.datas[2].visible).toBe(true);
 		});
 
-		it("should not displayed filter datas (using equal filter)", function() {
+		it('should not displayed filter datas (using equal filter)', function() {
 			var dg = new Datagrid(this.tableContainer, {
 				columns: [
 					{ field: 'firstName', title: 'First Name' },
@@ -443,7 +413,7 @@ describe("Yet another datagrid Test Suite", function() {
 			expect(dg.datas[2].visible).toBe(true);
 		});
 
-		it("should not displayed filter datas (using equal filter)", function() {
+		it('should not displayed filter datas (using equal filter)', function() {
 			var dg = new Datagrid(this.tableContainer, {
 				columns: [
 					{ field: 'firstName', title: 'First Name' },
@@ -469,7 +439,7 @@ describe("Yet another datagrid Test Suite", function() {
 			expect(dg.datas[2].visible).toBe(true);
 		});
 
-		it("should not displayed filter datas (using 'in' filter)", function() {
+		it('should not displayed filter datas (using \'in\' filter)', function() {
 			var dg = new Datagrid(this.tableContainer, {
 				columns: [
 					{ field: 'firstName', title: 'First Name' },
@@ -491,14 +461,14 @@ describe("Yet another datagrid Test Suite", function() {
 		});
 	});
 
-	describe("Datagrid sizing mechanism", function() {
+	describe('Datagrid sizing mechanism', function() {
 		beforeEach(function() {
 			jasmine.getFixtures().set('<div id="my-table" width="400px" height="400px"></div>');
-			$('html').append('<link rel="stylesheet" href="../src/css/grid.css">')
+			$('html').append('<link rel="stylesheet" href="../src/css/grid.css">');
 			this.tableContainer = $('#my-table').get()[0];
-		})
+		});
 
-		it("should set equal srollWidth for head wrapper and body wrapper", function() {
+		it('should set equal srollWidth for head wrapper and body wrapper', function() {
 			var opts = {
 				columns: [
 					{ field: 'id', title: 'Identifier' },
@@ -512,9 +482,9 @@ describe("Yet another datagrid Test Suite", function() {
 			};
 			var dg = new Datagrid(this.tableContainer, opts);
 			expect(dg.headWrapper.scrollWidth).toEqual(dg.bodyWrapper.scrollWidth);
-		})
+		});
 
-		it("should have equal srollWidth for head wrapper and body wrapper with big number of columns", function() {
+		it('should have equal srollWidth for head wrapper and body wrapper with big number of columns', function() {
 			var opts = {
 				columns: [
 					{ field: 'id', title: 'Identifier' },
@@ -526,20 +496,18 @@ describe("Yet another datagrid Test Suite", function() {
 					{ field: 'col5', title: 'Column 5' }
 				],
 				datas: [
-					{id: 1, name: 'cell 1', col1: "content 1", col2: "content 2", col3: "content 3", col4: "content 4", col5: "content5"},
-					{id: 1, name: 'cell 1', col1: "content 1", col2: "content 2", col3: "content 3", col4: "content 4", col5: "content5"}
+					{id: 1, name: 'cell 1', col1: 'content 1', col2: 'content 2', col3: 'content 3', col4: 'content 4', col5: 'content5'},
+					{id: 1, name: 'cell 1', col1: 'content 1', col2: 'content 2', col3: 'content 3', col4: 'content 4', col5: 'content5'}
 				],
 				frozenColumnsNum: 1,
 				tableClass: 'table table-striped table-bordered'
 			};
 			var dg = new Datagrid(this.tableContainer, opts);
 			expect(dg.headWrapper.scrollWidth).toEqual(dg.bodyWrapper.scrollWidth);
-		})
+		});
+	});
 
-	})
-
-	
-	describe("Expandable datagrid", function() {
+	describe('Expandable datagrid', function() {
 		return;
 
 		beforeEach(function() {

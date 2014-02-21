@@ -434,6 +434,10 @@
 		return x - y;
 	};
 
+	var defaultRenderFunction = function(row, field) {
+		return row.get(field);
+	}
+
 	/**
 	 * Column displayed in datagrid.
 	 * @param {number} idx Index of column in table.
@@ -455,6 +459,19 @@
 			this.sortFunction = numberSort;
 		} else {
 			this.sortFunction = defaultSort;
+		}
+
+		this.renderFunction = obj.renderFunction;
+	};
+
+
+	Column.prototype = {
+		getCellValue: function(row) {
+			if (this.renderFunction) {
+				return this.renderFunction(row.get(this.field) || '', row, this.field);
+			} else {
+				return row.get(this.field);
+			}
 		}
 	};
 
@@ -1044,7 +1061,7 @@
 		 */
 		createCell: function(data, column) {
 			var td = createElement('td'),
-				txt = data.get(column.field);
+				txt = column.getCellValue(data);
 
 			if (isNullOrUndefined(txt)) {
 				txt = '';
