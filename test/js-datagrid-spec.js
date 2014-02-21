@@ -2,15 +2,17 @@
  *
  */
 
-describe("Yet another datagrid Test Suite", function() {
+'use strict';
 
-	describe("Datagrid", function() {
+describe('Yet another datagrid Test Suite', function() {
+
+	describe('Datagrid', function() {
 		beforeEach(function() {
 			jasmine.getFixtures().set('<div id="my-table"></div>');
 			this.tableContainer = $('#my-table').get()[0];
 		});
 
-		it("should initialize", function() {
+		it('should initialize', function() {
 			var opts = {};
 			var dg = new Datagrid(this.tableContainer, opts);
 
@@ -25,7 +27,7 @@ describe("Yet another datagrid Test Suite", function() {
 			expect(dg.options.datas).toBeUndefined();
 		});
 
-		it("should initialize and set columns", function() {
+		it('should initialize and set columns', function() {
 			var opts = {
 				columns: [
 					{ field: 'id', title: 'Identifier' },
@@ -48,7 +50,7 @@ describe("Yet another datagrid Test Suite", function() {
 			expect(dg.columns[1].title).toBe('Name');
 		});
 
-		it ("should build internal dom structure", function() {
+		it ('should build internal dom structure', function() {
 			var opts = {
 				columns: [
 					{ field: 'id', title: 'Identifier' },
