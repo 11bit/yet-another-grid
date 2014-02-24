@@ -510,7 +510,6 @@ describe('Yet another datagrid Test Suite', function() {
 	});
 
 	describe('Expandable datagrid', function() {
-		return;
 
 		beforeEach(function() {
 			jasmine.getFixtures().set('<div id="my-table"></div>');
@@ -536,13 +535,13 @@ describe('Yet another datagrid Test Suite', function() {
 					]}
 				],
 				expandable: true
-			})
+			});
 		});
 
-		it("should have expand buttons for each row with children", function() {
+		it('should have expand buttons for each row with children', function() {
 			var dg = this.dg;
 			function rows() {
-				return $(dg.table).find('> tbody tr');
+				return $(dg.body.tbody).find('tr');
 			}
 
 			expect(rows().get().length).toBe(2);
@@ -550,10 +549,10 @@ describe('Yet another datagrid Test Suite', function() {
 			expect(rows().eq(1).find('.expand-children-button').get().length).toBe(1);
 		});
 
-		it("should expand and collapse children on click", function() {
+		it('should expand and collapse children on click', function() {
 			var dg = this.dg;
 			function rows() {
-				return $(dg.table).find('> tbody tr');
+				return $(dg.body.tbody).find('tr');
 			}
 
 			// expand second row children
@@ -564,29 +563,29 @@ describe('Yet another datagrid Test Suite', function() {
 				$row2 = rows().eq(2),
 				$row3 = rows().eq(3);
 
-			expect($row1.attr('data-data-id')).toBe('2')
+			expect($row1.attr('data-data-id')).toBe('2');
 			expect($row1.find('td').eq(0).text()).toMatch(/.*?Smith/);
 			expect($row1.find('td').eq(1).text()).toBe('5000');
 
-			expect($row2.attr('data-parents')).toBe('2')
+			expect($row2.attr('data-parents')).toBe('2');
 			expect($row2.find('td').eq(0).text()).toMatch(/.*?Jim/);
 			expect($row2.find('td').eq(1).text()).toBe('1500');
-			expect($row2.find('.expand-children-button').get().length).toBe(0)
+			expect($row2.find('.expand-children-button').get().length).toBe(0);
 
-			expect($row3.attr('data-parents')).toBe('2')
+			expect($row3.attr('data-parents')).toBe('2');
 			expect($row3.find('td').eq(0).text()).toMatch(/.*?Bob/);
 			expect($row3.find('td').eq(1).text()).toBe('2500');
-			expect($row3.find('.expand-children-button').get().length).toBe(1)
+			expect($row3.find('.expand-children-button').get().length).toBe(1);
 
 			// collapse second row
-			$(dg.table).find('> tbody tr').eq(1).find('.expand-children-button').click();
+			rows().eq(1).find('.expand-children-button').click();
 			expect(rows().get().length).toBe(2);
-		})	
+		});
 
-		it("should find data element by cell", function() {
+		it('should find data element by cell', function() {
 			var dg = this.dg;
 			function rows() {
-				return $(dg.table).find('> tbody tr');
+				return $(dg.body.tbody).find('tr');
 			}
 
 			// expand second row children
@@ -598,11 +597,10 @@ describe('Yet another datagrid Test Suite', function() {
 			expect(childData.get('name')).toBe('Jim');
 		});
 
-
-		it("should expand third level", function() {
+		it('should expand third level', function() {
 			var dg = this.dg;
 			function rows() {
-				return $(dg.table).find('> tbody tr');
+				return $(dg.body.tbody).find('tr');
 			}
 
 			// expand second second level
@@ -614,11 +612,10 @@ describe('Yet another datagrid Test Suite', function() {
 			expect(rows().get().length).toBe(8);
 
 			var $row = rows().eq(4);
-			expect($row.attr('data-parents')).toBe('2,1')
+			expect($row.attr('data-parents')).toBe('2,1');
 			expect($row.find('td').eq(0).text()).toMatch(/.*?car/);
 			expect($row.find('td').eq(1).text()).toBe('1000');
-			expect($row.find('.expand-children-button').get().length).toBe(0)
-		})
-	})
-
+			expect($row.find('.expand-children-button').get().length).toBe(0);
+		});
+	});
 });
