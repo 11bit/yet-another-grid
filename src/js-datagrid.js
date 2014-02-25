@@ -233,6 +233,63 @@
 
 	var scrollBarSize = measureScrollbar();
 
+	var MultiColumnUtil = {
+		addLayer: function(columns, layers, depth) {
+			var block_colspan = 0;
+			if (layers.length===depth) {
+				layers.push([]);
+			}
+			for (var i = 0; i < columns.length; i++) {
+				var column = extend({}, columns[i]),
+					colspan = 1;
+
+				layers[depth].push(column);
+
+				if (column.columns) {
+					colspan = this.addLayer(column.columns, layers, depth+1);
+				}
+				if (colspan>1){
+					column.colspan = colspan;
+					delete column.columns;
+				}
+				block_colspan += colspan;
+			}
+			return block_colspan;
+		},
+
+		setRowSpans: function(columns) {
+			var maxRowNum = 1;
+
+			var i, column, rowNums = [], totalcols = columns.length;
+
+			// precalculate number of rows each column has
+			for (i = 0; i < totalcols; i++) {
+				column = columns[i];
+				var rowNum = column.columns ? this.setRowSpans(column.columns) + 1 : 1;
+
+				if (rowNum>maxRowNum) {
+					maxRowNum = rowNum;
+				}
+				rowNums.push(rowNum);
+			}
+			//add additional rowspans to align columns with different height
+			for (i = 0; i < totalcols; i++) {
+				column = columns[i];
+				if (rowNums[i]<maxRowNum) {
+					column.rowspan = maxRowNum - rowNums[i] + 1;
+				}
+			}
+			return maxRowNum;
+		},
+
+		splitLayers: function(columns) {
+			var layers = [];
+			this.setRowSpans(columns);
+			this.addLayer(columns, layers, 0);
+			return layers;
+		}
+	};
+
 	/**
 	 * Filter object.
 	 * @param {Object} obj Initialization object.
@@ -694,11 +751,13 @@
 
 		/**
 		 * Set columns to datagrid.
-		 * @param {Array<Object>} columns Columns.
+		 * @param {Array<Object>} columns Columns. Datagrid supports column groups:
+		 * If column object has `columns` property it will be rendered as a column group with `columns` inside it.
 		 * @returns {Datagrid} this object.
 		 * @public
 		 */
 		setColumns: function(columns) {
+
 			this.columns = [];
 			for (var i = 0, ln = columns.length; i < ln; ++i) {
 				this.columns.push(new Column(i, columns[i]));
@@ -1074,7 +1133,7 @@
 
 			if (column.idx === 0 && this.options.expandable && data.hasChildren(this.options.childrenField)) {
 				var icon = data.expanded ?
-							this.options.collapseChildrenBUtton :
+							this.options.collapseChildrenButton :
 							this.options.expandChildrenButton;
 				txt = '<span class="expand-children-button">'+ icon + '</span>' + txt; // expand arrow
 			}
@@ -1203,11 +1262,13 @@
 		summaryRowNum: 0,               // number of summary rows at the bottom which don't take part in sort
 		childrenField: 'children',      // name of a list with children in data
 		expandChildrenButton: '⊞',
-		collapseChildrenBUtton: '⊟'
+		collapseChildrenButton: '⊟'
 	};
 
 	// Expose to global object
 	window.Datagrid = Datagrid;
-
+	window.YAD = {
+		MultiColumnUtil: MultiColumnUtil
+	};
 })(window, document, void 0, window.jQuery);
 
