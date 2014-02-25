@@ -233,20 +233,24 @@
 
 	var scrollBarSize = measureScrollbar();
 
-	var MultiColumnUtil = {
-		addLayer: function(columns, layers, depth) {
+	/**
+	 * Utility code that helps to build html table headers from grouped columns defenitions
+	 * @type {Object}
+	 */
+	var GroupedColumnUtil = {
+		buildRow: function(columns, rows, depth) {
 			var block_colspan = 0;
-			if (layers.length===depth) {
-				layers.push([]);
+			if (rows.length===depth) {
+				rows.push([]);
 			}
 			for (var i = 0; i < columns.length; i++) {
 				var column = extend({}, columns[i]),
 					colspan = 1;
 
-				layers[depth].push(column);
+				rows[depth].push(column);
 
 				if (column.columns) {
-					colspan = this.addLayer(column.columns, layers, depth+1);
+					colspan = this.buildRow(column.columns, rows, depth+1);
 				}
 				if (colspan>1){
 					column.colspan = colspan;
@@ -282,11 +286,19 @@
 			return maxRowNum;
 		},
 
-		splitLayers: function(columns) {
-			var layers = [];
+		/**
+		 * Build template object representing header's html structure for given hierarhical columns.
+		 * buildHeadStructure adds colspans for column groups and rowspans for columns without grouping
+		 * @param  {Array<Object>} columns Array of hierarhical columns. 
+		 * @return {Array<Array>} Array of rows. Each row is an array of objects with proper colspans and rowspans.
+		 *     Row is renderend into tr block
+		 *     Object is rendered into th
+		 */
+		buildHeadStructure: function(columns) {
+			var rows = [];
 			this.setRowSpans(columns);
-			this.addLayer(columns, layers, 0);
-			return layers;
+			this.buildRow(columns, rows, 0);
+			return rows;
 		}
 	};
 
@@ -1268,7 +1280,7 @@
 	// Expose to global object
 	window.Datagrid = Datagrid;
 	window.YAD = {
-		MultiColumnUtil: MultiColumnUtil
+		GroupedColumnUtil: GroupedColumnUtil
 	};
 })(window, document, void 0, window.jQuery);
 
