@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en" ng-app="gcsApp">
+<head>
+    <meta charset="utf-8">
+    <title>Grid Demo</title>
+
+    <link rel="stylesheet" href="bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="../src/css/grid.css">
+
+    <style type="text/css">
+        .page {
+            padding: 0 2em;
+        }
+
+        #container {
+            width: 800px;
+            height: 400px;
+            overflow: hidden;    
+
+            border: 1px #DDD solid;        
+        }
+
+        .dt-frozen-body-wrapper table, .dt-frozen-head-wrapper table {
+            border-right: 1px #ddd solid;
+        }
+
+
+    </style>
+</head>
+<body>
+    
+    <div class="page">
+        <h2> Grid Demo</h2>
+
+        <div id="container"></div>
+    </div>    
+
+
+    <script src="medals-by-sport.js"></script>
+    <script src="../lib/jquery/jquery.js"></script>
+    <script src="../lib/jquery.event.drag-drop/event.drag/jquery.event.drag.js"></script>
+    <script src="../src/js-datagrid.js"></script>
+
+    <script type="text/javascript">
+
+    var table_container = document.getElementById('container');
+
+    var columns = [
+        {title: 'Rank', field: 'rank'},
+        {title: 'Country', field: 'country'},
+        {title: 'Total Medals', field: 'total'},
+        {title: "Ice Hockey", columns: [{field: "ice hockey", title: "ice hockey"}]},
+        {title: "Curling", columns: [{field: "curling", title: "curling"}]},
+        {
+            title: "Speed skating",
+            columns: [
+              {field: "10000m", title: "10000m"},
+              {field: "1500m", title: "1500m"},
+              {field: "Team pursuit", title: "Team pursuit"},
+              {field: "combined (4 events)", title: "combined (4 events)"},
+              {field: "1000m", title: "1000m"},
+              {field: "3000m", title: "3000m"},
+              {field: "5000m", title: "5000m"},
+              {field: "500m", title: "500m"}
+            ]
+        },
+        {
+            title: "Figure skating",
+            columns: [
+              {field: "pairs", title: "pairs"},
+              {field: "individual", title: "individual"},
+              {field: "ice dancing", title: "ice dancing"}
+            ]
+        },
+        {
+            title: "Cross Country S",
+            columns: [
+              {field: "sprint 1.5km", title: "sprint 1.5km"},
+              {field: "Combined 7.5 + 7.5km mass start", title: "Combined 7.5 + 7.5km mass start"},
+              {field: "15km", title: "15km"},
+              {field: "Sprint 1,5km", title: "Sprint 1,5km"},
+              {field: "Combined 15 + 15km mass start", title: "Combined 15 + 15km mass start"},
+              {field: "15km mass start", title: "15km mass start"},
+              {field: "4x5km relay", title: "4x5km relay"},
+              {field: "3x5km relay", title: "3x5km relay"},
+              {field: "10km", title: "10km"},
+              {field: "5km pursuit", title: "5km pursuit"},
+              {field: "5km", title: "5km"},
+              {field: "Combined 10km + 15km pursuit", title: "Combined 10km + 15km pursuit"},
+              {field: "30km mass start", title: "30km mass start"},
+              {field: "Team sprint", title: "Team sprint"},
+              {field: "10km pursuit", title: "10km pursuit"},
+              {field: "18km", title: "18km"},
+              {field: "4x10km relay", title: "4x10km relay"},
+              {field: "30km", title: "30km"},
+              {field: "50km", title: "50km"},
+              {field: "20km", title: "20km"},
+              {field: "Combined 5km + 10km pursuit", title: "Combined 5km + 10km pursuit"}
+            ]
+        },
+        {
+            title: "Ski Jumping",
+            columns: [
+              {field: "K120 individual (90m)", title: "K120 individual (90m)"},
+              {field: "K90 individual (70m)", title: "K90 individual (70m)"},
+              {field: "K120 team (90m)", title: "K120 team (90m)"}
+            ]
+        },
+        {
+            title: "Freestyle Ski.",
+            columns: [
+              {field: "moguls", title: "moguls"},
+              {field: "aerials", title: "aerials"}
+            ]
+        },
+        {
+            title: "Biathlon",
+            columns: [
+              {field: "12,5km mass start", title: "12,5km mass start"},
+              {field: "15km", title: "15km"},
+              {field: "15km mass start", title: "15km mass start"},
+              {field: "7.5km", title: "7.5km"},
+              {field: "4x6km relay", title: "4x6km relay"},
+              {field: "20km", title: "20km"},
+              {field: "10km", title: "10km"},
+              {field: "military patrol", title: "military patrol"},
+              {field: "3x7.5km relay", title: "3x7.5km relay"},
+              {field: "12.5km pursuit", title: "12.5km pursuit"},
+              {field: "10km pursuit", title: "10km pursuit"},
+              {field: "4x7.5km relay", title: "4x7.5km relay"}
+            ]
+        },
+        {
+            title: "Snowboard",
+            columns: [
+              {field: "Half-pipe", title: "Half-pipe"},
+              {field: "Snowboard Cross", title: "Snowboard Cross"},
+              {field: "giant-slalom", title: "giant-slalom"},
+              {field: "Giant parallel slalom", title: "Giant parallel slalom"}
+            ]
+        },
+        {
+            title: "Bobsleigh",
+            columns: [
+              {field: "two-man", title: "two-man"},
+              {field: "five-man", title: "five-man"},
+              {field: "four-man", title: "four-man"}
+            ]
+        },
+        {
+            title: "Short Track S.",
+            columns: [
+              {field: "5000m relay", title: "5000m relay"},
+              {field: "1000m", title: "1000m"},
+              {field: "1500m", title: "1500m"},
+              {field: "500m", title: "500m"},
+              {field: "3000m relay", title: "3000m relay"}
+            ]
+        },
+        {
+            title: "Nordic Combined",
+            columns: [
+              {field: "sprint", title: "sprint"},
+              {field: "individual", title: "individual"},
+              {field: "Individual sprint", title: "Individual sprint"},
+              {field: "Individual", title: "Individual"},
+              {field: "Team", title: "Team"}
+            ]
+        },
+        {
+            title: "Alpine Skiing",
+            columns: [
+              {field: "Alpine combined", title: "Alpine combined"},
+              {field: "slalom", title: "slalom"},
+              {field: "giant slalom", title: "giant slalom"},
+              {field: "super-G", title: "super-G"},
+              {field: "downhill", title: "downhill"},
+              {field: "alpine combined", title: "alpine combined"}
+            ]
+        },
+        {
+            title: "Luge",
+            columns: [
+              {field: "singles", title: "singles"},
+              {field: "doubles", title: "doubles"}
+            ]
+        },
+        {
+            title: "Skeleton",
+            columns: [
+              {field: "individual", title: "individual"}
+            ]
+        }
+    ]
+
+     var dg = new Datagrid(table_container, {
+        datas: TEST_MEDALS_BY_SPORT,
+        columns: columns,
+        summaryRowNum: 2,
+        expandable: true,
+        frozenColumnsNum: 2,
+
+        tableClass: 'table table-striped table-bordered'
+     })
+    </script>
+
+</body>
+</html>

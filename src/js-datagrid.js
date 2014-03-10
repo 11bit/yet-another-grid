@@ -238,6 +238,12 @@
 	 * @type {Object}
 	 */
 	var GroupedColumnUtil = {
+		validateColumn: function(column) {
+			if (column.columns && column.field) {
+				throw 'Column group can\'t have field property';
+			}
+		},
+
 		buildRow: function(columns, rows, depth) {
 			var block_colspan = 0;
 			if (rows.length===depth) {
@@ -249,12 +255,16 @@
 
 				rows[depth].push(column);
 
+				this.validateColumn(column);
+
 				if (column.columns) {
 					colspan = this.buildRow(column.columns, rows, depth+1);
+					delete column.columns;
+				} else {
+					column.isColumn = true;
 				}
 				if (colspan>1){
 					column.colspan = colspan;
-					delete column.columns;
 				}
 				block_colspan += colspan;
 			}
@@ -289,16 +299,34 @@
 		/**
 		 * Build template object representing header's html structure for given hierarhical columns.
 		 * buildHeadStructure adds colspans for column groups and rowspans for columns without grouping
-		 * @param  {Array<Object>} columns Array of hierarhical columns. 
+		 * @param  {Array<Object>} columnGroups Array of hierarhical columns. 
 		 * @return {Array<Array>} Array of rows. Each row is an array of objects with proper colspans and rowspans.
 		 *     Row is renderend into tr block
 		 *     Object is rendered into th
 		 */
-		buildHeadStructure: function(columns) {
+		buildHeadStructure: function(columnGroups) {
 			var rows = [];
-			this.setRowSpans(columns);
-			this.buildRow(columns, rows, 0);
+			this.setRowSpans(columnGroups);
+			this.buildRow(columnGroups, rows, 0);
 			return rows;
+		},
+
+		/**
+		 * Get flat list of real columns from hierarhical columnGroup objects.
+		 * @param  {Array<Object>} columnGroups array of hierarhical columnGroups
+		 * @return {Array<Object>} Array of columns
+		 */
+		getColumns: function(columnGroups) {
+			var columns = [];
+			for (var i = 0; i < columnGroups.length; i++) {
+				var columnGroup = columnGroups[i];
+				if (columnGroup.columns) {
+					columns = columns.concat(this.getColumns(columnGroup.columns));
+				} else {
+					columns.push(columnGroup);
+				}
+			}
+			return columns;
 		}
 	};
 
@@ -505,7 +533,7 @@
 
 	var defaultRenderFunction = function(row, field) {
 		return row.get(field);
-	}
+	};
 
 	/**
 	 * Column displayed in datagrid.
@@ -584,7 +612,6 @@
 			this
 				.buildStructure()
 				.setColumns(this.options.columns)
-				.renderHead()
 				.addFilters(this.options.filters)
 				.set(this.options.datas)
 				.render()
@@ -768,32 +795,58 @@
 		 * @returns {Datagrid} this object.
 		 * @public
 		 */
-		setColumns: function(columns) {
-
+		setColumns: function(columnGroups) {
 			this.columns = [];
-			for (var i = 0, ln = columns.length; i < ln; ++i) {
-				this.columns.push(new Column(i, columns[i]));
+
+			// find and initialize real columns
+			var columnHeaders = GroupedColumnUtil.getColumns(columnGroups);
+			for (var i = 0; i < columnHeaders.length; i++) {
+				var header = columnHeaders[i];
+				header.column = new Column(i, columnHeaders[i]);
+				this.columns.push(header.column);
 			}
+
+			// 			
+			var frozenGroup = columnGroups.slice(0, this.options.frozenColumnsNum),
+				ordinalGroup = columnGroups.slice(this.options.frozenColumnsNum);
+
+
+
+			// var frozenCols = GroupedColumnUtil.getColumns(frozenGroup),
+			// 	ordinalCols = GroupedColumnUtil.getColumns(ordinalGroup);
+
+
+			var frozenColsStructure = GroupedColumnUtil.buildHeadStructure(frozenGroup),
+				ordinalColsStructure = GroupedColumnUtil.buildHeadStructure(ordinalGroup);
+
+
 			this.frozenColumns = this.columns.slice(0, this.options.frozenColumnsNum);
 			this.ordinalColumns = this.columns.slice(this.options.frozenColumnsNum);
-			return this;
-		},
 
-		renderHead: function() {
+			// var i, ln = frozenCols.length;
+			// for (i = 0; i < ln; ++i) {
+			// 	this.frozenColumns.push(new Column(i, frozenCols[i]));
+			// }
+			// for (i = ln, ln = ordinalCols.length; i < ln; ++i) {
+			// 	this.ordinalColumns.push(new Column(i, ordinalCols[i]));
+			// }
+
+			// this.columns = this.frozenColumns.concat(this.ordinalColumns);
+
+
 			// draw frozen columns
 			this
-				.setThead(this.frozenHead.thead, this.frozenColumns)
+				.setThead(this.frozenHead.thead, frozenColsStructure)
 				.setBodyHead(this.frozenBody.thead, this.frozenColumns);
 
 			// draw other columns
 			this
-				.setThead(this.head.thead, this.ordinalColumns)
+				.setThead(this.head.thead, ordinalColsStructure)
 				.setBodyHead(this.body.thead, this.ordinalColumns);
 
 			// draw right filler
-			
 			this
-				.setEmptyThead(this.rightHeadFiller.thead)
+				.setEmptyThead(this.rightHeadFiller.thead);
 
 			return this;
 		},
@@ -801,12 +854,23 @@
 		/**
 		 * Render header of datagrid - separate table in head wrapper.
 		 * @param {HTMLElement} thead Thead element in which we will create 
+		 * @param {Array<Array>} headLayers head layers which should be rendered into trs
 		 * @returns {Datagrid} this object.
 		 * @public
 		 */
-		setThead: function(thead, columns) {
+		setThead: function(thead, headLayers) {
 			innerHTML(thead, '');
 
+			for (var i = 0; i < headLayers.length; i++) {
+				var layer = headLayers[i],
+					tr = this.createHeadRow(layer);
+				appendChild(thead, tr);
+			}
+
+			return this;
+		},
+
+		createHeadRow: function(columns) {
 			var tr = createElement('tr'), th, column, txt;
 			for (var i = 0, ln = columns.length; i < ln; ++i) {
 				column = columns[i];
@@ -815,17 +879,24 @@
 				if (this.options.fixEmptyCell && !txt) {
 					txt = ' ';
 				}
-				txt += '<div class="dt-resize-handle"></div>'; // draggable="true"
 
 				th = createElement('th');
+				if (column.colspan) {
+					setAttribute(th, 'colspan', column.colspan);
+				}
+				if (column.rowspan) {
+					setAttribute(th, 'rowspan', column.rowspan);
+				}
+				if (column.column) {
+					txt += '<div class="dt-resize-handle"></div>'; // draggable="true"
+					setDataAttribute(th, ATTR_COLUMN_ID, column.column.idx);
+				}
+
 				column.th = th;
 				innerHTML(th, txt);
-				setDataAttribute(th, ATTR_COLUMN_ID, column.idx);
 				appendChild(tr, th);
 			}
-
-			appendChild(thead, tr);
-			return this;
+			return tr;
 		},
 
 		/**

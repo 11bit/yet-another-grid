@@ -17,9 +17,9 @@ describe('Multi Column Util Test Suite', function() {
 			{title: 'Third Col'}
 		];
 		var result = [[
-			{title: 'First Col'},
-			{title: 'Second Col'},
-			{title: 'Third Col'}
+			{title: 'First Col', isColumn: true},
+			{title: 'Second Col', isColumn: true},
+			{title: 'Third Col', isColumn: true}
 		]];
 		expect(this.GroupedColumnUtil.buildHeadStructure(columns)).toEqual(result);
 	});
@@ -31,7 +31,7 @@ describe('Multi Column Util Test Suite', function() {
 		];
 		var result = [
 			[{title: 'First Col', colspan: 2}, {title: 'Second Col', colspan: 3}],
-			[{title: 'First Child A'}, {title: 'Second Child A'}, {title: 'First Child B'}, {title: 'Second Child B'}, {title: 'Third Child B'}]
+			[{title: 'First Child A', isColumn: true}, {title: 'Second Child A', isColumn: true}, {title: 'First Child B', isColumn: true}, {title: 'Second Child B', isColumn: true}, {title: 'Third Child B', isColumn: true}]
 		];
 		expect(this.GroupedColumnUtil.buildHeadStructure(columns)).toEqual(result);
 	});
