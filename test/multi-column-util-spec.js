@@ -73,4 +73,15 @@ describe('Multi Column Util Test Suite', function() {
 		expect(res[0][2].rowspan).toBeUndefined();
 	});
 
+	it ('should normalize number of rows in different header structures', function() {
+		var headA = [[{title: 'col1'}, {title: 'col2'}]],
+			headB = [[{title: 'row1col1'}, {title: 'row1col2'}], [{title: 'row2col1'}, {title: 'row2col2'}]];
+
+		this.GroupedColumnUtil.normalizeHeights(headA, headB);
+		
+		expect(headA.length).toBe(2);
+		expect(headA[0].length).toBe(1);
+		expect(headA[0][0].colspan).toBe(2);
+	})
+
 });

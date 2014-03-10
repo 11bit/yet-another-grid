@@ -190,17 +190,21 @@
 	 */
 	var createTable = function(tableClass) {
 		var table = createElement('table'),
+			sizerHead = createElement('thead'),
 			thead = createElement('thead'),
 			tbody = createElement('tbody');
 
 		table.className = tableClass;
+		sizerHead.className = 'sizer-head';
 
+		appendChild(table, sizerHead);
 		appendChild(table, thead);
 		appendChild(table, tbody);
 
 		return {
 			table: table,
 			thead: thead,
+			sizerHead: sizerHead,
 			tbody: tbody
 		};
 	};
@@ -327,6 +331,35 @@
 				}
 			}
 			return columns;
+		},
+
+		/**
+		 * Normalizes number of rows in two head structures. If one structure has less rows then another
+		 * then it adds additional rows with appropriate collspan.
+		 * @param  {Array<Array>} headA first structure
+		 * @param  {Array<Array>} headB second structure
+		 */
+		normalizeHeights: function(headA, headB) {
+			if (headA.length===0 || headA.length === headB.length) {
+				return;
+			}
+			else if (headA.length>headB.length) {
+				var tmp = headB;
+				headB = headA;
+				headA = tmp;
+			}
+
+			// here headA has less columns than headB
+			var diff = headB.length - headA.length,
+				colspan = (headA[0] || []).length;
+
+			for (var i = 0; i < diff; i++) {
+				var filler = {title: '&nbsp;'};
+				if (colspan>1) {
+					filler.colspan = colspan;
+				}
+				headA.unshift([filler]);
+			}
 		}
 	};
 
@@ -779,13 +812,17 @@
 					return;
 				}
 				var newWidth = Math.max(baseWidth + pageX - pos, column.minWidth);
-				column.th.style.width = newWidth + 'px';
-				column.body_th.style.width = newWidth + 'px';
-				column.width = newWidth;
+				self.setColumnSize(column, newWidth);
 				self.invalidateRightFillerWidth();
 			});
 
 			return this;
+		},
+
+		setColumnSize: function(column, width) {
+			column.headSizer.style.width = width + 'px';
+			column.body_th.style.width = width + 'px';
+			column.width = width;
 		},
 
 		/**
@@ -819,30 +856,22 @@
 			var frozenColsStructure = GroupedColumnUtil.buildHeadStructure(frozenGroup),
 				ordinalColsStructure = GroupedColumnUtil.buildHeadStructure(ordinalGroup);
 
+			GroupedColumnUtil.normalizeHeights(frozenColsStructure, ordinalColsStructure);
 
 			this.frozenColumns = this.columns.slice(0, this.options.frozenColumnsNum);
 			this.ordinalColumns = this.columns.slice(this.options.frozenColumnsNum);
 
-			// var i, ln = frozenCols.length;
-			// for (i = 0; i < ln; ++i) {
-			// 	this.frozenColumns.push(new Column(i, frozenCols[i]));
-			// }
-			// for (i = ln, ln = ordinalCols.length; i < ln; ++i) {
-			// 	this.ordinalColumns.push(new Column(i, ordinalCols[i]));
-			// }
-
-			// this.columns = this.frozenColumns.concat(this.ordinalColumns);
-
-
 			// draw frozen columns
 			this
 				.setThead(this.frozenHead.thead, frozenColsStructure)
-				.setBodyHead(this.frozenBody.thead, this.frozenColumns);
+				.setBodyHead(this.frozenHead.sizerHead, this.frozenColumns, 'headSizer')
+				.setBodyHead(this.frozenBody.thead, this.frozenColumns, 'body_th');
 
 			// draw other columns
 			this
 				.setThead(this.head.thead, ordinalColsStructure)
-				.setBodyHead(this.body.thead, this.ordinalColumns);
+				.setBodyHead(this.head.sizerHead, this.ordinalColumns, 'headSizer')
+				.setBodyHead(this.body.thead, this.ordinalColumns, 'body_th');
 
 			// draw right filler
 			this
@@ -890,9 +919,9 @@
 				if (column.column) {
 					txt += '<div class="dt-resize-handle"></div>'; // draggable="true"
 					setDataAttribute(th, ATTR_COLUMN_ID, column.column.idx);
+					column.column.th = th;
 				}
 
-				column.th = th;
 				innerHTML(th, txt);
 				appendChild(tr, th);
 			}
@@ -918,13 +947,13 @@
 		 * @returns {Datagrid} this object.
 		 * @public
 		 */
-		 setBodyHead: function(thead, columns) {
+		 setBodyHead: function(thead, columns, elementName) {
 			innerHTML(thead, '');
 
 			var tr = createElement('tr');
 			for (var i = 0, ln = columns.length; i < ln; i++) {
 				var th = createElement('th');
-				columns[i].body_th = th;
+				columns[i][elementName] = th;
 				appendChild(tr, th);
 			}
 			appendChild(thead, tr);
@@ -1254,7 +1283,7 @@
 		 */
 		invalidateColumnSizes: function() {
 			this.syncHeaderAndBodyWidths(
-				this.frozenHead.thead.getElementsByTagName('th'),
+				this.frozenHead.sizerHead.getElementsByTagName('th'),
 				this.frozenBody.thead.getElementsByTagName('th'),
 				this.frozenColumns );
 
@@ -1262,7 +1291,7 @@
 			this.frozenBody.table.style.tableLayout = 'fixed';
 
 			this.syncHeaderAndBodyWidths(
-				this.head.thead.getElementsByTagName('th'),
+				this.head.sizerHead.getElementsByTagName('th'),
 				this.body.thead.getElementsByTagName('th'),
 				this.ordinalColumns );
 
@@ -1271,7 +1300,6 @@
 
 			return this;
 		},
-
 
 		syncHeaderAndBodyWidths: function(head_ths, body_ths, columns) {
 			var colnum = columns.length;
@@ -1300,7 +1328,6 @@
 				body_ths[i].style.width = maxWidth + 'px';
 			}
 		},
-
 
 		/**
 		 * Cacluates appropriate margin for right filler

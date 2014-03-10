@@ -26,15 +26,15 @@
 	/*float: left;*/
 }
 
-.dt-body-table > thead {
+.dt-body-table > thead, .sizer-head {
 	height: 0;
 }
 
-.dt-body-table > thead tr {
+.dt-body-table > thead tr, .sizer-head tr {
 	height: 0;
 }
 
-.dt-body-table th {
+.dt-body-table th, .sizer-head th {
 	height: 0;
 	line-height: 0;
 	border-top-width: 0 !important;

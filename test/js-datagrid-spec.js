@@ -91,7 +91,7 @@ describe('Yet another datagrid Test Suite', function() {
 
 			var dg = new Datagrid(this.tableContainer, opts);
 
-			var tableHead = $('#my-table .dt-head-wrapper thead').first();
+			var tableHead = $('#my-table .dt-head-wrapper thead').eq(1);
 			expect(tableHead).toBeTruthy();
 
 			// Header == 1 tr
