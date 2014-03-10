@@ -493,7 +493,7 @@
 			// 	}
 			// }
 
-			return this.obj[field];
+			return this.obj[field] || '';
 		},
 
 		/**
