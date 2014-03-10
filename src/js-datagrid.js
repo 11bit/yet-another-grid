@@ -879,8 +879,8 @@
 				.setBodyHead(this.body.thead, this.ordinalColumns, 'body_th');
 
 			// draw right filler
-			this
-				.setEmptyThead(this.rightHeadFiller.thead);
+			var maxRows = Math.max(frozenColsStructure.length, ordinalColsStructure.length);
+			this .setEmptyThead(this.rightHeadFiller.thead, maxRows);
 
 			return this;
 		},
@@ -941,13 +941,15 @@
 		 * Render empty header for right filler
 		 * @param {HTMLElement} thead Thead element
 		 */
-		setEmptyThead: function(thead) {
+		setEmptyThead: function(thead, rowNum) {
 			innerHTML(thead, '');
-			var tr = createElement('tr'),
-				th = createElement('th');
-			th.innerHTML = '&nbsp;';
-			appendChild(tr, th);
-			appendChild(thead, tr);
+			for (var i = 0; i < rowNum; i++) {
+				var tr = createElement('tr'),
+					th = createElement('th');
+				th.innerHTML = '&nbsp;';
+				appendChild(tr, th);
+				appendChild(thead, tr);
+			}
 			return this;
 		},
 
