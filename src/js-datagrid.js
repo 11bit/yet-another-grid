@@ -826,7 +826,7 @@
 
 		setColumnSize: function(column, width) {
 			column.headSizer.style.width = width + 'px';
-			column.body_th.style.width = width + 'px';
+			column.bodySizer.style.width = width + 'px';
 			column.width = width;
 		},
 
@@ -870,13 +870,13 @@
 			this
 				.setThead(this.frozenHead.thead, frozenColsStructure)
 				.setBodyHead(this.frozenHead.sizerHead, this.frozenColumns, 'headSizer')
-				.setBodyHead(this.frozenBody.thead, this.frozenColumns, 'body_th');
+				.setBodyHead(this.frozenBody.thead, this.frozenColumns, 'bodySizer');
 
 			// draw other columns
 			this
 				.setThead(this.head.thead, ordinalColsStructure)
 				.setBodyHead(this.head.sizerHead, this.ordinalColumns, 'headSizer')
-				.setBodyHead(this.body.thead, this.ordinalColumns, 'body_th');
+				.setBodyHead(this.body.thead, this.ordinalColumns, 'bodySizer');
 
 			// draw right filler
 			var maxRows = Math.max(frozenColsStructure.length, ordinalColsStructure.length);
