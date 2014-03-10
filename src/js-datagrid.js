@@ -729,10 +729,11 @@
 		bindSortEvents: function() {
 			var self = this;
 			// todo: remove jquery?
-			$(this.headContainer).on('click', 'th', function (e) {
+			$(this.headContainer).on('click', 'th.sortable', function (e) {
 				var srcElement = e.originalEvent.srcElement || e.originalEvent.target;
-				if ($(srcElement).hasClass('dt-resize-handle'))
+				if ($(srcElement).hasClass('dt-resize-handle')) {
 					return;
+				}
 
 				var col_id = parseInt(getDataAttribute(this, ATTR_COLUMN_ID), 10);
 
@@ -920,6 +921,10 @@
 					txt += '<div class="dt-resize-handle"></div>'; // draggable="true"
 					setDataAttribute(th, ATTR_COLUMN_ID, column.column.idx);
 					column.column.th = th;
+
+					if(column.column.sortable !== false) {
+						th.className += ' sortable';
+					}
 				}
 
 				innerHTML(th, txt);
