@@ -492,8 +492,12 @@
 			// 		break;
 			// 	}
 			// }
-
-			return this.obj[field] || '';
+			var val = this.obj[field];
+			if (val===undefined) {
+				return '';
+			} else {
+				return val;
+			}
 		},
 
 		/**
