@@ -869,14 +869,14 @@
 			// draw frozen columns
 			this
 				.setThead(this.frozenHead.thead, frozenColsStructure)
-				.setBodyHead(this.frozenHead.sizerHead, this.frozenColumns, 'headSizer')
-				.setBodyHead(this.frozenBody.thead, this.frozenColumns, 'bodySizer');
+				.createSizer(this.frozenHead.sizerHead, this.frozenColumns, 'headSizer')
+				.createSizer(this.frozenBody.thead, this.frozenColumns, 'bodySizer');
 
 			// draw other columns
 			this
 				.setThead(this.head.thead, ordinalColsStructure)
-				.setBodyHead(this.head.sizerHead, this.ordinalColumns, 'headSizer')
-				.setBodyHead(this.body.thead, this.ordinalColumns, 'bodySizer');
+				.createSizer(this.head.sizerHead, this.ordinalColumns, 'headSizer')
+				.createSizer(this.body.thead, this.ordinalColumns, 'bodySizer');
 
 			// draw right filler
 			var maxRows = Math.max(frozenColsStructure.length, ordinalColsStructure.length);
@@ -922,7 +922,7 @@
 					setAttribute(th, 'rowspan', column.rowspan);
 				}
 				if (column.column) {
-					txt += '<div class="dt-resize-handle"></div>'; // draggable="true"
+					txt += '<div class="dt-resize-handle"></div>';
 					setDataAttribute(th, ATTR_COLUMN_ID, column.column.idx);
 					column.column.th = th;
 
@@ -954,11 +954,15 @@
 		},
 
 		/**
-		 * Render ivisible header(we need it for sizing purposes) of body part of datagrid.
+		 * Render ivisible header for sizing purposes. It is created as a first line in a table so tables with
+		 * fixed layout can get size from it.
+		 * @param {HTMLElement} thead thead to add invisible row
+		 * @param {Array<Column>} columns columns
+		 * @param {String} elementName name of property in Column object to save a reference to a th
 		 * @returns {Datagrid} this object.
 		 * @public
 		 */
-		 setBodyHead: function(thead, columns, elementName) {
+		 createSizer: function(thead, columns, elementName) {
 			innerHTML(thead, '');
 
 			var tr = createElement('tr');
