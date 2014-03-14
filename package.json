@@ -6,7 +6,11 @@
 		"karma-chrome-launcher": "~0.1.0",
 		"gulp": "*",
 		"gulp-util": "*",
-		"gulp-karma": "*"
+		"gulp-karma": "*",
+		"gulp-uglify": "*",
+		"gulp-concat": "*",
+		"gulp-rename": "*",
+		"gulp-csso": "*"
 	},
 	"engines": {
 		"node": ">=0.9.0"

@@ -1,21 +1,29 @@
+'use strict';
+
 var gulp = require('gulp');
 var gutil = require('gulp-util');
 var karma = require('gulp-karma');
+var uglify = require('gulp-uglify');
+var concat = require('gulp-concat');
+var rename = require('gulp-rename');
+var csso = require('gulp-csso');
 
-gulp.task('default', function(){
-  // place code for your default task here
-});
-
-
-
+var paths = {
+  source: [
+    'src/*.js'
+  ],
+  css: [
+    'src/css/*.css'
+  ]
+};
 
 var testFiles = [
 	'lib/jquery/jquery.js',
 	'lib/jquery.event.drag-drop/event.drag/jquery.event.drag.js',
 	'test/libs/jasmine-jquery.js',
-	'src/css/grid.css',
 	'examples/bootstrap/bootstrap.min.css',
-	'src/js-datagrid.js',
+  paths.css,
+	paths.source,
 	'test/*spec.js'
 ];
 
@@ -28,6 +36,24 @@ gulp.task('test', function() {
     }));
 });
 
+gulp.task('js', function() {
+  // Minify and copy all JavaScript (except vendor scripts)
+  return gulp.src(paths.source)
+    .pipe(concat('yet-another-grid.js'))
+    .pipe(gulp.dest('dist'))
+    .pipe(rename('yet-another-grid.min.js'))
+    .pipe(uglify())
+    .pipe(gulp.dest('dist'));
+});
+
+gulp.task('css', function() {
+  return gulp.src(paths.css)
+    .pipe(csso())
+    .pipe(gulp.dest('dist/css'));
+});
+
+gulp.task('build', ['js', 'css']);
+
 gulp.task('default', function() {
   gulp.src(testFiles)
     .pipe(karma({
@@ -35,3 +61,4 @@ gulp.task('default', function() {
       action: 'watch'
     }));
 });
+
