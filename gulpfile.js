@@ -14,18 +14,22 @@ var paths = {
   ],
   css: [
     'src/css/*.css'
+  ],
+  tests: [
+    'test/*spec.js'
+  ],
+  testLibs: [
+    'lib/jquery/jquery.js',
+    'lib/jquery.event.drag-drop/event.drag/jquery.event.drag.js',
+    'test/libs/jasmine-jquery.js',
+    'examples/bootstrap/bootstrap.min.css'
   ]
 };
 
-var testFiles = [
-	'lib/jquery/jquery.js',
-	'lib/jquery.event.drag-drop/event.drag/jquery.event.drag.js',
-	'test/libs/jasmine-jquery.js',
-	'examples/bootstrap/bootstrap.min.css',
-  paths.css,
-	paths.source,
-	'test/*spec.js'
-];
+var testFiles = paths.testLibs
+  .concat(paths.css)
+  .concat(paths.source)
+  .concat(paths.tests);
 
 gulp.task('test', function() {
   // Be sure to return the stream
