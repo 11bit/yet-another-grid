@@ -23,7 +23,10 @@
         .dt-frozen-body-wrapper table, .dt-frozen-head-wrapper table {
             border-right: 1px #ddd solid;
         }
-
+    
+        .total {
+            font-weight: bold;
+        }
 
     </style>
 </head>
@@ -47,7 +50,7 @@
     var columns = [
         {title: 'Rank', field: 'rank'},
         {title: 'Country', field: 'country'},
-        {title: 'Total Medals', field: 'total'},
+        {title: 'Total Medals', field: 'total', cssClass: 'total'},
         {title: '1924', field: '1924'},
         {title: '1928', field: '1928'},
         {title: '1948', field: '1948'},

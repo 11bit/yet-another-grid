@@ -583,6 +583,7 @@
 		this.idx = idx;
 		this.field = obj.field;
 		this.title = obj.title;
+		this.cssClass = obj.cssClass;
 		this.width = obj.width;
 		this.minWidth = obj.minWidth || MIN_COL_WIDTH;
 
@@ -1268,6 +1269,10 @@
 			innerHTML(td, txt);
 			setDataAttribute(td, ATTR_DATA_ID, data.id);
 			setDataAttribute(td, ATTR_COLUMN_ID, column.idx);
+
+			if (column.cssClass) {
+				td.className = column.cssClass;
+			}
 
 			return td;
 		},
