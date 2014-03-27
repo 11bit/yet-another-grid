@@ -1040,6 +1040,31 @@
 			return this;
 		},
 
+		removeSortStyles: function() {
+			var columns = this.columns;
+			for (var i = 0; i < columns.length; i++) {
+				var col = columns[i],
+					className = col.th.className;
+				if (className.indexOf('sorted')!==-1) {
+					
+					className = className
+						.replace('sorted', '')
+						.replace('sort-asc', '')
+						.replace('sort-desc', '')
+						.replace('  ', ' ');
+						
+					col.th.className = className;
+				}
+			}
+		},
+
+		setSortStyles: function(column_ids) {
+			for (var i = 0; i < column_ids.length; i++) {
+				var col = this.columns[column_ids[i]];
+				col.th.className = col.th.className + ' sorted ' + (col.sortAsc ? 'sort-asc' : 'sort-desc');
+			}
+		},
+
 		/**
 		 * Performs stable multisort by column ids
 		 * @param  {Array<number>} column_ids for sort
@@ -1049,6 +1074,9 @@
 			var row_order = [],
 				columns = this.columns,
 				sort_col_num = column_ids.length;
+
+			this.removeSortStyles();
+			this.setSortStyles(column_ids);
 
 			// build array with row order for stable sort
 			var row_num = this.datas.length;
