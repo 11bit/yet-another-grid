@@ -587,7 +587,8 @@
 		this.width = obj.width;
 		this.minWidth = obj.minWidth || MIN_COL_WIDTH;
 
-		this.sortAsc = obj.sortAsc || obj.sortAsc === undefined;
+		this.sortable = obj.sortable === undefined || obj.sortable;
+		this.sortAsc =  obj.sortAsc === undefined || obj.sortAsc;
 		if (obj.sortFunction) {
 			this.sortFunction = obj.sortFunction;
 		} else if (obj.sortType === 'numeric' || obj.sortType === 'date') {
