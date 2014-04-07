@@ -1037,7 +1037,7 @@
 			var array = isArray(datas) ? datas : [datas];
 			for (var i = 0, ln = array.length; i < ln; ++i) {
 				var isSummaryRow = ln - i <= this.options.summaryRowNum;
-				this.datas.push(new Data(++this.length, array[i], isSummaryRow));
+				this.datas.push(new Data(this.length++, array[i], isSummaryRow));
 			}
 			return this;
 		},

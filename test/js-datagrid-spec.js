@@ -145,13 +145,13 @@ describe('Yet another datagrid Test Suite', function() {
 			expect(dg.options.datas).toBeUndefined();
 
 			// Check datas
-			expect(dg.datas[0].id).toBe(1);
+			expect(dg.datas[0].id).toBe(0);
 			expect(dg.datas[0].visible).toBe(true);
 			expect(dg.datas[0].obj).toBe(opts.datas[0]);
-			expect(dg.datas[1].id).toBe(2);
+			expect(dg.datas[1].id).toBe(1);
 			expect(dg.datas[1].visible).toBe(true);
 			expect(dg.datas[1].obj).toBe(opts.datas[1]);
-			expect(dg.datas[2].id).toBe(3);
+			expect(dg.datas[2].id).toBe(2);
 			expect(dg.datas[2].visible).toBe(true);
 			expect(dg.datas[2].obj).toBe(opts.datas[2]);
 		});
@@ -182,9 +182,9 @@ describe('Yet another datagrid Test Suite', function() {
 			expect(dg.datas.length).toEqual(2);
 			expect(dg.length).toBe(2);
 
-			expect(dg.datas[0].id).toBe(1);
+			expect(dg.datas[0].id).toBe(0);
 			expect(dg.datas[0].obj).toBe(datas[0]);
-			expect(dg.datas[1].id).toBe(2);
+			expect(dg.datas[1].id).toBe(1);
 			expect(dg.datas[1].obj).toBe(datas[1]);
 		});
 
@@ -214,15 +214,15 @@ describe('Yet another datagrid Test Suite', function() {
 			expect(dg.datas.length).toEqual(5);
 			expect(dg.length).toBe(5);
 
-			expect(dg.datas[0].id).toBe(1);
+			expect(dg.datas[0].id).toBe(0);
 			expect(dg.datas[0].obj).toBe(datas1[0]);
-			expect(dg.datas[1].id).toBe(2);
+			expect(dg.datas[1].id).toBe(1);
 			expect(dg.datas[1].obj).toBe(datas1[1]);
-			expect(dg.datas[2].id).toBe(3);
+			expect(dg.datas[2].id).toBe(2);
 			expect(dg.datas[2].obj).toBe(datas1[2]);
-			expect(dg.datas[3].id).toBe(4);
+			expect(dg.datas[3].id).toBe(3);
 			expect(dg.datas[3].obj).toBe(datas2[0]);
-			expect(dg.datas[4].id).toBe(5);
+			expect(dg.datas[4].id).toBe(4);
 			expect(dg.datas[4].obj).toBe(datas2[1]);
 		});
 
@@ -248,13 +248,13 @@ describe('Yet another datagrid Test Suite', function() {
 			expect(dg.datas.length).toEqual(4);
 			expect(dg.length).toBe(4);
 
-			expect(dg.datas[0].id).toBe(1);
+			expect(dg.datas[0].id).toBe(0);
 			expect(dg.datas[0].obj).toBe(datas[0]);
-			expect(dg.datas[1].id).toBe(2);
+			expect(dg.datas[1].id).toBe(1);
 			expect(dg.datas[1].obj).toBe(datas[1]);
-			expect(dg.datas[2].id).toBe(3);
+			expect(dg.datas[2].id).toBe(2);
 			expect(dg.datas[2].obj).toBe(datas[2]);
-			expect(dg.datas[3].id).toBe(4);
+			expect(dg.datas[3].id).toBe(3);
 			expect(dg.datas[3].obj).toBe(singleData);
 		});
 
@@ -281,43 +281,43 @@ describe('Yet another datagrid Test Suite', function() {
 			expect(tbody.find('tr').get().length).toBe(3);
 
 			var $tr0 = tbody.find('tr').eq(0);
-			expect($tr0.attr('data-data-id')).toBe('1');
+			expect($tr0.attr('data-data-id')).toBe('0');
 			expect($tr0.find('td').length).toBe(3);
 			expect($tr0.find('td').eq(0).html()).toBe('1');
 			expect($tr0.find('td').eq(0).attr('data-col-id')).toBe('0');
-			expect($tr0.find('td').eq(0).attr('data-data-id')).toBe('1');
+			expect($tr0.find('td').eq(0).attr('data-data-id')).toBe('0');
 			expect($tr0.find('td').eq(1).html()).toBe('foo');
 			expect($tr0.find('td').eq(1).attr('data-col-id')).toBe('1');
-			expect($tr0.find('td').eq(1).attr('data-data-id')).toBe('1');
+			expect($tr0.find('td').eq(1).attr('data-data-id')).toBe('0');
 			expect($tr0.find('td').eq(2).html()).toBe('$100');
 			expect($tr0.find('td').eq(2).attr('data-col-id')).toBe('2');
-			expect($tr0.find('td').eq(2).attr('data-data-id')).toBe('1');
+			expect($tr0.find('td').eq(2).attr('data-data-id')).toBe('0');
 
 			var $tr1 = tbody.find('tr').eq(1);
-			expect($tr1.attr('data-data-id')).toBe('2');
+			expect($tr1.attr('data-data-id')).toBe('1');
 			expect($tr1.find('td').length).toBe(3);
 			expect($tr1.find('td').eq(0).html()).toBe('2');
 			expect($tr1.find('td').eq(0).attr('data-col-id')).toBe('0');
-			expect($tr1.find('td').eq(0).attr('data-data-id')).toBe('2');
+			expect($tr1.find('td').eq(0).attr('data-data-id')).toBe('1');
 			expect($tr1.find('td').eq(1).html()).toBe('bar');
 			expect($tr1.find('td').eq(1).attr('data-col-id')).toBe('1');
-			expect($tr1.find('td').eq(1).attr('data-data-id')).toBe('2');
+			expect($tr1.find('td').eq(1).attr('data-data-id')).toBe('1');
 			expect($tr1.find('td').eq(2).html()).toBe('$10');
 			expect($tr1.find('td').eq(2).attr('data-col-id')).toBe('2');
-			expect($tr1.find('td').eq(2).attr('data-data-id')).toBe('2');
+			expect($tr1.find('td').eq(2).attr('data-data-id')).toBe('1');
 
 			var $tr2 = tbody.find('tr').eq(2);
-			expect($tr2.attr('data-data-id')).toBe('3');
+			expect($tr2.attr('data-data-id')).toBe('2');
 			expect($tr2.find('td').length).toBe(3);
 			expect($tr2.find('td').eq(0).html()).toBe('3');
 			expect($tr2.find('td').eq(0).attr('data-col-id')).toBe('0');
-			expect($tr2.find('td').eq(0).attr('data-data-id')).toBe('3');
+			expect($tr2.find('td').eq(0).attr('data-data-id')).toBe('2');
 			expect($tr2.find('td').eq(1).html()).toBe(' ');
 			expect($tr2.find('td').eq(1).attr('data-col-id')).toBe('1');
-			expect($tr2.find('td').eq(1).attr('data-data-id')).toBe('3');
+			expect($tr2.find('td').eq(1).attr('data-data-id')).toBe('2');
 			expect($tr2.find('td').eq(2).html()).toBe('$');
 			expect($tr2.find('td').eq(2).attr('data-col-id')).toBe('2');
-			expect($tr2.find('td').eq(2).attr('data-data-id')).toBe('3');
+			expect($tr2.find('td').eq(2).attr('data-data-id')).toBe('2');
 		});
 
 		it('should not displayed filter datas (string)', function() {
@@ -585,16 +585,16 @@ describe('Yet another datagrid Test Suite', function() {
 				$row2 = rows().eq(2),
 				$row3 = rows().eq(3);
 
-			expect($row1.attr('data-data-id')).toBe('2');
+			expect($row1.attr('data-data-id')).toBe('1');
 			expect($row1.find('td').eq(0).text()).toMatch(/.*?Smith/);
 			expect($row1.find('td').eq(1).text()).toBe('5000');
 
-			expect($row2.attr('data-parents')).toBe('2');
+			expect($row2.attr('data-parents')).toBe('1');
 			expect($row2.find('td').eq(0).text()).toMatch(/.*?Jim/);
 			expect($row2.find('td').eq(1).text()).toBe('1500');
 			expect($row2.find('.expand-children-button').get().length).toBe(0);
 
-			expect($row3.attr('data-parents')).toBe('2');
+			expect($row3.attr('data-parents')).toBe('1');
 			expect($row3.find('td').eq(0).text()).toMatch(/.*?Bob/);
 			expect($row3.find('td').eq(1).text()).toBe('2500');
 			expect($row3.find('.expand-children-button').get().length).toBe(1);
@@ -634,7 +634,7 @@ describe('Yet another datagrid Test Suite', function() {
 			expect(rows().get().length).toBe(8);
 
 			var $row = rows().eq(4);
-			expect($row.attr('data-parents')).toBe('2,1');
+			expect($row.attr('data-parents')).toBe('1,1');
 			expect($row.find('td').eq(0).text()).toMatch(/.*?car/);
 			expect($row.find('td').eq(1).text()).toBe('1000');
 			expect($row.find('.expand-children-button').get().length).toBe(0);
