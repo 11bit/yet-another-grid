@@ -587,6 +587,8 @@
 		this.width = obj.width;
 		this.minWidth = obj.minWidth || MIN_COL_WIDTH;
 
+        this.resizable = obj.resizable === undefined || obj.resizable;
+
 		this.sortable = obj.sortable === undefined || obj.sortable;
 		this.sortAsc =  obj.sortAsc === undefined || obj.sortAsc;
 		if (obj.sortFunction) {
@@ -800,7 +802,6 @@
 		 */
 		bindResizeColumnEvent: function() {
 			var self = this,
-				resizing = false,
 				column,
 				baseWidth,
 				pos,
@@ -924,14 +925,15 @@
 					setAttribute(th, 'rowspan', column.rowspan);
 				}
 				if (column.column) {
-					txt += '<div class="dt-resize-handle"></div>';
-					setDataAttribute(th, ATTR_COLUMN_ID, column.column.idx);
-					column.column.th = th;
-
+                    if (column.column.resizable) {
+                        txt += '<div class="dt-resize-handle"></div>';
+                        setDataAttribute(th, ATTR_COLUMN_ID, column.column.idx);
+                    }
 					if(column.column.sortable !== false) {
-						th.className += ' sortable';
-					}
-				}
+                        th.className += ' sortable';
+                    }
+                    column.column.th = th;
+                }
 
 				innerHTML(th, txt);
 				appendChild(tr, th);
@@ -1430,4 +1432,3 @@
 		GroupedColumnUtil: GroupedColumnUtil
 	};
 })(window, document, void 0, window.jQuery);
-

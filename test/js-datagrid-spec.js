@@ -106,8 +106,30 @@ describe('Yet another datagrid Test Suite', function() {
 			expect($th1.text()).toBe('Name');
 		});
 
+        it('should add resize handlers for resizable columns', function() {
 
-		it('should initialize and add datas', function() {
+            var opts = {
+                columns: [
+                    { field: 'default', title: 'Resizable By Default' },
+                    { field: 'sortable', title: 'Resizable Column', resizable: true },
+                    { field: 'notsortable', title: 'Not Resizable Column', resizable: false }
+                ]
+            };
+
+            new Datagrid(this.tableContainer, opts);
+            var tableHead = $('#my-table .dt-head-wrapper thead').eq(1);
+
+            var $th0 = tableHead.find('tr th').eq(0);
+            expect($th0).toContain('.dt-resize-handle');
+
+            var $th1 = tableHead.find('tr th').eq(1);
+            expect($th1).toContain('.dt-resize-handle');
+
+            var $th2 = tableHead.find('tr th').eq(2);
+            expect($th2).not.toContain('.dt-resize-handle');
+        });
+
+        it('should initialize and add datas', function() {
 			var opts = {
 				datas: [
 					{ guid: 1 },
