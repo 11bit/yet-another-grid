@@ -17,13 +17,6 @@
 	var MIN_COL_WIDTH = 40; //px
 
 	/**
-	 * No Operation function.
-	 * @private
-	 */
-	var noop = function() {
-	};
-
-	/**
 	 * Check if a data is an array.
 	 * @param {*} data Data to check.
 	 * @returns {boolean} True if data is an array, false otherwise.
@@ -84,6 +77,7 @@
 	/**
 	 * Create an html element.
 	 * @param {string} nodeType Node type ('tr', 'td' etc.)
+     * @param {string} [className] optional css class name for an element
 	 * @returns {HTMLElement} Created element.
 	 * @private
 	 */
@@ -145,7 +139,7 @@
 	 * @param {Array} value
 	 */
 	var setDataArray = function(element, name, value) {
-		var val = setDataAttribute(element, name, value.join(','));
+		setDataAttribute(element, name, value.join(','));
 	};
 
 	/**
@@ -221,7 +215,6 @@
 
 	/**
 	 * Get width of a scroll bar (jquery dependecy).
-	 * @param {HTMLElement?} element Element.
 	 * @returns {number} Width of an element.
 	 * @private
 	 */
@@ -468,10 +461,14 @@
 	 * @param {number} id Internal id of data.
 	 * @param {Object} obj Original object.
 	 * @param {boolean} summaryRow Summary row flag (this row will always sort to bottom)
+     * @param {number} level level of data for hierarchical data objects
 	 * @constructor
 	 * @private
 	 */
 	var Data = function(id, obj, summaryRow, level) {
+		/*
+		@public
+		 */
 		this.id = id;
 		this.obj = obj;
 		this.visible = true;
@@ -615,7 +612,7 @@
 
 	/**
 	 * Datagrid object.
-	 * @param {HTMLTableElement} table Table.
+	 * @param {HTMLTableElement} container Container for table.
 	 * @param {Object} options Plugin settings.
 	 * @constructor
 	 * @public
@@ -671,7 +668,7 @@
 		 * @returns {Datagrid} this object.
 		 * @public
 		 */
-		buildStructure: function(columns) {
+		buildStructure: function() {
 			this.headContainer = createElement('div', 'dt-head');
 			this.bodyContainer = createElement('div', 'dt-body');
 
@@ -770,10 +767,8 @@
 		bindScrollEvents: function() {
 			var self = this;
 			$(this.bodyWrapper).on('scroll', function scrollHandler() {
-				var scrollTop = this.scrollTop,
-					scrollLeft = this.scrollLeft;
-				self.headWrapper.scrollLeft = scrollLeft;
-				self.frozenBodyWrapper.scrollTop = scrollTop;
+				self.headWrapper.scrollLeft = this.scrollLeft;
+				self.frozenBodyWrapper.scrollTop = this.scrollTop;
 			});
 			return this;
 		},
@@ -785,7 +780,7 @@
 		bindExpandChildrenEvents: function() {
 			var self = this;
 
-			$(this.container).on('click', '.expand-children-button', function(e) {
+			$(this.container).on('click', '.expand-children-button', function() {
 				var cell = $(this).closest('td');
 
 				var data = self.getRowDataByCell(cell[0]);
@@ -835,7 +830,7 @@
 
 		/**
 		 * Set columns to datagrid.
-		 * @param {Array<Object>} columns Columns. Datagrid supports column groups:
+		 * @param {Array<Object>} columnGroups Columns or column groups. Datagrid supports column groups:
 		 * If column object has `columns` property it will be rendered as a column group with `columns` inside it.
 		 * @returns {Datagrid} this object.
 		 * @public
@@ -943,7 +938,9 @@
 
 		/**
 		 * Render empty header for right filler
-		 * @param {HTMLElement} thead Thead element
+		 * @param {HTMLElement} thead THead element
+         * @param {number} rowNum Number of empty rows to create
+         * @return {Datagrid} this object
 		 */
 		setEmptyThead: function(thead, rowNum) {
 			innerHTML(thead, '');
@@ -995,8 +992,8 @@
 		},
 
 		/**
-		 * Get row data by list of ids. Each id represents a row in a level of hiearhical data
-		 * @param {Array<Data>} rows Rows to search
+		 * Get row data by list of ids. Each id represents a row in a level of hierarchical data
+		 * @param {Array<Data>} datas Rows to search
 		 * @param  {Array<number>} ids List of ids to get data from hierarchical structures
 		 * @return {Data}
 		 */
@@ -1163,13 +1160,12 @@
 			var frozenColumns = this.createTableFragment(this.datas, this.frozenColumns);
 			innerHTML(this.frozenBody.tbody, '');
 			appendChild(this.frozenBody.tbody, frozenColumns);
-			frozenColumns = undefined;
 
 			var fragment = this.createTableFragment(this.datas, this.ordinalColumns);
 			innerHTML(this.body.tbody, '');
 			appendChild(this.body.tbody, fragment);
 
-			//create right fillter
+			//create right filter
 			var rightFillerBody = this.createEmptyTableFragment(this.datas);
 			innerHTML(this.rightFiller.tbody, '');
 			appendChild(this.rightFiller.tbody, rightFillerBody);
@@ -1226,7 +1222,9 @@
 		/**
 		 * Create row for data.
 		 * @param {Data} data Data to render.
-		 * @returns {HTMLElement} Row associated to data.
+         * @param {Array<Column>} columns to render
+         * @param {Array<number>} parents List of parent ids.
+		 * @returns {HTMLElement | DocumentFragment} Row associated to data.
 		 * @public
 		 */
 		createRow: function(data, columns, parents) {
@@ -1255,7 +1253,9 @@
 
 		/**
 		 * Create child rows
-		 * @param  {Data} data Data which children should be rendered
+		 * @param {Data} data Data which children should be rendered
+         * @param {Array<Column>} columns Columns to render
+         * @param {Array<number>} parents List of parent ids.
 		 * @return {DocumentFragment}
 		 * @public
 		 */
