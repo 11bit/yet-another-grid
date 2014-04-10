@@ -1070,8 +1070,7 @@
 		 * @return {Datagrid} this object
 		 */
 		sort: function(column_ids) {
-			var row_order = [],
-                row_positions = {},
+			var row_positions = {},
 				columns = this.columns,
 				sort_col_num = column_ids.length;
 
@@ -1082,8 +1081,7 @@
 			var row_num = this.datas.length;
 			for (var index=0; index<row_num; index++) {
 				var data = this.datas[index];
-				row_order.push(data.id);
-                row_positions[data.id] = index;
+				row_positions[data.id] = index;
 			}
 
 			this.datas.sort(function (a, b) {
@@ -1108,38 +1106,36 @@
 					}
 				}
 
-				return defaultSort(row_order[a.id], row_order[b.id]);
+				return defaultSort(row_positions[a.id], row_positions[b.id]);
 			});
 
 //			this.render();
-            this.reorderRows(row_positions);
+            this.reorderRows(this.frozenBody.tbody, this.datas, row_positions);
+            this.reorderRows(this.body.tbody, this.datas, row_positions);
 			return this;
 		},
 
+        /**
+         * Reorder rows in a table according to a new data
+         * @param tbody [TBody] body of a table
+         * @param datas [Array<Data>] Array with a new data
+         * @param oldPositions [Dictionary] dictionary with positions of data elements in an array before reordering
+         * @returns {Datagrid} this object
+         */
+        reorderRows: function(tbody, datas, oldPositions) {
+            var rows = [],
+                row;
 
-        reorderRows: function(oldPositions) {
-            var frozen = this.frozenBody.tbody,
-                ordinal = this.body.tbody,
-                frozenRows = [],
-                ordinalRows = [],
-                fRow;
-
-            while (fRow = frozen.firstChild) {
-                var row = ordinal.firstChild;
-
-                frozenRows.push(fRow);
-                ordinalRows.push(row);
-
-                frozen.removeChild(fRow);
-                ordinal.removeChild(row);
+            while (row = tbody.firstChild) {
+                rows.push(row);
+                tbody.removeChild(row);
             }
 
             for (var i=0; i<this.datas.length; i++) {
                 var data = this.datas[i];
-
-                frozen.appendChild(frozenRows[oldPositions[data.id]]);
-                ordinal.appendChild(ordinalRows[oldPositions[data.id]]);
+                tbody.appendChild(rows[oldPositions[data.id]]);
             }
+
             return this;
         },
 
