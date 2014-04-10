@@ -1071,6 +1071,7 @@
 		 */
 		sort: function(column_ids) {
 			var row_order = [],
+                row_positions = {},
 				columns = this.columns,
 				sort_col_num = column_ids.length;
 
@@ -1079,9 +1080,10 @@
 
 			// build array with row order for stable sort
 			var row_num = this.datas.length;
-			for (var data_id=0; data_id<row_num; data_id++) {
-				var data = this.datas[data_id];
+			for (var index=0; index<row_num; index++) {
+				var data = this.datas[index];
 				row_order.push(data.id);
+                row_positions[data.id] = index;
 			}
 
 			this.datas.sort(function (a, b) {
@@ -1109,10 +1111,37 @@
 				return defaultSort(row_order[a.id], row_order[b.id]);
 			});
 
-			this.render();
-
+//			this.render();
+            this.reorderRows(row_positions);
 			return this;
 		},
+
+
+        reorderRows: function(oldPositions) {
+            var frozen = this.frozenBody.tbody,
+                ordinal = this.body.tbody,
+                frozenRows = [],
+                ordinalRows = [],
+                fRow;
+
+            while (fRow = frozen.firstChild) {
+                var row = ordinal.firstChild;
+
+                frozenRows.push(fRow);
+                ordinalRows.push(row);
+
+                frozen.removeChild(fRow);
+                ordinal.removeChild(row);
+            }
+
+            for (var i=0; i<this.datas.length; i++) {
+                var data = this.datas[i];
+
+                frozen.appendChild(frozenRows[oldPositions[data.id]]);
+                ordinal.appendChild(ordinalRows[oldPositions[data.id]]);
+            }
+            return this;
+        },
 
 		/**
 		 * Add new filters to datagrid.

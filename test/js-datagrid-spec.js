@@ -483,6 +483,34 @@ describe('Yet another datagrid Test Suite', function() {
 			expect(dg.datas[1].visible).toBe(true);
 			expect(dg.datas[2].visible).toBe(true);
 		});
+
+        it('should sort', function() {
+            var dg = new Datagrid(this.tableContainer, {
+                columns: [
+                    { field: 'firstName', title: 'First Name' },
+                    { field: 'lastName', title: 'Last Name' }
+                ],
+                datas: [
+                    { guid: 1, firstName: 'foo1', lastName: 'foo2' },
+                    { guid: 2, firstName: 'bar1', lastName: 'bar2' },
+                    { guid: 3, firstName: 'baz1', lastName: 'baz2' }
+                ]
+            });
+
+            var tbody = $(dg.body.tbody);
+
+            expect(tbody.find('tr:eq(0) td:eq(0)')).toHaveText('foo1');
+            expect(tbody.find('tr:eq(1) td:eq(0)')).toHaveText('bar1');
+            expect(tbody.find('tr:eq(2) td:eq(0)')).toHaveText('baz1');
+
+            // sort by first column
+            dg.sort([0]);
+
+            expect(tbody.find('tr:eq(0) td:eq(0)')).toHaveText('bar1');
+            expect(tbody.find('tr:eq(1) td:eq(0)')).toHaveText('baz1');
+            expect(tbody.find('tr:eq(2) td:eq(0)')).toHaveText('foo1');
+
+        })
 	});
 
 	describe('Datagrid sizing mechanism', function() {
@@ -530,6 +558,7 @@ describe('Yet another datagrid Test Suite', function() {
 			expect(dg.headWrapper.scrollWidth).toEqual(dg.bodyWrapper.scrollWidth);
 		});
 	});
+
 
 	describe('Expandable datagrid', function() {
 
