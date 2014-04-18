@@ -669,4 +669,139 @@ describe('Yet another datagrid Test Suite', function() {
 			expect($row.find('.expand-children-button').get().length).toBe(0);
 		});
 	});
+
+    describe('Expandable datagrid with frozen column', function() {
+
+		beforeEach(function() {
+			jasmine.getFixtures().set('<div id="my-table"></div>');
+			this.tableContainer = $('#my-table').get()[0];
+			this.dg = new Datagrid(this.tableContainer, {
+				columns: [
+					{field: 'name', title: 'Name'},
+					{field: 'expenses', title: 'Expenses'}
+				],
+				datas: [
+					{guid: 1, name: 'Brown', expenses: 1000, children: [
+						{name: 'Alice', expenses: 400},
+						{name: 'John', expenses: 600}
+					]},
+					{guid: 1, name: 'Smith', expenses: 5000, children: [
+						{name: 'Jim', expenses: 1500},
+						{name: 'Bob', expenses: 2500, children: [
+							{name: 'car', expenses: 1000},
+							{name: 'house', expenses: 1000},
+							{name: 'dog', expenses: 500}
+						]},
+						{name: 'Margaret', expenses: 1000}
+					]}
+				],
+				expandable: true,
+                frozenColumnsNum: 1
+			});
+		});
+
+		it('should have expand buttons for each row with children', function() {
+			var dg = this.dg;
+			function rows() {
+				return $(dg.frozenBody.tbody).find('tr');
+			}
+
+			expect(rows().get().length).toBe(2);
+			expect(rows().eq(0)).toContain('.expand-children-button');
+			expect(rows().eq(1)).toContain('.expand-children-button');
+		});
+
+		it('should expand and collapse children on click', function() {
+			var dg = this.dg;
+
+			// expand second row children
+            $(dg.frozenBody.tbody).find('tr:eq(1) .expand-children-button').click();
+
+            var rows = $(dg.frozenBody.tbody).find('tr');
+            expect(rows.get().length).toBe(5);
+
+
+			expect($(dg.frozenBody.tbody).find('tr:eq(0)')).toHaveData('data-id', '0');
+			expect($(dg.frozenBody.tbody).find('tr:eq(0) td:eq(0)').text()).toMatch(/.*?Brown/);
+            expect($(dg.body.tbody).find('tr:eq(0) td:eq(0)')).toHaveText('1000');
+
+            expect($(dg.frozenBody.tbody).find('tr:eq(1)')).toHaveData('data-id', '1');
+			expect($(dg.frozenBody.tbody).find('tr:eq(1) td:eq(0)').text()).toMatch(/.*?Smith/);
+            expect($(dg.body.tbody).find('tr:eq(1) td:eq(0)')).toHaveText('5000');
+
+            expect($(dg.frozenBody.tbody).find('tr:eq(2)')).toHaveData('data-id', '0');
+            expect($(dg.frozenBody.tbody).find('tr:eq(2)')).toHaveData('parents', '1');
+			expect($(dg.frozenBody.tbody).find('tr:eq(2) td:eq(0)')).toHaveText(/.*?Jim/);
+            expect($(dg.frozenBody.tbody).find('tr:eq(2)')).not.toContain('.expand-children-button');
+            expect($(dg.body.tbody).find('tr:eq(2) td:eq(0)')).toHaveText('1500');
+
+            expect($(dg.frozenBody.tbody).find('tr:eq(3)')).toHaveData('data-id', '1');
+            expect($(dg.frozenBody.tbody).find('tr:eq(3)')).toHaveData('parents', '1');
+            expect($(dg.frozenBody.tbody).find('tr:eq(3) td:eq(0)')).toHaveText(/.*?Bob/);
+            expect($(dg.frozenBody.tbody).find('tr:eq(3)')).toContain('.expand-children-button');
+            expect($(dg.body.tbody).find('tr:eq(3) td:eq(0)')).toHaveText('2500');
+
+            // collapse second row
+            $(dg.frozenBody.tbody).find('tr:eq(1) td:eq(0)').find('.expand-children-button').click();
+			expect($(dg.frozenBody.tbody).find('tr').get().length).toBe(2);
+		});
+
+		it('should find data element by cell', function() {
+			var dg = this.dg;
+            var rows = $(dg.frozenBody.tbody).find('tr');
+
+            // expand second row children
+			rows.eq(1).find('.expand-children-button').click();
+            rows = $(dg.frozenBody.tbody).find('tr')
+
+			expect(dg.getRowDataByCell(rows.eq(1).find('td').eq(0)[0]).get('name')).toBe('Smith');
+
+			var childData = dg.getRowDataByCell(rows.eq(2).find('td').eq(0)[0]);
+			expect(childData).toBeDefined();
+			expect(childData.get('name')).toBe('Jim');
+		});
+
+		it('should expand third level', function() {
+			var dg = this.dg,
+                rows = $(dg.frozenBody.tbody).find('tr');
+
+			// expand second second level
+			rows.eq(1).find('.expand-children-button').click();
+
+            rows = $(dg.frozenBody.tbody).find('tr')
+			expect(rows.get().length).toBe(5);
+
+			// expand third level
+			rows.eq(3).find('.expand-children-button').click();
+            rows = $(dg.frozenBody.tbody).find('tr')
+
+			expect(rows.get().length).toBe(8);
+
+            expect($(dg.frozenBody.tbody).find('tr:eq(4)')).toHaveData('data-id', '0');
+            expect($(dg.frozenBody.tbody).find('tr:eq(4)')).toHaveData('parents', '1,1');
+            expect($(dg.frozenBody.tbody).find('tr:eq(4) td:eq(0)')).toHaveText(/.*?car/);
+            expect($(dg.frozenBody.tbody).find('tr:eq(4)')).not.toContain('.expand-children-button');
+            expect($(dg.body.tbody).find('tr:eq(4) td:eq(0)')).toHaveText('1000');
+        });
+
+        it('should remove all child columns all collapse', function() {
+            var dg = this.dg;
+            expect($(dg.frozenBody.tbody).find('tr').get().length).toBe(2);
+
+            expect($(dg.body.tbody).find('tr').get().length).toBe(2);
+            // expand second second level
+            $(dg.frozenBody.tbody).find('tr').eq(1).find('.expand-children-button').click();
+
+            // expand third level
+            $(dg.frozenBody.tbody).find('tr').eq(3).find('.expand-children-button').click();
+            expect($(dg.frozenBody.tbody).find('tr').get().length).toBe(8);
+
+            expect($(dg.body.tbody).find('tr').get().length).toBe(8);
+
+            // collapse
+            $(dg.frozenBody.tbody).find('tr').eq(1).find('.expand-children-button').click();
+            expect($(dg.frozenBody.tbody).find('tr').get().length).toBe(2);
+            expect($(dg.body.tbody).find('tr').get().length).toBe(2);
+        });
+    });
 });

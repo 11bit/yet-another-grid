@@ -780,12 +780,19 @@
 		bindExpandChildrenEvents: function() {
 			var self = this;
 
-			$(this.container).on('click', '.expand-children-button', function() {
-				var cell = $(this).closest('td');
+			$(this.container).on('click', '.expand-children-button', function expandChildrenHandler() {
+				var cell = $(this).closest('td'),
+                    row = cell.parent().get(0);
 
 				var data = self.getRowDataByCell(cell[0]);
 				data.expanded = !data.expanded;
-				self.render();
+//				self.render();
+
+                if (data.expanded) {
+                    self.expandRow(row, data);
+                } else {
+                    self.collapseRow(row, data);
+                }
 			});
 
 			return this;
@@ -1137,6 +1144,36 @@
             }
 
             return this;
+        },
+
+        expandRow: function(tr, data) {
+            var trIndex = $(tr).index(),
+                parents = getDataArray(tr, ATTR_PARENTS);
+            parents = (parents || []);
+
+            var frozenChildren = this.createChildrenRows(data, this.frozenColumns, parents.concat(data.id)),
+                ordinalChildren = this.createChildrenRows(data, this.ordinalColumns, parents.concat(data.id));
+
+            var frozenTr = this.frozenBody.tbody.childNodes[trIndex];
+            var ordinalTr = this.body.tbody.childNodes[trIndex];
+
+            this.frozenBody.tbody.insertBefore(frozenChildren, frozenTr.nextSibling);
+            this.body.tbody.insertBefore(ordinalChildren, ordinalTr.nextSibling);
+        },
+
+        collapseRow: function(tr, data) {
+            var parents = getDataArray(tr, ATTR_PARENTS);
+            parents = (parents || []).concat(data.id).join(',');
+
+            var next = tr.nextSibling;
+
+            while (next) {
+                var next2 = next.nextSibling;
+                if (getDataArray(next, ATTR_PARENTS).join(',')==parents) {
+                    tr.parentNode.removeChild(next);
+                }
+                next = next2;
+            }
         },
 
 		/**
