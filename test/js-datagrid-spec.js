@@ -511,6 +511,33 @@ describe('Yet another datagrid Test Suite', function() {
             expect(tbody.find('tr:eq(2) td:eq(0)')).toHaveText('foo1');
 
         })
+
+        it('should reuse dom elements by default', function() {
+            var dg = new Datagrid(this.tableContainer, {
+                columns: [
+                    { field: 'firstName', title: 'First Name' },
+                    { field: 'lastName', title: 'Last Name' }
+                ],
+                datas: [
+                    { guid: 1, firstName: 'foo1', lastName: 'foo2' },
+                    { guid: 2, firstName: 'bar1', lastName: 'bar2' },
+                    { guid: 3, firstName: 'baz1', lastName: 'baz2' }
+                ]
+            });
+
+            var before_sort, after_sort;
+
+            before_sort = Array.prototype.slice.call(dg.body.tbody.childNodes, 0);
+
+            // sort by first column
+            dg.sort([0]);
+
+            after_sort = Array.prototype.slice.call(dg.body.tbody.childNodes, 0);
+
+            expect(before_sort[0]).toBe(after_sort[2]);
+            expect(before_sort[1]).toBe(after_sort[0]);
+            expect(before_sort[2]).toBe(after_sort[1]);
+        })
 	});
 
 	describe('Datagrid sizing mechanism', function() {

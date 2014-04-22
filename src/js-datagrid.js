@@ -465,7 +465,7 @@
 	 * @constructor
 	 * @private
 	 */
-	var Data = function(id, obj, summaryRow, level) {
+	var Data = function(id, obj, summaryRow, level, parents) {
 		/*
 		@public
 		 */
@@ -475,7 +475,11 @@
 		this.expanded = false;
 		this.level = level || 0;
 		this.summaryRow = summaryRow;
-	};
+
+
+        this.parents = parents || [];
+        this.uid = this.parents.join('-') + '-' + this.id;
+    };
 
 	Data.prototype = {
 		get: function(field) {
@@ -506,12 +510,14 @@
 			if (!this._children) {
 				// create children on demand
 				var raw = this.obj[childrenField],
-					children = [];
+					children = [],
+                    parents = this.parents.concat(this.id);
+
 				if (!raw) {
 					return [];
 				}
 				for (var i=0, ln=raw.length; i<ln; i++) {
-					children.push(new Data(i, raw[i], false, this.level + 1));
+					children.push(new Data(i, raw[i], false, this.level + 1, parents));
 				}
 				this._children = children;
 			}
@@ -646,6 +652,13 @@
 		 * @public
 		 */
 		init: function() {
+
+            if (true) {
+                this.domCache = {
+                    frozenCols: {},
+                    ordinalCols: {}
+                }
+            }
 
 			this
 				.buildStructure()
@@ -786,13 +799,13 @@
 
 				var data = self.getRowDataByCell(cell[0]);
 				data.expanded = !data.expanded;
-//				self.render();
+				self.render();
 
-                if (data.expanded) {
-                    self.expandRow(row, data);
-                } else {
-                    self.collapseRow(row, data);
-                }
+//                if (data.expanded) {
+//                    self.expandRow(row, data);
+//                } else {
+//                    self.collapseRow(row, data);
+//                }
 			});
 
 			return this;
@@ -1116,65 +1129,9 @@
 				return defaultSort(row_positions[a.id], row_positions[b.id]);
 			});
 
-//			this.render();
-            this.reorderRows(this.frozenBody.tbody, this.datas, row_positions);
-            this.reorderRows(this.body.tbody, this.datas, row_positions);
+			this.render();
 			return this;
 		},
-
-        /**
-         * Reorder rows in a table according to a new data
-         * @param tbody [TBody] body of a table
-         * @param datas [Array<Data>] Array with a new data
-         * @param oldPositions [Dictionary] dictionary with positions of data elements in an array before reordering
-         * @returns {Datagrid} this object
-         */
-        reorderRows: function(tbody, datas, oldPositions) {
-            var rows = [],
-                row;
-
-            while (row = tbody.firstChild) {
-                rows.push(row);
-                tbody.removeChild(row);
-            }
-
-            for (var i=0; i<this.datas.length; i++) {
-                var data = this.datas[i];
-                tbody.appendChild(rows[oldPositions[data.id]]);
-            }
-
-            return this;
-        },
-
-        expandRow: function(tr, data) {
-            var trIndex = $(tr).index(),
-                parents = getDataArray(tr, ATTR_PARENTS);
-            parents = (parents || []);
-
-            var frozenChildren = this.createChildrenRows(data, this.frozenColumns, parents.concat(data.id)),
-                ordinalChildren = this.createChildrenRows(data, this.ordinalColumns, parents.concat(data.id));
-
-            var frozenTr = this.frozenBody.tbody.childNodes[trIndex];
-            var ordinalTr = this.body.tbody.childNodes[trIndex];
-
-            this.frozenBody.tbody.insertBefore(frozenChildren, frozenTr.nextSibling);
-            this.body.tbody.insertBefore(ordinalChildren, ordinalTr.nextSibling);
-        },
-
-        collapseRow: function(tr, data) {
-            var parents = getDataArray(tr, ATTR_PARENTS);
-            parents = (parents || []).concat(data.id).join(',');
-
-            var next = tr.nextSibling;
-
-            while (next) {
-                var next2 = next.nextSibling;
-                if (getDataArray(next, ATTR_PARENTS).join(',')==parents) {
-                    tr.parentNode.removeChild(next);
-                }
-                next = next2;
-            }
-        },
 
 		/**
 		 * Add new filters to datagrid.
@@ -1219,11 +1176,11 @@
 		 * @public
 		 */
 		render: function() {
-			var frozenColumns = this.createTableFragment(this.datas, this.frozenColumns);
+			var frozenColumns = this.createTableFragment(this.datas, this.frozenColumns, this.domCache.frozenCols);
 			innerHTML(this.frozenBody.tbody, '');
 			appendChild(this.frozenBody.tbody, frozenColumns);
 
-			var fragment = this.createTableFragment(this.datas, this.ordinalColumns);
+			var fragment = this.createTableFragment(this.datas, this.ordinalColumns, this.domCache.ordinalCols);
 			innerHTML(this.body.tbody, '');
 			appendChild(this.body.tbody, fragment);
 
@@ -1242,7 +1199,7 @@
 		 * @param  {Array<object>} columns Columns to render
 		 * @return {DocumentFragment}      DocumentFragment with `tr` rows
 		 */
-		createTableFragment: function(datas, columns) {
+		createTableFragment: function(datas, columns, domCache) {
 			var fragment = document.createDocumentFragment();
 			for (var i = 0, ln = datas.length; i < ln; ++i) {
 				var data = datas[i];
@@ -1251,7 +1208,7 @@
 				}
 
 				if (data.visible) {
-					appendChild(fragment, this.createRow(datas[i], columns));
+                    appendChild(fragment, this.createRow(datas[i], columns, false, domCache));
 				}
 			}
 			return fragment;
@@ -1289,21 +1246,29 @@
 		 * @returns {HTMLElement | DocumentFragment} Row associated to data.
 		 * @public
 		 */
-		createRow: function(data, columns, parents) {
-			var tr = createElement('tr');
-			setDataAttribute(tr, ATTR_DATA_ID, data.id);
-			
-			if (parents){
-				setDataArray(tr, ATTR_PARENTS, parents);
-			}
+		createRow: function(data, columns, parents, domCache) {
+            if (!(this.options.reuseDom && domCache[data.uid])) {
+                var tr = createElement('tr');
+                setDataAttribute(tr, ATTR_DATA_ID, data.id);
 
-			for (var i = 0, ln = columns.length; i < ln; ++i) {
-				appendChild(tr, this.createCell(data, columns[i]));
-			}
+                if (parents){
+                    setDataArray(tr, ATTR_PARENTS, parents);
+                }
+
+                for (var i = 0, ln = columns.length; i < ln; ++i) {
+                    appendChild(tr, this.createCell(data, columns[i]));
+                }
+
+                if (this.options.reuseDom) {
+                    domCache[data.uid] = tr;
+                }
+            } else {
+                tr = domCache[data.uid];
+            }
 
 			if (data.expanded) {
 				parents = (parents || []);
-				var children = this.createChildrenRows(data, columns, parents.concat(data.id)),
+				var children = this.createChildrenRows(data, columns, parents.concat(data.id), domCache),
 					withChildren = document.createDocumentFragment();
 				appendChild(withChildren, tr);
 				appendChild(withChildren, children);
@@ -1321,12 +1286,12 @@
 		 * @return {DocumentFragment}
 		 * @public
 		 */
-		createChildrenRows: function(data, columns, parents) {
+		createChildrenRows: function(data, columns, parents, domCache) {
 			var children = data.getChildren(this.options.childrenField),
 				fragment = document.createDocumentFragment();
 
 			for (var i = 0, ln = children.length; i < ln; i++) {
-				appendChild(fragment, this.createRow(children[i], columns, parents));
+				appendChild(fragment, this.createRow(children[i], columns, parents, domCache));
 			}
 
 			return fragment;
@@ -1481,6 +1446,7 @@
 		filters: [],
 		fixEmptyCell: true,
 		caseInsensitive: true,
+        reuseDom: true,                 // store already created dom nodes for rows and cells and reuse in on rerendering
 		frozenColumnsNum: 0,
 		summaryRowNum: 0,               // number of summary rows at the bottom which don't take part in sort
 		childrenField: 'children',      // name of a list with children in data
