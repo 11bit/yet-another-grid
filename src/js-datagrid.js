@@ -799,7 +799,12 @@
 
 				var data = self.getRowDataByCell(cell[0]);
 				data.expanded = !data.expanded;
-				self.render();
+
+                this.innerHTML = data.expanded ?
+                    self.options.collapseChildrenButton :
+                    self.options.expandChildrenButton;
+
+                self.render();
 
 //                if (data.expanded) {
 //                    self.expandRow(row, data);

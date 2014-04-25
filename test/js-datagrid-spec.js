@@ -627,6 +627,18 @@ describe('Yet another datagrid Test Suite', function() {
 			expect(rows().eq(1).find('.expand-children-button').get().length).toBe(1);
 		});
 
+        it('should change expand icon to collapse icon on expand/collapse', function() {
+            var dg = this.dg,
+                toggle_collapse = $(dg.body.tbody).find('tr:eq(0) td:eq(0) .expand-children-button');
+
+            expect(toggle_collapse).toHaveText('⊞');
+
+            toggle_collapse.click();
+
+            expect(toggle_collapse).toHaveText('⊟');
+
+        })
+
 		it('should expand and collapse children on click', function() {
 			var dg = this.dg;
 			function rows() {
