@@ -1256,6 +1256,10 @@
                 var tr = createElement('tr');
                 setDataAttribute(tr, ATTR_DATA_ID, data.id);
 
+                if (data.level>0) {
+                    tr.className = 'children-level-' + data.level;
+                }
+
                 if (parents){
                     setDataArray(tr, ATTR_PARENTS, parents);
                 }
