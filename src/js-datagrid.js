@@ -1386,7 +1386,7 @@
 				var column = columns[i],
 					head_col_width = getCellWidth(head_ths[i]),
 					body_col_width = getCellWidth(body_ths[i]),
-					maxWidth = Math.max(head_col_width, body_col_width),
+					maxWidth = Math.max(head_col_width, body_col_width, column.width),
 					narrowMode = column.narrowMode;
 
 				if (column.width && column.width<maxWidth) {
