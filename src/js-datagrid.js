@@ -1326,14 +1326,20 @@
 				txt = ' ';
 			}
 
-			if (column.idx === 0 && this.options.expandable && data.hasChildren(this.options.childrenField)) {
+            if (column.idx === 0 && this.options.expandable && data.hasChildren(this.options.childrenField)) {
 				var icon = data.expanded ?
 							this.options.collapseChildrenButton :
 							this.options.expandChildrenButton;
+
 				txt = '<span class="expand-children-button">'+ icon + '</span>' + txt; // expand arrow
 			}
 
-			innerHTML(td, txt);
+            if (column.idx === 0 && data.level>0 && this.options.childrenPadding>0) {
+                var children_padding = (this.options.childrenPadding * data.level) + 'px';
+                txt = '<span style="padding-left: ' + children_padding + '"></span>' + txt;
+            }
+
+            innerHTML(td, txt);
 			setDataAttribute(td, ATTR_DATA_ID, data.id);
 			setDataAttribute(td, ATTR_COLUMN_ID, column.idx);
 
@@ -1460,7 +1466,8 @@
 		summaryRowNum: 0,               // number of summary rows at the bottom which don't take part in sort
 		childrenField: 'children',      // name of a list with children in data
 		expandChildrenButton: '⊞',
-		collapseChildrenButton: '⊟'
+		collapseChildrenButton: '⊟',
+        childrenPadding: 10
 	};
 
 	// Expose to global object
