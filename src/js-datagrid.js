@@ -501,6 +501,14 @@
 			}
 		},
 
+        /**
+         * Get a row data.
+         * @returns {Object} Source data of a row
+         */
+        getData: function() {
+            return this.obj;
+        },
+
 		/**
 		 * Get children of a row
 		 * @param  {string} childrenField
