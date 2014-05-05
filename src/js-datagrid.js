@@ -791,6 +791,9 @@
 				self.headWrapper.scrollLeft = this.scrollLeft;
 				self.frozenBodyWrapper.scrollTop = this.scrollTop;
 			});
+            $(this.frozenBodyWrapper).on('scroll', function fbScroll() {
+                console.log('hello');
+            })
 			return this;
 		},
 
@@ -959,6 +962,9 @@
                     }
 					if(column.column.sortable !== false) {
                         th.className += ' sortable';
+                    }
+                    if (column.column.cssClass) {
+                        th.className += ' ' + column.column.cssClass;
                     }
                     column.column.th = th;
                 }
