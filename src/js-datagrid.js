@@ -791,10 +791,7 @@
 				self.headWrapper.scrollLeft = this.scrollLeft;
 				self.frozenBodyWrapper.scrollTop = this.scrollTop;
 			});
-            $(this.frozenBodyWrapper).on('scroll', function fbScroll() {
-                console.log('hello');
-            })
-			return this;
+            return this;
 		},
 
 		/**
