@@ -871,19 +871,44 @@
 		setColumns: function(columnGroups) {
 			this.columns = [];
 
-			// find and initialize real columns
-			var columnHeaders = GroupedColumnUtil.getColumns(columnGroups);
-			for (var i = 0; i < columnHeaders.length; i++) {
-				var header = columnHeaders[i];
-				header.column = new Column(i, columnHeaders[i]);
-				this.columns.push(header.column);
-			}
+            var colid = 0;
+            function createColumn(colDesc) {
+                colDesc.column = new Column(colid++, colDesc);
+                return colDesc.column;
+            }
 
-			// 			
+            function createColumns(colDescs, start_id) {
+                var columns = [];
+                for (var i=0; i<colDescs.length; i++) {
+                    var colDesc = colDescs[i];
+                    colDesc.column = new Column(i+start_id, colDesc);
+                    columns.push(colDesc.column);
+                }
+                return columns;
+            }
+
+            var frozenHeaders = GroupedColumnUtil.getColumns(columnGroups.slice(0, this.options.frozenColumnsNum));
+            var ordinalHeaders = GroupedColumnUtil.getColumns(columnGroups.slice(this.options.frozenColumnsNum));
+
+            this.frozenColumns = createColumns(frozenHeaders, 0);
+            this.ordinalColumns = createColumns(ordinalHeaders, frozenHeaders.length);
+
+            this.columns = this.frozenColumns.concat(this.ordinalColumns);
+
+            // find and initialize real columns
+//			var columnHeaders = GroupedColumnUtil.getColumns(columnGroups);
+//			for (var i = 0; i < columnHeaders.length; i++) {
+//				var header = columnHeaders[i];
+//
+//			}
+
+//            this.frozenColumns = this.columns.slice(0, this.options.frozenColumnsNum);
+//            this.ordinalColumns = this.columns.slice(this.options.frozenColumnsNum);
+
+
+            //
 			var frozenGroup = columnGroups.slice(0, this.options.frozenColumnsNum),
 				ordinalGroup = columnGroups.slice(this.options.frozenColumnsNum);
-
-
 
 			// var frozenCols = GroupedColumnUtil.getColumns(frozenGroup),
 			// 	ordinalCols = GroupedColumnUtil.getColumns(ordinalGroup);
@@ -894,8 +919,6 @@
 
 			GroupedColumnUtil.normalizeHeights(frozenColsStructure, ordinalColsStructure);
 
-			this.frozenColumns = this.columns.slice(0, this.options.frozenColumnsNum);
-			this.ordinalColumns = this.columns.slice(this.options.frozenColumnsNum);
 
 			// draw frozen columns
 			this

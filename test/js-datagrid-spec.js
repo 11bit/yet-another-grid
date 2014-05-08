@@ -843,4 +843,50 @@ describe('Yet another datagrid Test Suite', function() {
             expect($(dg.body.tbody).find('tr').get().length).toBe(2);
         });
     });
+
+    describe('Datagrid with grouped columns', function() {
+        beforeEach(function() {
+            jasmine.getFixtures().set('<div id="my-table"></div>');
+            this.tableContainer = $('#my-table').get()[0];
+        });
+
+        it ('should use frozenColumnsNum property for column groups', function() {
+            var columns = [
+                {title: 'group A', columns: [{title: 'nested A1', field: 'A1'}, {title: 'nested A2', field: 'A2'}]},
+                {title: 'group B', columns: [{title: 'nested B1', field: 'B1'}, {title: 'nested B2', field: 'B2'}]},
+                {title: 'group C', columns: [{title: 'nested C1', field: 'C1'}, {title: 'nested C2', field: 'C2'}]}
+                ],
+                data = [
+                    {A1: 10, A2: 20, A3: 30, A4: 40}
+                ]
+            var dg = new Datagrid(this.tableContainer, {columns: columns, frozenColumnsNum: 2});
+
+
+            expect(dg.frozenColumns.length).toBe(4);
+            expect(dg.ordinalColumns.length).toBe(2);
+
+            expect($(dg.frozenHead.thead).find('tr:eq(0) th:eq(0)')).toHaveText('group A');
+
+            var nestedA = $(dg.frozenHead.thead).find('tr:eq(1)')
+            expect(nestedA.find('th:eq(0)')).toHaveText('nested A1');
+            expect(nestedA.find('th:eq(0)')).toHaveData('col-id', 0);
+
+            expect(nestedA.find('th:eq(1)')).toHaveText('nested A2');
+            expect(nestedA.find('th:eq(1)')).toHaveData('col-id', 1);
+
+            expect(nestedA.find('th:eq(2)')).toHaveText('nested B1');
+            expect(nestedA.find('th:eq(2)')).toHaveData('col-id', 2);
+
+            expect(nestedA.find('th:eq(3)')).toHaveText('nested B2');
+            expect(nestedA.find('th:eq(3)')).toHaveData('col-id', 3);
+
+            var nestedA = $(dg.head.thead).find('tr:eq(1)')
+            expect(nestedA.find('th:eq(0)')).toHaveText('nested C1');
+            expect(nestedA.find('th:eq(0)')).toHaveData('col-id', 4);
+
+            expect(nestedA.find('th:eq(1)')).toHaveText('nested C2');
+            expect(nestedA.find('th:eq(1)')).toHaveData('col-id', 5);
+        })
+
+    });
 });
