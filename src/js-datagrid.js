@@ -733,6 +733,11 @@
 			this.rightHeadFiller = createTable(this.options.tableClass + ' dt-table dt-right-filler');
 			appendChild(this.rightFillerHeadWrapper, this.rightHeadFiller.table);
 
+            if (this.options.takeAllHeight) {
+                this.bodyWrapper.style.overflow = 'auto';
+                this.frozenBodyWrapper.style.overflow = 'auto';
+            }
+
 			return this;
 		},
 
@@ -1464,6 +1469,11 @@
 		 * @public
 		 */
 		ivalidateBodyWrapperHeight: function() {
+
+            if (this.options.takeAllHeight) {
+                return this;
+            }
+
 			var fullHeight = this.container.offsetHeight,
 				headerHeight = this.headWrapper.offsetHeight,
 				bodyHeight = fullHeight - headerHeight;
@@ -1492,7 +1502,8 @@
 		childrenField: 'children',      // name of a list with children in data
 		expandChildrenButton: '⊞',
 		collapseChildrenButton: '⊟',
-        childrenPadding: 10
+        childrenPadding: 10,
+        takeAllHeight: false            // take all height or use vertical scrolling
 	};
 
 	// Expose to global object
