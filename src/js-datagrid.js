@@ -1267,20 +1267,29 @@
 		 * @return {DocumentFragment}    DocumentFragment with `tr` rows       
 		 */
 		createEmptyTableFragment: function(datas) {
-			var fragment = document.createDocumentFragment();
-			for (var i = 0, ln = datas.length; i < ln; ++i) {
-				var data = datas[i];
-				if (this.checkVisibility) {
-					data.updateVisibility(this.filters, this.options.caseInsensitive);
-				}
 
-				if (data.visible) {
-					var tr = createElement('tr'),
-						td = createElement('td');
-					td.innerHTML = '&nbsp;';
-					appendChild(tr, td);
-					appendChild(fragment, tr);
-				}
+            var countRows = function(datas) {
+                var rowNum = 0;
+                for (var i=0;i<datas.length; i++) {
+
+                    if (!datas[i].visible) continue;
+
+                    rowNum++;
+                    if (datas[i].expanded) {
+                        rowNum += countRows(datas[i].getChildren('children'));
+                    }
+                }
+                return rowNum;
+            };
+            var rowNum = countRows(datas);
+
+			var fragment = document.createDocumentFragment();
+			for (var i = 0, ln = rowNum; i < ln; ++i) {
+                var tr = createElement('tr'),
+                    td = createElement('td');
+                td.innerHTML = '&nbsp;';
+                appendChild(tr, td);
+                appendChild(fragment, tr);
 			}
 			return fragment;
 		},

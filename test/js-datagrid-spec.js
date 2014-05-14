@@ -680,11 +680,17 @@ describe('Yet another datagrid Test Suite', function() {
 				return $(dg.body.tbody).find('tr');
 			}
 
+            expect(rows().get().length).toBe(2);
+            expect($('#my-table').find('.dt-right-filler td').length).toBe(2);
+
 			// expand second row children
 			rows().eq(1).find('.expand-children-button').click();
+
 			expect(rows().get().length).toBe(5);
-			
-			var $row1 = rows().eq(1),
+            expect($('#my-table').find('.dt-right-filler td').length).toBe(5);
+
+
+            var $row1 = rows().eq(1),
 				$row2 = rows().eq(2),
 				$row3 = rows().eq(3);
 
@@ -705,7 +711,8 @@ describe('Yet another datagrid Test Suite', function() {
 			// collapse second row
 			rows().eq(1).find('.expand-children-button').click();
 			expect(rows().get().length).toBe(2);
-		});
+            expect($('#my-table').find('.dt-right-filler td').length).toBe(2);
+        });
 
 		it('should find data element by cell', function() {
 			var dg = this.dg;
