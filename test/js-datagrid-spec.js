@@ -50,7 +50,40 @@ describe('Yet another datagrid Test Suite', function() {
 			expect(dg.columns[1].title).toBe('Name');
 		});
 
-		it ('should build internal dom structure', function() {
+        it ('should build internal dom structure', function () {
+            var opts = {
+                columns: [{field: 'id', title: 'id'}],
+                datas: [{id: 1}]
+            };
+
+            var dg = new Datagrid(this.tableContainer, opts);
+
+            var $table = $('#my-table'),
+                head = $table.find('> .dt-head'),
+                headWrapper = head.find('> .dt-head-wrapper'),
+                body = $table.find('> .dt-body'),
+                bodyWrapper = body.find('> .dt-body-wrapper');
+
+            expect(dg.container).toBeTruthy();
+            expect(dg.container).toEqual($table.get()[0]);
+            expect($table.children().length).toBe(2);
+
+            expect(dg.headContainer).toBeTruthy();
+            expect(dg.headContainer).toEqual(head.get()[0]);
+            expect(head.children().length).toBe(1);
+
+            expect(dg.headWrapper).toBeTruthy();
+            expect(dg.headWrapper).toEqual(headWrapper.get()[0]);
+
+            expect(dg.bodyContainer).toBeTruthy();
+            expect(dg.bodyContainer).toEqual(body.get()[0]);
+            expect(body.children().length).toBe(1);
+
+            expect(dg.bodyWrapper).toBeTruthy();
+            expect(dg.bodyWrapper).toEqual(bodyWrapper.get()[0]);
+        });
+
+		it ('should build internal dom structure with frozen columns', function() {
 			var opts = {
 				columns: [
 					{ field: 'id', title: 'Identifier' },
@@ -64,21 +97,22 @@ describe('Yet another datagrid Test Suite', function() {
 
 			var dg = new Datagrid(this.tableContainer, opts);
 
-            var $table = $('#my-table');
+            var $table = $('#my-table'),
+                head = $table.find('> .dt-head'),
+                body = $table.find('> .dt-body');
+
+            expect(dg.container).toBeTruthy();
             expect(dg.container).toEqual($table.get()[0]);
+            expect($table.children().length).toBe(2);
 
-			expect(dg.headContainer).toBeTruthy();
-			expect(dg.headContainer).toEqual($table.find('> .dt-head').get()[0]);
+            expect($table.children(0)).toBe('div.dt-head');
+            expect($table.children(1)).toBe('div.dt-body');
 
-			expect(dg.frozenHeadWrapper).toBeTruthy();
-			expect(dg.frozenHeadWrapper).toEqual($table.find('.dt-head > .dt-frozen-head-wrapper').get()[0]);
+            expect(head.children(0)).toBe('div.dt-frozen-head-wrapper');
+            expect(head.children(1)).toBe('div.dt-head-wrapper');
 
-			expect(dg.headWrapper).toBeTruthy();
-			expect(dg.headWrapper).toEqual($table.find('.dt-head > .dt-head-wrapper').get()[0]);
-
-			expect(dg.bodyContainer).toBeTruthy();
-			expect(dg.bodyContainer).toEqual($table.find('> .dt-body').get()[0]);
-
+            expect(body.children(0)).toBe('div.dt-frozen-body-wrapper');
+            expect(body.children(1)).toBe('div.dt-body-wrapper');
 		});
 
 		it('should initialize and render header', function() {

@@ -696,33 +696,33 @@
 			appendChild(this.container, this.headContainer);
 			appendChild(this.container, this.bodyContainer);
 
-			this.frozenHeadWrapper = createElement('div', 'dt-frozen-head-wrapper');
-			appendChild(this.headContainer, this.frozenHeadWrapper);
-			
-			this.headWrapper = createElement('div', 'dt-head-wrapper');
-			this.headWrapper.style.marginRight = scrollBarSize.width + 'px';
-			appendChild(this.headContainer, this.headWrapper);
+            if (this.options.frozenColumnsNum>0) {
+                this.frozenHeadWrapper = createElement('div', 'dt-frozen-head-wrapper');
+                this.frozenBodyWrapper = createElement('div', 'dt-frozen-body-wrapper');
+                this.frozenBody = createTable(this.options.tableClass + ' dt-table dt-body-table');
+                this.frozenHead = createTable(this.options.tableClass + ' dt-table dt-head-table');
 
-			this.frozenBodyWrapper = createElement('div', 'dt-frozen-body-wrapper');
-			appendChild(this.bodyContainer, this.frozenBodyWrapper);
+                appendChild(this.headContainer, this.frozenHeadWrapper);
+                appendChild(this.bodyContainer, this.frozenBodyWrapper);
+                appendChild(this.frozenHeadWrapper, this.frozenHead.table);
+                appendChild(this.frozenBodyWrapper, this.frozenBody.table);
+            }
 
+            this.headWrapper = createElement('div', 'dt-head-wrapper');
+            this.headWrapper.style.marginRight = scrollBarSize.width + 'px';
+            appendChild(this.headContainer, this.headWrapper);
 
-			this.bodyWrapper = createElement('div', 'dt-body-wrapper');
-			appendChild(this.bodyContainer, this.bodyWrapper);
+            this.bodyWrapper = createElement('div', 'dt-body-wrapper');
+            appendChild(this.bodyContainer, this.bodyWrapper);
 
-			this.frozenHead = createTable(this.options.tableClass + ' dt-table dt-head-table');
-			this.frozenBody = createTable(this.options.tableClass + ' dt-table dt-body-table');
-			this.head = createTable(this.options.tableClass + ' dt-table dt-head-table');
-			this.body = createTable(this.options.tableClass + ' dt-table dt-body-table');
+            this.head = createTable(this.options.tableClass + ' dt-table dt-head-table');
 
-			appendChild(this.headWrapper, this.head.table);
-			appendChild(this.bodyWrapper, this.body.table);
-			appendChild(this.frozenHeadWrapper, this.frozenHead.table);
-			appendChild(this.frozenBodyWrapper, this.frozenBody.table);
+            this.body = createTable(this.options.tableClass + ' dt-table dt-body-table');
 
+            appendChild(this.headWrapper, this.head.table);
+            appendChild(this.bodyWrapper, this.body.table);
 
-			// create right filler
-
+            // create right filler
 			this.rightFillerWrapper = createElement('div', 'dt-right-filler-wrapper');
 			appendChild(this.bodyWrapper, this.rightFillerWrapper);
 			this.rightFiller = createTable(this.options.tableClass + ' dt-table dt-right-filler');
@@ -924,12 +924,13 @@
 
 			GroupedColumnUtil.normalizeHeights(frozenColsStructure, ordinalColsStructure);
 
-
-			// draw frozen columns
-			this
-				.setThead(this.frozenHead.thead, frozenColsStructure)
-				.createSizer(this.frozenHead.sizerHead, this.frozenColumns, 'headSizer')
-				.createSizer(this.frozenBody.thead, this.frozenColumns, 'bodySizer');
+            if (this.options.frozenColumnsNum>0) {
+                // draw frozen columns
+                this
+                    .setThead(this.frozenHead.thead, frozenColsStructure)
+                    .createSizer(this.frozenHead.sizerHead, this.frozenColumns, 'headSizer')
+                    .createSizer(this.frozenBody.thead, this.frozenColumns, 'bodySizer');
+            }
 
 			// draw other columns
 			this
@@ -1220,9 +1221,11 @@
 		 * @public
 		 */
 		render: function() {
-			var frozenColumns = this.createTableFragment(this.datas, this.frozenColumns, this.domCache.frozenCols);
-			innerHTML(this.frozenBody.tbody, '');
-			appendChild(this.frozenBody.tbody, frozenColumns);
+            if (this.options.frozenColumnsNum>0) {
+                var frozenColumns = this.createTableFragment(this.datas, this.frozenColumns, this.domCache.frozenCols);
+                innerHTML(this.frozenBody.tbody, '');
+                appendChild(this.frozenBody.tbody, frozenColumns);
+            }
 
 			var fragment = this.createTableFragment(this.datas, this.ordinalColumns, this.domCache.ordinalCols);
 			innerHTML(this.body.tbody, '');
@@ -1414,13 +1417,15 @@
 		 * @public
 		 */
 		invalidateColumnSizes: function() {
-			this.syncHeaderAndBodyWidths(
-				this.frozenHead.sizerHead.getElementsByTagName('th'),
-				this.frozenBody.thead.getElementsByTagName('th'),
-				this.frozenColumns );
+            if (this.options.frozenColumnsNum>0) {
+                this.syncHeaderAndBodyWidths(
+                    this.frozenHead.sizerHead.getElementsByTagName('th'),
+                    this.frozenBody.thead.getElementsByTagName('th'),
+                    this.frozenColumns );
 
-			this.frozenHead.table.style.tableLayout = 'fixed';
-			this.frozenBody.table.style.tableLayout = 'fixed';
+                this.frozenHead.table.style.tableLayout = 'fixed';
+                this.frozenBody.table.style.tableLayout = 'fixed';
+            }
 
 			this.syncHeaderAndBodyWidths(
 				this.head.sizerHead.getElementsByTagName('th'),
@@ -1479,7 +1484,10 @@
 				bodyHeight = fullHeight - headerHeight;
 
 			this.bodyWrapper.style.height = bodyHeight + 'px';
-			this.frozenBodyWrapper.style.height = bodyHeight - scrollBarSize.width + 'px';
+
+            if (this.options.frozenColumnsNum) {
+                this.frozenBodyWrapper.style.height = bodyHeight - scrollBarSize.width + 'px';
+            }
 
 			return this;
 		}
