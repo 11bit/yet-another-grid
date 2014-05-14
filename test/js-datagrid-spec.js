@@ -63,20 +63,21 @@ describe('Yet another datagrid Test Suite', function() {
 			};
 
 			var dg = new Datagrid(this.tableContainer, opts);
-			
-			expect(dg.container).toEqual($('#my-table').get()[0]);
+
+            var $table = $('#my-table');
+            expect(dg.container).toEqual($table.get()[0]);
 
 			expect(dg.headContainer).toBeTruthy();
-			expect(dg.headContainer).toEqual($('#my-table > .dt-head').get()[0]);
+			expect(dg.headContainer).toEqual($table.find('> .dt-head').get()[0]);
 
 			expect(dg.frozenHeadWrapper).toBeTruthy();
-			expect(dg.frozenHeadWrapper).toEqual($('#my-table .dt-head > .dt-frozen-head-wrapper').get()[0]);
+			expect(dg.frozenHeadWrapper).toEqual($table.find('.dt-head > .dt-frozen-head-wrapper').get()[0]);
 
 			expect(dg.headWrapper).toBeTruthy();
-			expect(dg.headWrapper).toEqual($('#my-table .dt-head > .dt-head-wrapper').get()[0]);
+			expect(dg.headWrapper).toEqual($table.find('.dt-head > .dt-head-wrapper').get()[0]);
 
 			expect(dg.bodyContainer).toBeTruthy();
-			expect(dg.bodyContainer).toEqual($('#my-table > .dt-body').get()[0]);
+			expect(dg.bodyContainer).toEqual($table.find('> .dt-body').get()[0]);
 
 		});
 
@@ -89,9 +90,9 @@ describe('Yet another datagrid Test Suite', function() {
 				]
 			};
 
-			var dg = new Datagrid(this.tableContainer, opts);
+			new Datagrid(this.tableContainer, opts);
 
-			var tableHead = $('#my-table .dt-head-wrapper thead').eq(1);
+			var tableHead = $('#my-table').find('.dt-head-wrapper thead').eq(1);
 			expect(tableHead).toBeTruthy();
 
 			// Header == 1 tr
@@ -117,7 +118,7 @@ describe('Yet another datagrid Test Suite', function() {
             };
 
             new Datagrid(this.tableContainer, opts);
-            var tableHead = $('#my-table .dt-head-wrapper thead').eq(1);
+            var tableHead = $('#my-table').find('.dt-head-wrapper thead').eq(1);
 
             var $th0 = tableHead.find('tr th').eq(0);
             expect($th0).toContain('.dt-resize-handle');
@@ -510,7 +511,7 @@ describe('Yet another datagrid Test Suite', function() {
             expect(tbody.find('tr:eq(1) td:eq(0)')).toHaveText('baz1');
             expect(tbody.find('tr:eq(2) td:eq(0)')).toHaveText('foo1');
 
-        })
+        });
 
         it('should reuse dom elements by default', function() {
             var dg = new Datagrid(this.tableContainer, {
@@ -637,7 +638,7 @@ describe('Yet another datagrid Test Suite', function() {
 
             expect(toggle_collapse).toHaveText('⊟');
 
-        })
+        });
 
 		it('should expand and collapse children on click', function() {
 			var dg = this.dg;
@@ -791,7 +792,7 @@ describe('Yet another datagrid Test Suite', function() {
 
             // expand second row children
 			rows.eq(1).find('.expand-children-button').click();
-            rows = $(dg.frozenBody.tbody).find('tr')
+            rows = $(dg.frozenBody.tbody).find('tr');
 
 			expect(dg.getRowDataByCell(rows.eq(1).find('td').eq(0)[0]).get('name')).toBe('Smith');
 
@@ -807,12 +808,12 @@ describe('Yet another datagrid Test Suite', function() {
 			// expand second second level
 			rows.eq(1).find('.expand-children-button').click();
 
-            rows = $(dg.frozenBody.tbody).find('tr')
+            rows = $(dg.frozenBody.tbody).find('tr');
 			expect(rows.get().length).toBe(5);
 
 			// expand third level
 			rows.eq(3).find('.expand-children-button').click();
-            rows = $(dg.frozenBody.tbody).find('tr')
+            rows = $(dg.frozenBody.tbody).find('tr');
 
 			expect(rows.get().length).toBe(8);
 
@@ -858,8 +859,8 @@ describe('Yet another datagrid Test Suite', function() {
                 ],
                 data = [
                     {A1: 10, A2: 20, A3: 30, A4: 40}
-                ]
-            var dg = new Datagrid(this.tableContainer, {columns: columns, frozenColumnsNum: 2});
+                ];
+            var dg = new Datagrid(this.tableContainer, {columns: columns, datas: data, frozenColumnsNum: 2});
 
 
             expect(dg.frozenColumns.length).toBe(4);
@@ -867,7 +868,7 @@ describe('Yet another datagrid Test Suite', function() {
 
             expect($(dg.frozenHead.thead).find('tr:eq(0) th:eq(0)')).toHaveText('group A');
 
-            var nestedA = $(dg.frozenHead.thead).find('tr:eq(1)')
+            var nestedA = $(dg.frozenHead.thead).find('tr:eq(1)');
             expect(nestedA.find('th:eq(0)')).toHaveText('nested A1');
             expect(nestedA.find('th:eq(0)')).toHaveData('col-id', 0);
 
@@ -880,12 +881,12 @@ describe('Yet another datagrid Test Suite', function() {
             expect(nestedA.find('th:eq(3)')).toHaveText('nested B2');
             expect(nestedA.find('th:eq(3)')).toHaveData('col-id', 3);
 
-            var nestedA = $(dg.head.thead).find('tr:eq(1)')
-            expect(nestedA.find('th:eq(0)')).toHaveText('nested C1');
-            expect(nestedA.find('th:eq(0)')).toHaveData('col-id', 4);
+            var nestedB = $(dg.head.thead).find('tr:eq(1)');
+            expect(nestedB.find('th:eq(0)')).toHaveText('nested C1');
+            expect(nestedB.find('th:eq(0)')).toHaveData('col-id', 4);
 
-            expect(nestedA.find('th:eq(1)')).toHaveText('nested C2');
-            expect(nestedA.find('th:eq(1)')).toHaveData('col-id', 5);
+            expect(nestedB.find('th:eq(1)')).toHaveText('nested C2');
+            expect(nestedB.find('th:eq(1)')).toHaveData('col-id', 5);
         })
 
     });
