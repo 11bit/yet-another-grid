@@ -1520,6 +1520,26 @@
 
             var colId = cell.getAttribute('data-col-id');
             return this.columns[colId];
+        },
+
+        /**
+         * Get list of cell parent's ids. Returns empty list for top level.
+         * @param cell {HTMLNode} cell
+         * @returns {Array} parent's ids
+         */
+        getParents: function(cell) {
+            if (cell===undefined || cell.getAttribute===undefined) {
+                throw 'Can not get column by cell. ' + cell + ' is not a data grid cell';
+            }
+
+            var parents = cell.parentNode.getAttribute('data-parents'),
+                parentsList = parents ? parents.split(',') : [];
+
+            for (var i=0; i<parentsList.length; i++) {
+                parentsList[i] = parseInt(parentsList[i], 10);
+            }
+
+            return parentsList;
         }
 
 	};

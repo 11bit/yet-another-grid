@@ -85,4 +85,45 @@ describe('API spec', function() {
             }).toThrow('Can not get column by cell. [object Object] is not a data grid cell')
         })
     });
+
+    describe('getParents', function() {
+        beforeEach(function () {
+            jasmine.getFixtures().set('<div id="my-table"></div>');
+            this.tableContainer = $('#my-table').get()[0];
+            this.options = {
+                columns: [
+                    {field: 'name', title: 'Name'},
+                    {field: 'expenses', title: 'Expenses'}
+                ],
+                datas: [
+                    {guid: 1, name: 'Brown', expenses: 1000, children: [
+                        {name: 'Alice', expenses: 400},
+                        {name: 'John', expenses: 600}
+                    ]},
+                    {guid: 1, name: 'Smith', expenses: 5000, children: [
+                        {name: 'Jim', expenses: 1500},
+                        {name: 'Bob', expenses: 2500, children: [
+                            {name: 'car', expenses: 1000},
+                            {name: 'house', expenses: 1000},
+                            {name: 'dog', expenses: 500}
+                        ]},
+                        {name: 'Margaret', expenses: 1000}
+                    ]}
+                ],
+                expandable: true
+            };
+        });
+
+        it ('should get list of parents', function (){
+            var dg = new Datagrid(this.tableContainer, this.options);
+
+            var cell = $(dg.body.tbody).find('td:eq(0)');
+            expect(dg.getParents(cell[0])).toEqual([]);
+
+            $(dg.body.tbody).find('td:eq(0) .expand-children-button').click();
+
+            var child_cell = $(dg.body.tbody).find('tr:eq(1) td:eq(0)');
+            expect(dg.getParents(child_cell[0])).toEqual([0]);
+        })
+    });
 });
