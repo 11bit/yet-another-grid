@@ -1499,7 +1499,29 @@
             }
 
 			return this;
-		}
+		},
+
+
+
+
+        /*
+            Data API
+         */
+
+        /**
+         * Returns column by cell
+         * @param cell {HTMLNode} cell to get data
+         * @returns {Column} column
+         */
+        getColumnByCell: function(cell) {
+            if (cell===undefined || cell.getAttribute===undefined) {
+                throw 'Can not get column by cell. ' + cell + ' is not a data grid cell';
+            }
+
+            var colId = cell.getAttribute('data-col-id');
+            return this.columns[colId];
+        }
+
 	};
 
 	/**
