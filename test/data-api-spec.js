@@ -86,7 +86,7 @@ describe('API spec', function() {
         })
     });
 
-    describe('getParents', function() {
+    describe('getParentIdsByCell', function() {
         beforeEach(function () {
             jasmine.getFixtures().set('<div id="my-table"></div>');
             this.tableContainer = $('#my-table').get()[0];
@@ -114,16 +114,58 @@ describe('API spec', function() {
             };
         });
 
-        it ('should get list of parents', function (){
+        it ('should get list of parent ids', function (){
             var dg = new Datagrid(this.tableContainer, this.options);
 
             var cell = $(dg.body.tbody).find('td:eq(0)');
-            expect(dg.getParents(cell[0])).toEqual([]);
+            expect(dg.getParentIdsByCell(cell[0])).toEqual([]);
 
             $(dg.body.tbody).find('td:eq(0) .expand-children-button').click();
 
             var child_cell = $(dg.body.tbody).find('tr:eq(1) td:eq(0)');
-            expect(dg.getParents(child_cell[0])).toEqual([0]);
+            expect(dg.getParentIdsByCell(child_cell[0])).toEqual([0]);
+        })
+    });
+
+    describe('getParentRowsByCell', function() {
+        beforeEach(function () {
+            jasmine.getFixtures().set('<div id="my-table"></div>');
+            this.tableContainer = $('#my-table').get()[0];
+            this.options = {
+                columns: [
+                    {field: 'name', title: 'Name'},
+                    {field: 'expenses', title: 'Expenses'}
+                ],
+                datas: [
+                    {guid: 1, name: 'Brown', expenses: 1000, children: [
+                        {name: 'Alice', expenses: 400},
+                        {name: 'John', expenses: 600}
+                    ]},
+                    {guid: 1, name: 'Smith', expenses: 5000, children: [
+                        {name: 'Jim', expenses: 1500},
+                        {name: 'Bob', expenses: 2500, children: [
+                            {name: 'car', expenses: 1000},
+                            {name: 'house', expenses: 1000},
+                            {name: 'dog', expenses: 500}
+                        ]},
+                        {name: 'Margaret', expenses: 1000}
+                    ]}
+                ],
+                expandable: true
+            };
+        });
+
+        it ('should get parent rows of a cell', function (){
+            var dg = new Datagrid(this.tableContainer, this.options);
+
+            $(dg.body.tbody).find('tr:eq(1) td:eq(0) .expand-children-button').click();
+            $(dg.body.tbody).find('tr:eq(3) td:eq(0) .expand-children-button').click();
+
+            var child_cell = $(dg.body.tbody).find('tr:eq(4) td:eq(0)');
+            var parentDatas = dg.getParentRowsByCell(child_cell[0]);
+
+            expect(parentDatas[0].get('name')).toBe('Smith');
+            expect(parentDatas[1].get('name')).toBe('Bob');
         })
     });
 });

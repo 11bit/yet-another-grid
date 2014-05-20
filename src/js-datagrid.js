@@ -1527,7 +1527,7 @@
          * @param cell {HTMLNode} cell
          * @returns {Array} parent's ids
          */
-        getParents: function(cell) {
+        getParentIdsByCell: function(cell) {
             if (cell===undefined || cell.getAttribute===undefined) {
                 throw 'Can not get column by cell. ' + cell + ' is not a data grid cell';
             }
@@ -1540,6 +1540,19 @@
             }
 
             return parentsList;
+        },
+
+        getParentRowsByCell: function(cell) {
+            var ids = this.getParentIdsByCell(cell),
+                data = this.datas,
+                rows = [];
+
+            while (ids.length>0) {
+                var row = data[ids.pop()];
+                rows.push(row);
+                data = row.getChildren(this.options.childrenField);
+            }
+            return rows;
         }
 
 	};
