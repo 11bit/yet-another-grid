@@ -794,7 +794,10 @@
 			var self = this;
 			$(this.bodyWrapper).on('scroll', function scrollHandler() {
 				self.headWrapper.scrollLeft = this.scrollLeft;
-				self.frozenBodyWrapper.scrollTop = this.scrollTop;
+
+                if (self.options.frozenColumnsNum>0) {
+                    self.frozenBodyWrapper.scrollTop = this.scrollTop;
+                }
 			});
             return this;
 		},
