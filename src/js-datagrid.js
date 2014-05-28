@@ -99,7 +99,28 @@
 		element.innerHTML = text;
 	};
 
-	/**
+    /**
+     * Remove all children of a DOM node
+     * @param node {HTMLElement} Node to remove children
+     */
+    var removeChildren = function(node) {
+        while (node.lastChild) {
+            node.removeChild(node.lastChild);
+        }
+    };
+
+    /**
+     * Replaces node content with a new html content
+     * @param node{HTMLElement} target node
+     * @param element{HTMLElement} content for replace
+     */
+    var replaceContent = function(node, element) {
+        removeChildren(node);
+        appendChild(node, element);
+    };
+
+
+    /**
 	 * Set attribute of an html element.
 	 * @param {HTMLElement} element HTML Element.
 	 * @param {string} name Name of attribute.
@@ -794,7 +815,10 @@
 			var self = this;
 			$(this.bodyWrapper).on('scroll', function scrollHandler() {
 				self.headWrapper.scrollLeft = this.scrollLeft;
-				self.frozenBodyWrapper.scrollTop = this.scrollTop;
+
+                if (self.options.frozenColumnsNum>0) {
+                    self.frozenBodyWrapper.scrollTop = this.scrollTop;
+                }
 			});
             return this;
 		},
@@ -818,12 +842,6 @@
                     self.options.expandChildrenButton;
 
                 self.render();
-
-//                if (data.expanded) {
-//                    self.expandRow(row, data);
-//                } else {
-//                    self.collapseRow(row, data);
-//                }
 			});
 
 			return this;
@@ -1223,18 +1241,15 @@
 		render: function() {
             if (this.options.frozenColumnsNum>0) {
                 var frozenColumns = this.createTableFragment(this.datas, this.frozenColumns, this.domCache.frozenCols);
-                innerHTML(this.frozenBody.tbody, '');
-                appendChild(this.frozenBody.tbody, frozenColumns);
+                replaceContent(this.frozenBody.tbody, frozenColumns);
             }
 
 			var fragment = this.createTableFragment(this.datas, this.ordinalColumns, this.domCache.ordinalCols);
-			innerHTML(this.body.tbody, '');
-			appendChild(this.body.tbody, fragment);
+            replaceContent(this.body.tbody, fragment);
 
 			//create right filter
 			var rightFillerBody = this.createEmptyTableFragment(this.datas);
-			innerHTML(this.rightFiller.tbody, '');
-			appendChild(this.rightFiller.tbody, rightFillerBody);
+            replaceContent(this.rightFiller.tbody, rightFillerBody);
 
 			this.checkVisibility = false;
 			return this;
@@ -1334,7 +1349,7 @@
 				appendChild(withChildren, children);
 				return withChildren;
 			} else {
-				return tr;
+                return tr;
 			}
 		},
 
@@ -1499,7 +1514,62 @@
             }
 
 			return this;
-		}
+		},
+
+
+
+
+        /*
+            Data API
+         */
+
+        /**
+         * Returns column by cell
+         * @param cell {HTMLNode} cell to get data
+         * @returns {Column} column
+         */
+        getColumnByCell: function(cell) {
+            if (cell===undefined || cell.getAttribute===undefined) {
+                throw 'Can not get column by cell. ' + cell + ' is not a data grid cell';
+            }
+
+            var colId = cell.getAttribute('data-col-id');
+            return this.columns[colId];
+        },
+
+        /**
+         * Get list of cell parent's ids. Returns empty list for top level.
+         * @param cell {HTMLNode} cell
+         * @returns {Array} parent's ids
+         */
+        getParentIdsByCell: function(cell) {
+            if (cell===undefined || cell.getAttribute===undefined) {
+                throw 'Can not get column by cell. ' + cell + ' is not a data grid cell';
+            }
+
+            var parents = cell.parentNode.getAttribute('data-parents'),
+                parentsList = parents ? parents.split(',') : [];
+
+            for (var i=0; i<parentsList.length; i++) {
+                parentsList[i] = parseInt(parentsList[i], 10);
+            }
+
+            return parentsList;
+        },
+
+        getParentRowsByCell: function(cell) {
+            var ids = this.getParentIdsByCell(cell),
+                data = this.datas,
+                rows = [];
+
+            while (ids.length>0) {
+                var row = data[ids.pop()];
+                rows.push(row);
+                data = row.getChildren(this.options.childrenField);
+            }
+            return rows;
+        }
+
 	};
 
 	/**
