@@ -99,7 +99,28 @@
 		element.innerHTML = text;
 	};
 
-	/**
+    /**
+     * Remove all children of a DOM node
+     * @param node {HTMLElement} Node to remove children
+     */
+    var removeChildren = function(node) {
+        while (node.lastChild) {
+            node.removeChild(node.lastChild);
+        }
+    };
+
+    /**
+     * Replaces node content with a new html content
+     * @param node{HTMLElement} target node
+     * @param element{HTMLElement} content for replace
+     */
+    var replaceContent = function(node, element) {
+        removeChildren(node);
+        appendChild(node, element);
+    };
+
+
+    /**
 	 * Set attribute of an html element.
 	 * @param {HTMLElement} element HTML Element.
 	 * @param {string} name Name of attribute.
@@ -821,12 +842,6 @@
                     self.options.expandChildrenButton;
 
                 self.render();
-
-//                if (data.expanded) {
-//                    self.expandRow(row, data);
-//                } else {
-//                    self.collapseRow(row, data);
-//                }
 			});
 
 			return this;
@@ -1226,18 +1241,15 @@
 		render: function() {
             if (this.options.frozenColumnsNum>0) {
                 var frozenColumns = this.createTableFragment(this.datas, this.frozenColumns, this.domCache.frozenCols);
-                innerHTML(this.frozenBody.tbody, '');
-                appendChild(this.frozenBody.tbody, frozenColumns);
+                replaceContent(this.frozenBody.tbody, frozenColumns);
             }
 
 			var fragment = this.createTableFragment(this.datas, this.ordinalColumns, this.domCache.ordinalCols);
-			innerHTML(this.body.tbody, '');
-			appendChild(this.body.tbody, fragment);
+            replaceContent(this.body.tbody, fragment);
 
 			//create right filter
 			var rightFillerBody = this.createEmptyTableFragment(this.datas);
-			innerHTML(this.rightFiller.tbody, '');
-			appendChild(this.rightFiller.tbody, rightFillerBody);
+            replaceContent(this.rightFiller.tbody, rightFillerBody);
 
 			this.checkVisibility = false;
 			return this;
@@ -1337,7 +1349,7 @@
 				appendChild(withChildren, children);
 				return withChildren;
 			} else {
-				return tr;
+                return tr;
 			}
 		},
 
