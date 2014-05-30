@@ -1402,7 +1402,7 @@
 
             if (column.idx === 0 && data.level>0 && this.options.childrenPadding>0) {
                 var children_padding = (this.options.childrenPadding * data.level) + 'px';
-                txt = '<span style="padding-left: ' + children_padding + '"></span>' + txt;
+                txt = '<span class="child-indent" style="padding-left: ' + children_padding + '"></span>' + txt;
             }
 
             innerHTML(td, txt);
