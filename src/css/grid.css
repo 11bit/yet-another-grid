@@ -19,6 +19,7 @@
 
 .dt-body-wrapper {
 	overflow: scroll;
+    overflow-x: auto;
 	position: relative;
 }
 
