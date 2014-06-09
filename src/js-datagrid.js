@@ -614,6 +614,7 @@
 	var Column = function(idx, obj) {
 		this.idx = idx;
 		this.field = obj.field;
+        this.sortByField = obj.sortByField || obj.field;
 		this.title = obj.title;
 		this.cssClass = obj.cssClass;
 		this.width = obj.width;
@@ -756,7 +757,9 @@
 
             if (this.options.takeAllHeight) {
                 this.bodyWrapper.style.overflow = 'auto';
-                this.frozenBodyWrapper.style.overflow = 'auto';
+                if (this.options.frozenColumnsNum>0) {
+                    this.frozenBodyWrapper.style.overflow = 'auto';
+                }
             }
 
 			return this;
@@ -1178,7 +1181,7 @@
 					var col_id = column_ids[i],
 						column = columns[col_id];
 
-					result = column.sortFunction(a.get(column.field), b.get(column.field));
+					result = column.sortFunction(a.get(column.sortByField), b.get(column.sortByField));
 
 					if (!column.sortAsc) {
 						result = -result;
