@@ -1392,7 +1392,7 @@
 
 			txt = txt.toString();
 			if (this.options.fixEmptyCell && !txt) {
-				txt = ' ';
+				txt = '&nbsp;';
 			}
 
             if (column.idx === 0 && this.options.expandable && data.hasChildren(this.options.childrenField)) {
@@ -1594,7 +1594,7 @@
 		collapseChildrenButton: '⊟',
         childrenPadding: 10,
         takeAllHeight: false            // take all height or use vertical scrolling
-	};
+    };
 
 	// Expose to global object
 	window.Datagrid = Datagrid;

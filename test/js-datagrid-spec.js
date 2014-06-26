@@ -347,7 +347,7 @@ describe('Yet another datagrid Test Suite', function() {
 			expect($tr2.find('td').eq(0).html()).toBe('3');
 			expect($tr2.find('td').eq(0).attr('data-col-id')).toBe('0');
 			expect($tr2.find('td').eq(0).attr('data-data-id')).toBe('2');
-			expect($tr2.find('td').eq(1).html()).toBe(' ');
+			expect($tr2.find('td').eq(1).html()).toBe('&nbsp;');
 			expect($tr2.find('td').eq(1).attr('data-col-id')).toBe('1');
 			expect($tr2.find('td').eq(1).attr('data-data-id')).toBe('2');
 			expect($tr2.find('td').eq(2).html()).toBe('$');
@@ -388,9 +388,9 @@ describe('Yet another datagrid Test Suite', function() {
 			expect($tr0.find('td').eq(1).attr('data-col-id')).toBe('1');
 
 			var $tr1 = tbody.find('tr').eq(1);
-			expect($tr1.find('td').eq(0).html()).toBe(' ');
+			expect($tr1.find('td').eq(0).html()).toBe('&nbsp;');
 			expect($tr1.find('td').eq(0).attr('data-col-id')).toBe('0');
-			expect($tr1.find('td').eq(1).html()).toBe(' ');
+			expect($tr1.find('td').eq(1).html()).toBe('&nbsp;');
 			expect($tr1.find('td').eq(1).attr('data-col-id')).toBe('1');
 		});
 
@@ -619,6 +619,25 @@ describe('Yet another datagrid Test Suite', function() {
 			var dg = new Datagrid(this.tableContainer, opts);
 			expect(dg.headWrapper.scrollWidth).toEqual(dg.bodyWrapper.scrollWidth);
 		});
+
+        it ('should have equal column heights for ordinal and empty columns', function () {
+            var opts = {
+                columns: [
+                    {field: 'a', title: 'a'},
+                    {field: 'b', title: 'b'}
+                ],
+                datas: [
+                    {a: 'content', b: 'content'},
+                    {a: '', b: ''}
+                ]
+            };
+
+            var dg = new Datagrid(this.tableContainer, opts);
+            var col1 = $(dg.body.tbody).find('tr:eq(0) td:eq(0)'),
+                col2 = $(dg.body.tbody).find('tr:eq(1) td:eq(0)');
+
+            expect(col1.height()).toBe(col2.height());
+        })
 	});
 
 
