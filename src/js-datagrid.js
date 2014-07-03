@@ -1327,6 +1327,8 @@
 
                 if (data.level>0) {
                     tr.className = 'children-level-' + data.level;
+                } else {
+                    tr.className = 'dt-parent-row';
                 }
 
                 if (parents){
