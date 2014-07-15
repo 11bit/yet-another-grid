@@ -768,6 +768,21 @@ describe('Yet another datagrid Test Suite', function() {
 			expect($row.find('td').eq(1).text()).toBe('1000');
 			expect($row.find('.expand-children-button').get().length).toBe(0);
 		});
+
+        it('should expand all if expandAll was called', function() {
+            var dg = this.dg;
+            function rows() {
+                return $(dg.body.tbody).find('tr');
+            }
+
+            expect(rows().get().length).toBe(2);
+            
+            dg.expandAll(dg.datas, true);
+            expect(rows().get().length).toBe(10);
+
+            dg.expandAll(dg.datas, false);
+            expect(rows().get().length).toBe(2);
+        });
 	});
 
     describe('Expandable datagrid with frozen column', function() {

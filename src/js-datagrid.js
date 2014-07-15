@@ -500,6 +500,9 @@
 
         this.parents = parents || [];
         this.uid = this.parents.join('-') + '-' + this.id;
+
+        //internals
+        this._expandIconState = false;
     };
 
 	Data.prototype = {
@@ -838,20 +841,19 @@
                     return true;
                 }
 
-                var cell = $(this).closest('td'),
-                    button = $(this).find('.expand-children-button')[0];
+                var cell = $(this).closest('td');
+                var data = self.getRowDataByCell(cell[0]);
 
-				var data = self.getRowDataByCell(cell[0]);
-				data.expanded = !data.expanded;
+                if (event.shiftKey) {
+                    self.expandAll(self.datas, !data.expanded);
+                } else {
+                    var button = $(cell).find('.expand-children-button')[0];
 
-                button.innerHTML = data.expanded ?
-                    self.options.collapseChildrenButton :
-                    self.options.expandChildrenButton;
+                    data.expanded = !data.expanded;
 
-                self.render();
+                    self.render();
+                }
 			});
-
-
 
 			return this;
 		},
@@ -892,6 +894,22 @@
 			column.bodySizer.style.width = width + 'px';
 			column.width = width;
 		},
+
+        /**
+         * Expands or collapses all given rows
+         * @param {Array<Data>} rows Rows to expand
+         * @param {boolean} expand Expand or collapse rows
+         */
+        expandAll: function(rows, expand) {
+            for(var i=0; i<rows.length; i++) {
+                rows[i].expanded = expand;
+
+                if (rows[i].hasChildren(this.options.childrenField)) {
+                    this.expandAll(rows[i].getChildren(this.options.childrenField), expand);
+                }
+            }
+            this.render();
+        },
 
 		/**
 		 * Set columns to datagrid.
@@ -1350,6 +1368,16 @@
                 }
             } else {
                 tr = domCache[data.uid];
+            }
+
+            if (data.expanded != data._expandIconState && tr.children.length>0) {
+                var button = tr.children[0].querySelector('.expand-children-button');
+                if (button) {
+                    button.innerHTML = data.expanded ?
+                        this.options.collapseChildrenButton :
+                        this.options.expandChildrenButton;
+                }
+                data._expandIconState = true;
             }
 
 			if (data.expanded) {
