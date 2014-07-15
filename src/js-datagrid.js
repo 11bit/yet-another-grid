@@ -833,19 +833,25 @@
 		bindExpandChildrenEvents: function() {
 			var self = this;
 
-			$(this.container).on('click', '.expand-children-button', function expandChildrenHandler() {
-				var cell = $(this).closest('td'),
-                    row = cell.parent().get(0);
+			$(this.container).on('click', '.expand-children-cell', function expandChildrenHandler(event) {
+                if (event.offsetX>self.options.expandChildrenButtonOffset) {
+                    return true;
+                }
+
+                var cell = $(this).closest('td'),
+                    button = $(this).find('.expand-children-button')[0];
 
 				var data = self.getRowDataByCell(cell[0]);
 				data.expanded = !data.expanded;
 
-                this.innerHTML = data.expanded ?
+                button.innerHTML = data.expanded ?
                     self.options.collapseChildrenButton :
                     self.options.expandChildrenButton;
 
                 self.render();
 			});
+
+
 
 			return this;
 		},
@@ -1388,7 +1394,11 @@
 			var td = createElement('td'),
 				txt = column.getCellValue(data);
 
-			if (isNullOrUndefined(txt)) {
+            if (column.cssClass) {
+                td.className = column.cssClass;
+            }
+
+            if (isNullOrUndefined(txt)) {
 				txt = '';
 			}
 
@@ -1397,12 +1407,17 @@
 				txt = '&nbsp;';
 			}
 
-            if (column.idx === 0 && this.options.expandable && data.hasChildren(this.options.childrenField)) {
-				var icon = data.expanded ?
-							this.options.collapseChildrenButton :
-							this.options.expandChildrenButton;
+            if (column.idx === 0 && this.options.expandable) {
+                if (data.hasChildren(this.options.childrenField)) {
+                    var icon = data.expanded ?
+                        this.options.collapseChildrenButton :
+                        this.options.expandChildrenButton;
 
-				txt = '<span class="expand-children-button">'+ icon + '</span>' + txt; // expand arrow
+                    txt = '<span class="expand-children-button">'+ icon + '</span>' + txt; // expand arrow
+                    td.className += ' expand-children-cell';
+                } else {
+                    txt = '<span class="child-indent" style="padding-left: ' + this.options.childrenPadding + 'px"></span>' + txt;
+                }
 			}
 
             if (column.idx === 0 && data.level>0 && this.options.childrenPadding>0) {
@@ -1413,10 +1428,6 @@
             innerHTML(td, txt);
 			setDataAttribute(td, ATTR_DATA_ID, data.id);
 			setDataAttribute(td, ATTR_COLUMN_ID, column.idx);
-
-			if (column.cssClass) {
-				td.className = column.cssClass;
-			}
 
 			return td;
 		},
@@ -1591,9 +1602,12 @@
         reuseDom: true,                 // store already created dom nodes for rows and cells and reuse in on rerendering
 		frozenColumnsNum: 0,
 		summaryRowNum: 0,               // number of summary rows at the bottom which don't take part in sort
-		childrenField: 'children',      // name of a list with children in data
+
+        childrenField: 'children',      // name of a list with children in data
 		expandChildrenButton: '⊞',
 		collapseChildrenButton: '⊟',
+        expandChildrenButtonOffset: 30, // clickable area in the first cell that will expand children
+
         childrenPadding: 10,
         takeAllHeight: false            // take all height or use vertical scrolling
     };
