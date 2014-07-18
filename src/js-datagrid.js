@@ -636,6 +636,7 @@
 		}
 
 		this.renderFunction = obj.renderFunction;
+        this.headerRenderFunction = obj.headerRenderFunction;
 	};
 
 
@@ -646,7 +647,15 @@
 			} else {
 				return row.get(this.field);
 			}
-		}
+		},
+
+        getHeader: function() {
+            if (this.headerRenderFunction) {
+                return this.headerRenderFunction(this.title);
+            } else {
+                return this.title;
+            }
+        }
 	};
 
 	/**
@@ -1013,8 +1022,8 @@
 			var tr = createElement('tr'), th, column, txt;
 			for (var i = 0, ln = columns.length; i < ln; ++i) {
 				column = columns[i];
-
-				txt = column.title;
+    
+				txt = column.column && column.column.getHeader() || column.title;
 				if (this.options.fixEmptyCell && !txt) {
 					txt = ' ';
 				}

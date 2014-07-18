@@ -120,7 +120,8 @@ describe('Yet another datagrid Test Suite', function() {
 			var opts = {
 				columns: [
 					{ field: 'id', title: 'Identifier' },
-					{ field: 'name', title: 'Name' }
+					{ field: 'name', title: 'Name' },
+					{ field: 'content', title: 'my ', headerRenderFunction: function(title) {return title + 'content'} }
 				]
 			};
 
@@ -139,6 +140,10 @@ describe('Yet another datagrid Test Suite', function() {
 			var $th1 = tableHead.find('tr th').eq(1);
 			expect($th1.attr('data-col-id')).toBe('1');
 			expect($th1.text()).toBe('Name');
+
+            var $th1 = tableHead.find('tr th').eq(2);
+			expect($th1.attr('data-col-id')).toBe('2');
+			expect($th1.text()).toBe('my content');
 		});
 
         it('should add resize handlers for resizable columns', function() {
