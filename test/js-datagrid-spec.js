@@ -783,9 +783,11 @@ describe('Yet another datagrid Test Suite', function() {
             expect(rows().get().length).toBe(2);
             
             dg.expandAll(dg.datas, true);
+            dg.render();
             expect(rows().get().length).toBe(10);
 
             dg.expandAll(dg.datas, false);
+            dg.render();
             expect(rows().get().length).toBe(2);
         });
 	});

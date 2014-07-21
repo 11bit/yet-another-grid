@@ -860,9 +860,9 @@
 
                     data.expanded = !data.expanded;
 
-                    self.render();
                 }
-			});
+                self.render();
+            });
 
 			return this;
 		},
@@ -917,7 +917,6 @@
                     this.expandAll(rows[i].getChildren(this.options.childrenField), expand);
                 }
             }
-            this.render();
         },
 
 		/**
