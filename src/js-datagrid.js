@@ -16,6 +16,8 @@
 	var ATTR_PARENTS = 'parents';
 	var MIN_COL_WIDTH = 40; //px
 
+    var NBSP = '\u00A0'; // non breaking space
+
 	/**
 	 * Check if a data is an array.
 	 * @param {*} data Data to check.
@@ -1065,7 +1067,7 @@
 			for (var i = 0; i < rowNum; i++) {
 				var tr = createElement('tr'),
 					th = createElement('th');
-				th.innerHTML = '&nbsp;';
+				th.innerText = NBSP;
 				appendChild(tr, th);
 				appendChild(thead, tr);
 			}
@@ -1337,7 +1339,7 @@
 			for (var i = 0, ln = rowNum; i < ln; ++i) {
                 var tr = createElement('tr'),
                     td = createElement('td');
-                td.innerHTML = '&nbsp;';
+                td.innerText = NBSP;
                 appendChild(tr, td);
                 appendChild(fragment, tr);
 			}
