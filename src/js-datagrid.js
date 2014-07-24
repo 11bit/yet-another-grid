@@ -18,6 +18,8 @@
 
     var NBSP = '\u00A0'; // non breaking space
 
+    var iOS = /(iPad|iPhone|iPod)/g.test( navigator.userAgent );
+
 	/**
 	 * Check if a data is an array.
 	 * @param {*} data Data to check.
@@ -1540,7 +1542,9 @@
 		 * @return {Datagrid} this object.
 		 */
 		invalidateRightFillerWidth: function() {
-			var margin = this.body.table.offsetWidth + 'px';
+            // Use scrollWidth instead of offsetWidth because on IOS offsetWidth was equal to
+            // parent container width (which works wrong for grids with horizontal scrolling)
+			var margin = this.body.table.scrollWidth + 'px';
 			this.rightFillerWrapper.style.left = margin;
 			this.rightFillerHeadWrapper.style.left = margin;
 			return this;
