@@ -63,7 +63,7 @@
 
 .expand-children-button {
 	font-size: 13px;
-	line-height: 10px;
+	line-height: inherit;
 	padding-right: 5px;
 }
 
