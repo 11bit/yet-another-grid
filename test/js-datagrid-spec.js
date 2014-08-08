@@ -692,7 +692,7 @@ describe('Yet another datagrid Test Suite', function() {
 
             expect(toggle_collapse).toHaveText('⊞');
 
-            toggle_collapse.click();
+            toggle_collapse.parent().mouseup();
 
             expect(toggle_collapse).toHaveText('⊟');
 
@@ -708,7 +708,7 @@ describe('Yet another datagrid Test Suite', function() {
             expect($('#my-table').find('.dt-right-filler td').length).toBe(2);
 
 			// expand second row children
-			rows().eq(1).find('.expand-children-button').click();
+			rows().eq(1).find('.expand-children-button').mouseup();
 
 			expect(rows().get().length).toBe(5);
             expect($('#my-table').find('.dt-right-filler td').length).toBe(5);
@@ -733,7 +733,7 @@ describe('Yet another datagrid Test Suite', function() {
 			expect($row3.find('.expand-children-button').get().length).toBe(1);
 
 			// collapse second row
-			rows().eq(1).find('.expand-children-button').click();
+			rows().eq(1).find('.expand-children-button').mouseup();
 			expect(rows().get().length).toBe(2);
             expect($('#my-table').find('.dt-right-filler td').length).toBe(2);
         });
@@ -745,7 +745,7 @@ describe('Yet another datagrid Test Suite', function() {
 			}
 
 			// expand second row children
-			rows().eq(1).find('.expand-children-button').click();
+			rows().eq(1).find('.expand-children-button').mouseup();
 			expect(dg.getRowDataByCell(rows().eq(1).find('td').eq(0)[0]).get('name')).toBe('Smith');
 
 			var childData = dg.getRowDataByCell(rows().eq(2).find('td').eq(0)[0]);
@@ -760,11 +760,11 @@ describe('Yet another datagrid Test Suite', function() {
 			}
 
 			// expand second second level
-			rows().eq(1).find('.expand-children-button').click();
+			rows().eq(1).find('.expand-children-button').mouseup();
 			expect(rows().get().length).toBe(5);
 
 			// expand third level
-			rows().eq(3).find('.expand-children-button').click();
+			rows().eq(3).find('.expand-children-button').mouseup();
 			expect(rows().get().length).toBe(8);
 
 			var $row = rows().eq(4);
@@ -837,7 +837,7 @@ describe('Yet another datagrid Test Suite', function() {
 			var dg = this.dg;
 
 			// expand second row children
-            $(dg.frozenBody.tbody).find('tr:eq(1) .expand-children-button').click();
+            $(dg.frozenBody.tbody).find('tr:eq(1) .expand-children-button').mouseup();
 
             var rows = $(dg.frozenBody.tbody).find('tr');
             expect(rows.get().length).toBe(5);
@@ -864,7 +864,7 @@ describe('Yet another datagrid Test Suite', function() {
             expect($(dg.body.tbody).find('tr:eq(3) td:eq(0)')).toHaveText('2500');
 
             // collapse second row
-            $(dg.frozenBody.tbody).find('tr:eq(1) td:eq(0)').find('.expand-children-button').click();
+            $(dg.frozenBody.tbody).find('tr:eq(1) td:eq(0)').find('.expand-children-button').mouseup();
 			expect($(dg.frozenBody.tbody).find('tr').get().length).toBe(2);
 		});
 
@@ -873,7 +873,7 @@ describe('Yet another datagrid Test Suite', function() {
             var rows = $(dg.frozenBody.tbody).find('tr');
 
             // expand second row children
-			rows.eq(1).find('.expand-children-button').click();
+			rows.eq(1).find('.expand-children-button').mouseup();
             rows = $(dg.frozenBody.tbody).find('tr');
 
 			expect(dg.getRowDataByCell(rows.eq(1).find('td').eq(0)[0]).get('name')).toBe('Smith');
@@ -888,13 +888,13 @@ describe('Yet another datagrid Test Suite', function() {
                 rows = $(dg.frozenBody.tbody).find('tr');
 
 			// expand second second level
-			rows.eq(1).find('.expand-children-button').click();
+			rows.eq(1).find('.expand-children-button').mouseup();
 
             rows = $(dg.frozenBody.tbody).find('tr');
 			expect(rows.get().length).toBe(5);
 
 			// expand third level
-			rows.eq(3).find('.expand-children-button').click();
+			rows.eq(3).find('.expand-children-button').mouseup();
             rows = $(dg.frozenBody.tbody).find('tr');
 
 			expect(rows.get().length).toBe(8);
@@ -912,16 +912,16 @@ describe('Yet another datagrid Test Suite', function() {
 
             expect($(dg.body.tbody).find('tr').get().length).toBe(2);
             // expand second second level
-            $(dg.frozenBody.tbody).find('tr').eq(1).find('.expand-children-button').click();
+            $(dg.frozenBody.tbody).find('tr').eq(1).find('.expand-children-button').mouseup();
 
             // expand third level
-            $(dg.frozenBody.tbody).find('tr').eq(3).find('.expand-children-button').click();
+            $(dg.frozenBody.tbody).find('tr').eq(3).find('.expand-children-button').mouseup();
             expect($(dg.frozenBody.tbody).find('tr').get().length).toBe(8);
 
             expect($(dg.body.tbody).find('tr').get().length).toBe(8);
 
             // collapse
-            $(dg.frozenBody.tbody).find('tr').eq(1).find('.expand-children-button').click();
+            $(dg.frozenBody.tbody).find('tr').eq(1).find('.expand-children-button').mouseup();
             expect($(dg.frozenBody.tbody).find('tr').get().length).toBe(2);
             expect($(dg.body.tbody).find('tr').get().length).toBe(2);
         });

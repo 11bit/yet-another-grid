@@ -119,7 +119,7 @@
      * @param element{HTMLElement} content for replace
      */
     var replaceContent = function(node, element) {
-        removeChildren(node);
+//        removeChildren(node);
         appendChild(node, element);
     };
 
@@ -254,6 +254,10 @@
 	}
 
 	var scrollBarSize = measureScrollbar();
+
+    var defer = function(func) {
+        setTimeout(func, 10);
+    };
 
 	/**
 	 * Utility code that helps to build html table headers from grouped columns defenitions
@@ -621,6 +625,7 @@
 	var Column = function(idx, obj) {
 		this.idx = idx;
 		this.field = obj.field;
+        this.isHTML = obj.isHTML;
         this.sortByField = obj.sortByField || obj.field;
 		this.title = obj.title;
 		this.cssClass = obj.cssClass;
@@ -849,23 +854,31 @@
 		bindExpandChildrenEvents: function() {
 			var self = this;
 
-			$(this.container).on('click', '.expand-children-cell', function expandChildrenHandler(event) {
+			$(this.container).on('mouseup', '.expand-children-cell', function expandChildrenHandler(event) {
                 if (event.offsetX>self.options.expandChildrenButtonOffset) {
                     return true;
                 }
 
                 var cell = $(this).closest('td');
                 var data = self.getRowDataByCell(cell[0]);
-
+    
                 if (event.shiftKey) {
                     self.expandAll(self.datas, !data.expanded);
+                    self.render();
                 } else {
-                    var button = $(cell).find('.expand-children-button')[0];
-
                     data.expanded = !data.expanded;
+                    var button = $(cell).find('.expand-children-button')[0];
+                    self.changeExpandIcon(button, data);
 
+                    YAD.defer(function(){
+                        if (data.expanded) {
+                            var rowNum = cell.parent().index();
+                            self.expandThat(data, rowNum);
+                        } else {
+                            self.collapseThat(data);
+                        }
+                    });
                 }
-                self.render();
             });
 
 			return this;
@@ -1272,6 +1285,47 @@
 			return this;
 		},
 
+        changeExpandIcon: function(iconContainer, data) {
+            iconContainer.innerHTML = data.expanded ?
+                this.options.collapseChildrenButton :
+                this.options.expandChildrenButton;
+        },
+
+        expandThat: function(data, rowNum) {
+            var children = data.getChildren(this.options.childrenField);
+            if (this.options.frozenColumnsNum>0) {
+                var frozenColumns = this.createChildrenRows(data, this.frozenColumns, data.parents.concat([data.id]), this.domCache.frozenCols);
+                this.frozenBody.tbody.insertBefore(frozenColumns, this.frozenBody.tbody.childNodes[rowNum].nextSibling);
+            }
+
+            var fragment = this.createChildrenRows(data, this.ordinalColumns, data.parents.concat([data.id]), this.domCache.ordinalCols);
+            this.body.tbody.insertBefore(fragment,this.body.tbody.childNodes[rowNum].nextSibling);
+
+            //create right filler
+            var rightFillerBody = this.createEmptyTableFragment(children);
+            this.rightFiller.tbody.insertBefore(rightFillerBody, this.rightFiller.tbody.childNodes[rowNum].nextSibling);
+
+            return this;
+        },
+
+        collapseThat: function(data) {
+            var children = data.getChildren(this.options.childrenField);
+            for (var i=0; i<children.length; i++) {
+                var child = children[i];
+
+                if (this.options.frozenColumnsNum>0) {
+                    this.frozenBody.tbody.removeChild(this.domCache.frozenCols[child.uid]);
+                }
+                this.body.tbody.removeChild(this.domCache.ordinalCols[child.uid]);
+
+                if (child.expanded) {
+                    this.collapseThat(child);
+                }
+
+                this.rightFiller.tbody.removeChild(this.rightFiller.tbody.firstChild);
+            }
+        },
+
 		/**
 		 * Render datagrid.
 		 * @return {Datagrid} this object.
@@ -1279,16 +1333,23 @@
 		 */
 		render: function() {
             if (this.options.frozenColumnsNum>0) {
+                removeChildren(this.frozenBody.tbody);
+            }
+            removeChildren(this.body.tbody);
+            removeChildren(this.rightFiller.tbody);
+
+
+            if (this.options.frozenColumnsNum>0) {
                 var frozenColumns = this.createTableFragment(this.datas, this.frozenColumns, this.domCache.frozenCols);
-                replaceContent(this.frozenBody.tbody, frozenColumns);
+                appendChild(this.frozenBody.tbody, frozenColumns);
             }
 
 			var fragment = this.createTableFragment(this.datas, this.ordinalColumns, this.domCache.ordinalCols);
-            replaceContent(this.body.tbody, fragment);
+            appendChild(this.body.tbody, fragment);
 
 			//create right filter
 			var rightFillerBody = this.createEmptyTableFragment(this.datas);
-            replaceContent(this.rightFiller.tbody, rightFillerBody);
+            appendChild(this.rightFiller.tbody, rightFillerBody);
 
 			this.checkVisibility = false;
 			return this;
@@ -1385,9 +1446,7 @@
             if (data.expanded != data._expandIconState && tr.children.length>0) {
                 var button = tr.children[0].querySelector('.expand-children-button');
                 if (button) {
-                    button.innerHTML = data.expanded ?
-                        this.options.collapseChildrenButton :
-                        this.options.expandChildrenButton;
+                    this.changeExpandIcon(button, data);
                 }
                 data._expandIconState = true;
             }
@@ -1417,7 +1476,7 @@
 				fragment = document.createDocumentFragment();
 
 			for (var i = 0, ln = children.length; i < ln; i++) {
-				appendChild(fragment, this.createRow(children[i], columns, parents, domCache));
+                appendChild(fragment, this.createRow(children[i], columns, parents, domCache));
 			}
 
 			return fragment;
@@ -1444,28 +1503,48 @@
 
 			txt = txt.toString();
 			if (this.options.fixEmptyCell && !txt) {
-				txt = '&nbsp;';
+				txt = NBSP;
 			}
 
             if (column.idx === 0 && this.options.expandable) {
                 if (data.hasChildren(this.options.childrenField)) {
                     var icon = data.expanded ?
                         this.options.collapseChildrenButton :
-                        this.options.expandChildrenButton;
+                        this.options.expandChildrenButton,
+                        iconContainer = document.createElement('span');
 
-                    txt = '<span class="expand-children-button">'+ icon + '</span>' + txt; // expand arrow
+                    iconContainer.className = 'expand-children-button';
+                    iconContainer.innerHTML = icon;
+
+//                    txt = '<span class="expand-children-button">'+ icon + '</span>' + txt; // expand arrow
                     td.className += ' expand-children-cell';
+                    td.appendChild(iconContainer);
                 } else {
-                    txt = '<span class="child-indent" style="padding-left: ' + this.options.childrenPadding + 'px"></span>' + txt;
+                    var indent = document.createElement('span');
+                    indent.className = 'child-indent';
+                    indent.style.paddingLeft = this.options.childrenPadding + 'px';
+                    td.appendChild(indent);
                 }
 			}
 
             if (column.idx === 0 && data.level>0 && this.options.childrenPadding>0) {
-                var children_padding = (this.options.childrenPadding * data.level) + 'px';
-                txt = '<span class="child-indent" style="padding-left: ' + children_padding + '"></span>' + txt;
+                var indent = document.createElement('span');
+                indent.className = 'child-indent';
+                indent.style.paddingLeft = (this.options.childrenPadding * data.level) + 'px';
+                td.insertBefore(indent, td.firstChild);
+
+//                var children_padding = (this.options.childrenPadding * data.level) + 'px';
+//                txt = '<span class="child-indent" style="padding-left: ' + children_padding + '"></span>' + txt;
             }
 
-            innerHTML(td, txt);
+//            innerHTML(td, txt);
+            if (column.isHTML) {
+                var el = document.createElement('span');
+                td.appendChild(el);
+                el.outerHTML = txt;
+            } else {
+                td.appendChild(document.createTextNode(txt));
+            }
 			setDataAttribute(td, ATTR_DATA_ID, data.id);
 			setDataAttribute(td, ATTR_COLUMN_ID, column.idx);
 
@@ -1627,7 +1706,6 @@
             }
             return rows;
         }
-
 	};
 
 	/**
@@ -1657,6 +1735,7 @@
 	// Expose to global object
 	window.Datagrid = Datagrid;
 	window.YAD = {
-		GroupedColumnUtil: GroupedColumnUtil
+		GroupedColumnUtil: GroupedColumnUtil,
+        defer: defer
 	};
 })(window, document, void 0, window.jQuery);

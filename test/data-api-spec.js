@@ -3,6 +3,10 @@
 describe('API spec', function() {
     describe('getColumnByCell', function() {
         beforeEach(function () {
+
+            // use synchronous code for testing
+            YAD.defer = function(func) {func()};
+
             jasmine.getFixtures().set('<div id="my-table"></div>');
             this.tableContainer = $('#my-table').get()[0];
             this.options = {
@@ -49,7 +53,7 @@ describe('API spec', function() {
         it ('should get column by children cell', function() {
             var dg = new Datagrid(this.tableContainer, this.options);
 
-            $(dg.body.tbody).find('td:eq(0) .expand-children-button').click();
+            $(dg.body.tbody).find('td:eq(0) .expand-children-button').mouseup();
 
             var childCell1 = $(dg.body.tbody).find('tr:eq(1) td:eq(0)'),
                 column1 = dg.getColumnByCell(childCell1[0]);
@@ -120,7 +124,7 @@ describe('API spec', function() {
             var cell = $(dg.body.tbody).find('td:eq(0)');
             expect(dg.getParentIdsByCell(cell[0])).toEqual([]);
 
-            $(dg.body.tbody).find('td:eq(0) .expand-children-button').click();
+            $(dg.body.tbody).find('td:eq(0) .expand-children-button').mouseup();
 
             var child_cell = $(dg.body.tbody).find('tr:eq(1) td:eq(0)');
             expect(dg.getParentIdsByCell(child_cell[0])).toEqual([0]);
@@ -158,8 +162,8 @@ describe('API spec', function() {
         it ('should get parent rows of a cell', function (){
             var dg = new Datagrid(this.tableContainer, this.options);
 
-            $(dg.body.tbody).find('tr:eq(1) td:eq(0) .expand-children-button').click();
-            $(dg.body.tbody).find('tr:eq(3) td:eq(0) .expand-children-button').click();
+            $(dg.body.tbody).find('tr:eq(1) td:eq(0) .expand-children-button').mouseup();
+            $(dg.body.tbody).find('tr:eq(3) td:eq(0) .expand-children-button').mouseup();
 
             var child_cell = $(dg.body.tbody).find('tr:eq(4) td:eq(0)');
             var parentDatas = dg.getParentRowsByCell(child_cell[0]);
