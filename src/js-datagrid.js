@@ -1111,39 +1111,6 @@
 		},
 
 		/**
-		 * Get row data by list of ids. Each id represents a row in a level of hierarchical data
-		 * @param {Array<Data>} datas Rows to search
-		 * @param  {Array<number>} ids List of ids to get data from hierarchical structures
-		 * @return {Data}
-		 */
-		getRowDataByIds: function(datas, ids) {
-			var level_id = parseInt(ids.shift(), 10);
-			for (var i=0, ln=datas.length; i<ln; i++) {
-				if (datas[i].id === level_id) {
-					if (ids.length===0) {
-						return datas[i];
-					} else {
-						return this.getRowDataByIds(datas[i].getChildren(this.options.childrenField), ids);
-					}
-				}
-			}
-		},
-
-		/**
-		 * Get row data by cell element
-		 * @param  {HTMLElement} cell
-		 * @return {Data}
-		 */
-		getRowDataByCell: function(cell) {
-			var row = cell.parentNode,
-				data_id = parseInt(getDataAttribute(cell, ATTR_DATA_ID), 10),
-				parents = getDataArray(row, ATTR_PARENTS) || [];
-
-			parents.push(data_id);
-			return this.getRowDataByIds(this.datas, parents);
-		},
-
-		/**
 		 * Add new datas to datagrid.
 		 * @param {*} datas Datas to add.
 		 * @return {Datagrid} this object.
@@ -1577,6 +1544,39 @@
          */
 
         /**
+         * Get row data by list of ids. Each id represents a row in a level of hierarchical data
+         * @param {Array<Data>} datas Rows to search
+         * @param  {Array<number>} ids List of ids to get data from hierarchical structures
+         * @return {Data}
+         */
+        getRowDataByIds: function(datas, ids) {
+            var level_id = parseInt(ids.shift(), 10);
+            for (var i=0, ln=datas.length; i<ln; i++) {
+                if (datas[i].id === level_id) {
+                    if (ids.length===0) {
+                        return datas[i];
+                    } else {
+                        return this.getRowDataByIds(datas[i].getChildren(this.options.childrenField), ids);
+                    }
+                }
+            }
+        },
+
+        /**
+         * Get row data by cell element
+         * @param  {HTMLElement} cell
+         * @return {Data}
+         */
+        getRowDataByCell: function(cell) {
+            var row = cell.parentNode,
+                data_id = parseInt(getDataAttribute(cell, ATTR_DATA_ID), 10),
+                parents = getDataArray(row, ATTR_PARENTS) || [];
+
+            parents.push(data_id);
+            return this.getRowDataByIds(this.datas, parents);
+        },
+
+        /**
          * Returns column by cell
          * @param cell {HTMLNode} cell to get data
          * @returns {Column} column
@@ -1610,13 +1610,21 @@
             return parentsList;
         },
 
+        getRowById: function(datas, level_id) {
+            for (var i=0, ln=datas.length; i<ln; i++) {
+                if (datas[i].id === level_id) {
+                    return datas[i];
+                }
+            }
+        },
+
         getParentRowsByCell: function(cell) {
             var ids = this.getParentIdsByCell(cell),
                 data = this.datas,
                 rows = [];
 
             while (ids.length>0) {
-                var row = data[ids.pop()];
+                var row = this.getRowById(data, ids.pop());
                 rows.push(row);
                 data = row.getChildren(this.options.childrenField);
             }

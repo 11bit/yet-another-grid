@@ -166,6 +166,22 @@ describe('API spec', function() {
 
             expect(parentDatas[0].get('name')).toBe('Smith');
             expect(parentDatas[1].get('name')).toBe('Bob');
-        })
+        });
+
+        it ('should get parent rows of a cell after table sort', function (){
+            var dg = new Datagrid(this.tableContainer, this.options);
+
+            dg.columns[0].sortAsc = false;
+            dg.sort([0]);
+
+            $(dg.body.tbody).find('tr:eq(0) td:eq(0) .expand-children-button').click();
+            $(dg.body.tbody).find('tr:eq(2) td:eq(0) .expand-children-button').click();
+
+            var child_cell = $(dg.body.tbody).find('tr:eq(3) td:eq(0)');
+            var parentDatas = dg.getParentRowsByCell(child_cell[0]);
+
+            expect(parentDatas[0].get('name')).toBe('Smith');
+            expect(parentDatas[1].get('name')).toBe('Bob');
+        });
     });
 });
