@@ -8,7 +8,11 @@ describe('Yet another datagrid Test Suite', function() {
 
 	describe('Datagrid', function() {
 		beforeEach(function() {
-			jasmine.getFixtures().set('<div id="my-table"></div>');
+
+            // use synchronous code for testing
+            YAD.defer = function(func) {func()};
+
+            jasmine.getFixtures().set('<div id="my-table"></div>');
 			this.tableContainer = $('#my-table').get()[0];
 		});
 

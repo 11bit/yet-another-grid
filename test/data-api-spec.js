@@ -178,8 +178,8 @@ describe('API spec', function() {
             dg.columns[0].sortAsc = false;
             dg.sort([0]);
 
-            $(dg.body.tbody).find('tr:eq(0) td:eq(0) .expand-children-button').click();
-            $(dg.body.tbody).find('tr:eq(2) td:eq(0) .expand-children-button').click();
+            $(dg.body.tbody).find('tr:eq(0) td:eq(0) .expand-children-button').mouseup();
+            $(dg.body.tbody).find('tr:eq(2) td:eq(0) .expand-children-button').mouseup();
 
             var child_cell = $(dg.body.tbody).find('tr:eq(3) td:eq(0)');
             var parentDatas = dg.getParentRowsByCell(child_cell[0]);
