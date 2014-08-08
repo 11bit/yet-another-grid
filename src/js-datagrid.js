@@ -1614,13 +1614,16 @@
 			this.bodyWrapper.style.height = bodyHeight + 'px';
 
             if (this.options.frozenColumnsNum) {
-                this.frozenBodyWrapper.style.height = bodyHeight - scrollBarSize.width + 'px';
+                var sb = this.hasHorizontalScroll() ? scrollBarSize.width : 0;
+                this.frozenBodyWrapper.style.height = bodyHeight - sb + 'px';
             }
 
 			return this;
 		},
 
-
+        hasHorizontalScroll: function() {
+            return this.bodyWrapper.clientWidth < this.bodyWrapper.scrollWidth;
+        },
 
 
         /*
