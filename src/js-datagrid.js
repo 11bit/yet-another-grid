@@ -865,6 +865,7 @@
                 if (event.shiftKey) {
                     self.expandAll(self.datas, !data.expanded);
                     self.render();
+                    self.ivalidateBodyWrapperHeight();
                 } else {
                     data.expanded = !data.expanded;
                     var button = $(cell).find('.expand-children-button')[0];
@@ -877,6 +878,7 @@
                         } else {
                             self.collapseThat(data);
                         }
+                        self.ivalidateBodyWrapperHeight();
                     });
                 }
             });
