@@ -1713,7 +1713,7 @@
                 rows = [];
 
             while (ids.length>0) {
-                var row = this.getRowById(data, ids.pop());
+                var row = this.getRowById(data, ids.shift());
                 rows.push(row);
                 data = row.getChildren(this.options.childrenField);
             }
