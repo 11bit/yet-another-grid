@@ -1610,7 +1610,7 @@
             }
 
 			var fullHeight = this.container.offsetHeight,
-				headerHeight = this.headWrapper.offsetHeight,
+				headerHeight = this.headContainer.offsetHeight,
 				bodyHeight = fullHeight - headerHeight;
 
 			this.bodyWrapper.style.height = bodyHeight + 'px';
