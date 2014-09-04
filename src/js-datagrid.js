@@ -104,6 +104,15 @@
 	};
 
     /**
+     * set text content of an element
+     * @param element
+     * @param text
+     */
+    var textContent = function(element, text) {
+        element.textContent = text;
+    };
+
+    /**
      * Remove all children of a DOM node
      * @param node {HTMLElement} Node to remove children
      */
@@ -1084,7 +1093,7 @@
 			for (var i = 0; i < rowNum; i++) {
 				var tr = createElement('tr'),
 					th = createElement('th');
-				th.innerText = NBSP;
+                textContent(th, NBSP);
 				appendChild(tr, th);
 				appendChild(thead, tr);
 			}
@@ -1371,7 +1380,7 @@
 			for (var i = 0, ln = rowNum; i < ln; ++i) {
                 var tr = createElement('tr'),
                     td = createElement('td');
-                td.innerText = NBSP;
+                textContent(td, NBSP);
                 appendChild(tr, td);
                 appendChild(fragment, tr);
 			}
