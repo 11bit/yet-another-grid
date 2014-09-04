@@ -792,7 +792,6 @@
 		 */
 		bindSortEvents: function() {
 			var self = this;
-			// todo: remove jquery?
 			$(this.headContainer).on('click', 'th.sortable', function (e) {
 				var srcElement = e.originalEvent.srcElement || e.originalEvent.target;
 				if ($(srcElement).hasClass('dt-resize-handle')) {
