@@ -164,8 +164,8 @@
 	};
 
 	/**
-	 * Get array serrialized to 'data' attribute of html element
-	 * @param  {HTMLElement} element
+	 * Get array serialized to 'data' attribute of html element
+	 * @param  {Element} element
 	 * @param  {string} name
 	 * @return {Array}
 	 */
@@ -513,16 +513,6 @@
 
 	Data.prototype = {
 		get: function(field) {
-			//TODO: use flag to enable deep object getters?      
-			// var fields = field.split('.'),
-			// 	current = this.obj;
-
-			// for (var i = 0, ln = fields.length; i < ln; ++i) {
-			// 	current = current[fields[i]];
-			// 	if (isNullOrUndefined(current)) {
-			// 		break;
-			// 	}
-			// }
 			var val = this.obj[field];
 			if (val===undefined) {
 				return '';
@@ -1624,10 +1614,11 @@
 
         /**
          * Get row data by cell element
-         * @param  {HTMLElement} cell
+         * @param  {Element} cell
          * @return {Data}
          */
         getRowDataByCell: function(cell) {
+            //noinspection JSCheckFunctionSignatures
             var row = cell.parentNode,
                 data_id = parseInt(getDataAttribute(cell, ATTR_DATA_ID), 10),
                 parents = getDataArray(row, ATTR_PARENTS) || [];
