@@ -18,8 +18,6 @@
 
     var NBSP = '\u00A0'; // non breaking space
 
-    var iOS = /(iPad|iPhone|iPod)/g.test( navigator.userAgent );
-
 	/**
 	 * Check if a data is an array.
 	 * @param {*} data Data to check.
@@ -168,7 +166,7 @@
 	/**
 	 * Get array serrialized to 'data' attribute of html element
 	 * @param  {HTMLElement} element
-	 * @param  {name} name
+	 * @param  {string} name
 	 * @return {Array}
 	 */
 	var getDataArray = function(element, name) {
@@ -214,6 +212,18 @@
 			tbody: tbody
 		};
 	};
+
+    /**
+     * Create span block with specidied padding
+     * @param padding
+     * @returns {HTMLElement}
+     */
+    var createIndentBlock = function (padding) {
+        var indent = document.createElement('span');
+        indent.className = 'child-indent';
+        indent.style.paddingLeft = padding + 'px';
+        return indent;
+    };
 
 	/**
 	 * Get width of a td or th.
@@ -477,8 +487,8 @@
 	 * @param {number} id Internal id of data.
 	 * @param {Object} obj Original object.
 	 * @param {boolean} summaryRow Summary row flag (this row will always sort to bottom)
-     * @param [{number}] level level of data for hierarchical data objects
-     * @param [{Array}] parents List of parent ids
+     * @param {number} [level] level of data for hierarchical data objects
+     * @param {Array} [parents] List of parent ids
 	 * @constructor
 	 * @private
 	 */
@@ -622,11 +632,14 @@
 		this.sortAsc =  obj.sortAsc === undefined || obj.sortAsc;
 		if (obj.sortFunction) {
 			this.sortFunction = obj.sortFunction;
-		} else if (obj.sortType === 'numeric' || obj.sortType === 'date') {
-			this.sortFunction = numberSort;
 		} else {
-			this.sortFunction = defaultSort;
-		}
+		    //noinspection JSUnresolvedVariable
+            if (obj.sortType === 'numeric' || obj.sortType === 'date') {
+                        this.sortFunction = numberSort;
+                    } else {
+                        this.sortFunction = defaultSort;
+                    }
+        }
 
 		this.renderFunction = obj.renderFunction;
         this.headerRenderFunction = obj.headerRenderFunction;
@@ -672,7 +685,8 @@
 		this.init();
 	};
 
-	Datagrid.prototype = {
+	//noinspection JSUnusedGlobalSymbols
+    Datagrid.prototype = {
 		/**
 		 * Call a callback function with datagrid object as context.
 		 * @param {function} fn Callback function.
@@ -902,8 +916,10 @@
 		},
 
 		setColumnSize: function(column, width) {
-			column.headSizer.style.width = width + 'px';
-			column.bodySizer.style.width = width + 'px';
+			//noinspection JSUnresolvedVariable
+            column.headSizer.style.width = width + 'px';
+			//noinspection JSUnresolvedVariable
+            column.bodySizer.style.width = width + 'px';
 			column.width = width;
 		},
 
@@ -1454,24 +1470,14 @@
                     td.className += ' expand-children-cell';
                     td.appendChild(iconContainer);
                 } else {
-                    var indent = document.createElement('span');
-                    indent.className = 'child-indent';
-                    indent.style.paddingLeft = this.options.childrenPadding + 'px';
-                    td.appendChild(indent);
+                    td.appendChild(createIndentBlock(this.options.childrenPadding));
                 }
 			}
 
             if (column.idx === 0 && data.level>0 && this.options.childrenPadding>0) {
-                var indent = document.createElement('span');
-                indent.className = 'child-indent';
-                indent.style.paddingLeft = (this.options.childrenPadding * data.level) + 'px';
-                td.insertBefore(indent, td.firstChild);
-
-//                var children_padding = (this.options.childrenPadding * data.level) + 'px';
-//                txt = '<span class="child-indent" style="padding-left: ' + children_padding + '"></span>' + txt;
+                td.insertBefore(createIndentBlock(this.options.childrenPadding * data.level), td.firstChild);
             }
 
-//            innerHTML(td, txt);
             if (column.isHTML) {
                 var el = document.createElement('span');
                 td.appendChild(el);
@@ -1486,11 +1492,11 @@
 		},
 
 		/**
-		 * Changes the size of all internal elementes than container is chaging it's size
+		 * Changes the size of all internal elements than container is changing it's size
 		 * @return {Datagrid} this object.
 		 * @public
 		 */
-		invalidateSize: function() {
+        invalidateSize: function() {
 			//todo: don't run all resize functions if only one dimension is changed
 			var heightChanged = true,
 				widthChanged = true;
@@ -1632,7 +1638,7 @@
 
         /**
          * Returns column by cell
-         * @param cell {HTMLNode} cell to get data
+         * @param cell {HTMLElement} cell to get data
          * @returns {Column} column
          */
         getColumnByCell: function(cell) {
@@ -1646,7 +1652,7 @@
 
         /**
          * Get list of cell parent's ids. Returns empty list for top level.
-         * @param cell {HTMLNode} cell
+         * @param cell {HTMLElement} cell
          * @returns {Array} parent's ids
          */
         getParentIdsByCell: function(cell) {
