@@ -123,17 +123,6 @@
     };
 
     /**
-     * Replaces node content with a new html content
-     * @param node{HTMLElement} target node
-     * @param element{HTMLElement} content for replace
-     */
-    var replaceContent = function(node, element) {
-//        removeChildren(node);
-        appendChild(node, element);
-    };
-
-
-    /**
 	 * Set attribute of an html element.
 	 * @param {HTMLElement} element HTML Element.
 	 * @param {string} name Name of attribute.
@@ -201,17 +190,6 @@
 	};
 
 	/**
-	 * Get elements by tag name.
-	 * @param {string} tagName Name of tag to find.
-	 * @param {HTMLElement?} element Element, use document by default.
-	 * @returns {NodeList} Founded elements.
-	 * @private
-	 */
-	var byTag = function(tagName, element) {
-		return (element || document).getElementsByTagName(tagName);
-	};
-
-	/**
 	 * Creates table
 	 * @param {string} tableClass specific css class for <table>
 	 * @return {Object} returns dictionary with table, head and body element
@@ -249,7 +227,7 @@
 
 	/**
 	 * Get width of a scroll bar (jquery dependecy).
-	 * @returns {number} Width of an element.
+	 * @returns {{width: number, height: number}} Width and height of an element.
 	 * @private
 	 */
 	function measureScrollbar() {
@@ -433,7 +411,7 @@
 		 */
 		checkValues: function(value, caseInsensitive, fn) {
 			var filterValue = this.value;
-			var array = isArray(filterValue) ? filterValue.slice() : [filterValue];
+			var array = isArray(filterValue) ? filterValue.slice(0) : [filterValue];
 
 			for (var i = 0, ln = array.length; i < ln; ++i) {
 				array[i] = isDefined(array[i]) ? array[i].toString() : '';
@@ -499,7 +477,8 @@
 	 * @param {number} id Internal id of data.
 	 * @param {Object} obj Original object.
 	 * @param {boolean} summaryRow Summary row flag (this row will always sort to bottom)
-     * @param {number} level level of data for hierarchical data objects
+     * @param [{number}] level level of data for hierarchical data objects
+     * @param [{Array}] parents List of parent ids
 	 * @constructor
 	 * @private
 	 */
@@ -620,10 +599,6 @@
 		return x - y;
 	};
 
-	var defaultRenderFunction = function(row, field) {
-		return row.get(field);
-	};
-
 	/**
 	 * Column displayed in datagrid.
 	 * @param {number} idx Index of column in table.
@@ -713,7 +688,7 @@
 		 */
 		init: function() {
 
-            if (true) {
+            if (this.options.reuseDom) {
                 this.domCache = {
                     frozenCols: {},
                     ordinalCols: {}
@@ -957,12 +932,6 @@
 		setColumns: function(columnGroups) {
 			this.columns = [];
 
-            var colid = 0;
-            function createColumn(colDesc) {
-                colDesc.column = new Column(colid++, colDesc);
-                return colDesc.column;
-            }
-
             function createColumns(colDescs, start_id) {
                 var columns = [];
                 for (var i=0; i<colDescs.length; i++) {
@@ -981,24 +950,8 @@
 
             this.columns = this.frozenColumns.concat(this.ordinalColumns);
 
-            // find and initialize real columns
-//			var columnHeaders = GroupedColumnUtil.getColumns(columnGroups);
-//			for (var i = 0; i < columnHeaders.length; i++) {
-//				var header = columnHeaders[i];
-//
-//			}
-
-//            this.frozenColumns = this.columns.slice(0, this.options.frozenColumnsNum);
-//            this.ordinalColumns = this.columns.slice(this.options.frozenColumnsNum);
-
-
-            //
 			var frozenGroup = columnGroups.slice(0, this.options.frozenColumnsNum),
 				ordinalGroup = columnGroups.slice(this.options.frozenColumnsNum);
-
-			// var frozenCols = GroupedColumnUtil.getColumns(frozenGroup),
-			// 	ordinalCols = GroupedColumnUtil.getColumns(ordinalGroup);
-
 
 			var frozenColsStructure = GroupedColumnUtil.buildHeadStructure(frozenGroup),
 				ordinalColsStructure = GroupedColumnUtil.buildHeadStructure(ordinalGroup);
@@ -1333,12 +1286,13 @@
 			return this;
 		},
 
-		/**
-		 * Create docuemnt fragment with table rows for given data and columns
-		 * @param  {Array<object>} datas   Data to render
-		 * @param  {Array<object>} columns Columns to render
-		 * @return {DocumentFragment}      DocumentFragment with `tr` rows
-		 */
+        /**
+         * Create docuemnt fragment with table rows for given data and columns
+         * @param  {Array<Data>} datas   Data to render
+         * @param  {Array<Column>} columns Columns to render
+         * @param {Object} domCache Dictionary with cached DOM nodes
+         * @return {DocumentFragment}      DocumentFragment with `tr` rows
+         */
 		createTableFragment: function(datas, columns, domCache) {
 			var fragment = document.createDocumentFragment();
 			for (var i = 0, ln = datas.length; i < ln; ++i) {
@@ -1348,7 +1302,7 @@
 				}
 
 				if (data.visible) {
-                    appendChild(fragment, this.createRow(datas[i], columns, false, domCache));
+                    appendChild(fragment, this.createRow(data, columns, false, domCache));
 				}
 			}
 			return fragment;
@@ -1391,8 +1345,9 @@
 		 * Create row for data.
 		 * @param {Data} data Data to render.
          * @param {Array<Column>} columns to render
-         * @param {Array<number>} parents List of parent ids.
-		 * @returns {HTMLElement | DocumentFragment} Row associated to data.
+         * @param {Array<number> | boolean} parents List of parent ids.
+         * @param {Object} domCache Dictionary with cached DOM nodes
+         * @returns {HTMLElement | DocumentFragment} Row associated to data.
 		 * @public
 		 */
 		createRow: function(data, columns, parents, domCache) {
@@ -1446,6 +1401,7 @@
 		 * @param {Data} data Data which children should be rendered
          * @param {Array<Column>} columns Columns to render
          * @param {Array<number>} parents List of parent ids.
+         * @param {Object} domCache Dictionary with cached DOM nodes
 		 * @return {DocumentFragment}
 		 * @public
 		 */
