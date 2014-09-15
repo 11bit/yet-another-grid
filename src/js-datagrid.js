@@ -706,9 +706,9 @@
 				.set(this.options.datas)
 				.render()
 				.bindEventHandlers()
-				.ivalidateBodyWrapperHeight()
 				.invalidateColumnSizes()
-				.invalidateRightFillerWidth();
+				.invalidateRightFillerWidth()
+                .ivalidateBodyWrapperHeight();
 
 			delete this.options.datas;
 			delete this.options.columns;
@@ -1489,14 +1489,16 @@
 			//todo: don't run all resize functions if only one dimension is changed
 			var heightChanged = true,
 				widthChanged = true;
-			if (heightChanged) {
-				this.ivalidateBodyWrapperHeight();
-			}
 
 			if (widthChanged) {
 				this.invalidateRightFillerWidth();
 			}
-			return this;
+
+            if (heightChanged) {
+                this.ivalidateBodyWrapperHeight();
+            }
+            
+            return this;
 		},
 
 		/**
