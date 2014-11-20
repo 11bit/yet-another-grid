@@ -652,6 +652,7 @@
 
 		this.renderFunction = obj.renderFunction;
         this.headerRenderFunction = obj.headerRenderFunction;
+		this.postRenderFunction = obj.postRenderFunction;
 	};
 
 
@@ -1620,6 +1621,9 @@
             }
 			setDataAttribute(td, ATTR_DATA_ID, data.id);
 			setDataAttribute(td, ATTR_COLUMN_ID, column.idx);
+
+			if (column.postRenderFunction)
+				column.postRenderFunction(td, data);
 
 			return td;
 		},
