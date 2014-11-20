@@ -188,6 +188,25 @@
 	};
 
 	/**
+	 * Debounce function (stolen from underscore.js
+	 */
+	var debounce = function(func, wait, immediate) {
+		var timeout, result;
+		return function() {
+			var context = this, args = arguments;
+			var later = function() {
+				timeout = null;
+				if (!immediate) result = func.apply(context, args);
+			};
+			var callNow = immediate && !timeout;
+			clearTimeout(timeout);
+			timeout = setTimeout(later, wait);
+			if (callNow) result = func.apply(context, args);
+			return result;
+		};
+	};
+
+	/**
 	 * Creates table
 	 * @param {string} tableClass specific css class for <table>
 	 * @return {Object} returns dictionary with table, head and body element
@@ -672,6 +691,10 @@
 		// Internal flags
 		this.checkVisibility = false;
 		this.options = extend(Datagrid.options, options);
+
+		this.lastRenderedIndex  = 0;
+		this.lastScrollTop = 0;
+
 		this.init();
 	};
 
@@ -771,6 +794,33 @@
                 }
             }
 
+			if (this.options.loadOnScroll) {
+				this.createScrollFillers();
+			}
+
+			return this;
+		},
+
+		/**
+		 * If table renders additional rows on scroll we need empty containers to have scroll bars of proper height
+		 */
+		createScrollFillers: function () {
+			var frozenScrollFiller;
+			if (this.options.frozenColumnsNum>0) {
+				frozenScrollFiller = createElement('div');
+				frozenScrollFiller.className = 'empty-div';
+				this.frozenBodyWrapper.appendChild(frozenScrollFiller);
+			}
+
+			var scrollFiller = createElement('div');
+			scrollFiller.className = 'empty-div';
+			this.bodyWrapper.appendChild(scrollFiller);
+
+			this.scrollFillers = {
+				frozenScrollFiller: frozenScrollFiller,
+				scrollFiller: scrollFiller
+			};
+
 			return this;
 		},
 
@@ -798,7 +848,7 @@
 					return;
 				}
 
-				var col_id = parseInt(getDataAttribute(this, ATTR_COLUMN_ID), 10);
+				var col_id = parseInt(getDataAttribute(srcElement, ATTR_COLUMN_ID), 10);
 
 				if (isNaN(col_id)) {
 					return;
@@ -817,6 +867,31 @@
 			return this;
 		},
 
+
+		/**
+		 * Calculates how many rows we need to fill visible area.
+		 * @returns {number} number of rows to fill visible area including hidden space on top if container was scrolled.
+		 */
+		getRowsToFitCount: function(){
+			var visibleHeight = this.container.offsetHeight - this.headContainer.offsetHeight;
+			return Math.ceil((this.bodyWrapper.scrollTop + visibleHeight) / this.getRowHeight());
+		},
+
+		getRowHeight:function(){
+			if (!this._rowHeight) {
+				var tr = createElement('tr'),
+					td = createElement('td');
+
+				td.appendChild(document.createTextNode('test'));
+				tr.appendChild(td);
+
+				this.body.tbody.appendChild(tr);
+				this._rowHeight = tr.offsetHeight;
+				this.body.tbody.removeChild(tr);
+			}
+			return this._rowHeight;
+		},
+
 		/**
 		 * Bind scroll events
 		 * @returns {Datagrid} this object.
@@ -824,7 +899,38 @@
 		 */
 		bindScrollEvents: function() {
 			var self = this;
+			var rowHeight = this.getRowHeight();
+
+			var appendRows = YAD.debounce(function(){
+				var scrollDiff = self.bodyWrapper.scrollTop - self.lastScrollTop;
+
+				if (scrollDiff < 0)
+					return; // scroll to top
+
+				self.lastScrollTop = self.bodyWrapper.scrollTop;
+				var step = Math.ceil(scrollDiff/rowHeight);
+
+				if(step >= 1) {
+					//append more rows
+					var nextStep = self.lastRenderedIndex + step;
+
+					if (nextStep > self.datas.length)
+						nextStep = self.datas.length;
+
+					self.drawPortion(self.lastRenderedIndex, nextStep);
+				}
+			}, 30);
+
+
 			$(this.bodyWrapper).on('scroll', function scrollHandler() {
+				// perform load on scroll if
+				// on desktop platform &
+				// end of the dataprovider is not reached &
+				// scrolling down
+				if(self.options.loadOnScroll && self.lastRenderedIndex<self.datas.length){
+					appendRows();
+				}
+
 				self.headWrapper.scrollLeft = this.scrollLeft;
 
                 if (self.options.frozenColumnsNum>0) {
@@ -1263,31 +1369,69 @@
         },
 
 		/**
-		 * Render datagrid.
+		 * Remove all dom from table structure
+		 */
+		clearAll: function() {
+			if (this.options.frozenColumnsNum>0) {
+				removeChildren(this.frozenBody.tbody);
+			}
+			removeChildren(this.body.tbody);
+			removeChildren(this.rightFiller.tbody);
+		},
+
+		/**
+		 * Rerender full datagrid.
 		 * @return {Datagrid} this object.
 		 * @public
 		 */
 		render: function() {
-            if (this.options.frozenColumnsNum>0) {
-                removeChildren(this.frozenBody.tbody);
-            }
-            removeChildren(this.body.tbody);
-            removeChildren(this.rightFiller.tbody);
+			var renderTo;
 
+			if(this.options.loadOnScroll){
+				renderTo = this.getRowsToFitCount();
+				this.lastScrollTop = this.bodyWrapper.scrollTop;
+			} else  {
+				renderTo = this.datas.length;
+			}
 
-            if (this.options.frozenColumnsNum>0) {
-                var frozenColumns = this.createTableFragment(this.datas, this.frozenColumns, this.domCache.frozenCols);
-                appendChild(this.frozenBody.tbody, frozenColumns);
-            }
+			this.clearAll();
+			this.drawPortion(0, renderTo);
+			this.checkVisibility = false;
+			return this;
+		},
 
-			var fragment = this.createTableFragment(this.datas, this.ordinalColumns, this.domCache.ordinalCols);
-            appendChild(this.body.tbody, fragment);
+		/**
+		 * Render certain rows of data and append them to datagrid
+		 * @param {Number} from Index of the first row to draw
+		 * @param {Number} to Index of the last row to draw
+		 * @returns {Datagrid} this object
+		 */
+		drawPortion:function(from, to){
+			var data_frame = this.datas.slice(from, to);
+			this.lastRenderedIndex = to;
+
+			if (this.options.frozenColumnsNum>0) {
+				var frozenColumns = this.createTableFragment(data_frame, this.frozenColumns, this.domCache.frozenCols);
+				appendChild(this.frozenBody.tbody, frozenColumns);
+			}
+
+			var fragment = this.createTableFragment(data_frame, this.ordinalColumns, this.domCache.ordinalCols);
+			appendChild(this.body.tbody, fragment);
 
 			//create right filter
-			var rightFillerBody = this.createEmptyTableFragment(this.datas);
-            appendChild(this.rightFiller.tbody, rightFillerBody);
+			var rightFillerBody = this.createEmptyTableFragment(data_frame);
+			appendChild(this.rightFiller.tbody, rightFillerBody);
 
-			this.checkVisibility = false;
+			if (this.options.loadOnScroll) {
+				//decrease height of the empty div
+				var newFillerHeight = (this.datas.length - to)*this.getRowHeight() + 'px';
+				this.scrollFillers.scrollFiller.style.height = newFillerHeight;
+
+				if (this.scrollFillers.frozenScrollFiller) {
+					this.scrollFillers.frozenScrollFiller.style.height = newFillerHeight;
+				}
+			}
+
 			return this;
 		},
 
@@ -1495,6 +1639,18 @@
 			}
 
             if (heightChanged) {
+				if(this.options.loadOnScroll && this.lastRenderedIndex<this.datas.length) {
+					var rowsToFit = this.getRowsToFitCount();
+
+					if (rowsToFit<this.lastRenderedIndex)
+						return this;
+
+					if (rowsToFit > this.datas.length)
+						rowsToFit = this.datas.length;
+
+					this.drawPortion(this.lastRenderedIndex, rowsToFit);
+				}
+
                 this.ivalidateBodyWrapperHeight();
             }
             
@@ -1566,7 +1722,6 @@
 		 * @public
 		 */
 		ivalidateBodyWrapperHeight: function() {
-
             if (this.options.takeAllHeight) {
                 return this;
             }
@@ -1712,6 +1867,7 @@
 	window.Datagrid = Datagrid;
 	window.YAD = {
 		GroupedColumnUtil: GroupedColumnUtil,
-        defer: defer
+        defer: defer,
+		debounce: debounce
 	};
 })(window, document, void 0, window.jQuery);
