@@ -696,6 +696,10 @@
 		this.lastRenderedIndex  = 0;
 		this.lastScrollTop = 0;
 
+		if (this.options.takeAllHeight) {
+			this.options.loadOnScroll = false;
+		}
+
 		this.init();
 	};
 
