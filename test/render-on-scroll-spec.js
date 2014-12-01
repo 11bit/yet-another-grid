@@ -29,6 +29,7 @@ describe('Render on scroll behaviour', function() {
 
         // use synchronous code for testing
         YAD.defer = function(func) {func()};
+        YAD.debounce = function (f) {return f};
 
         jasmine.getFixtures().set('<div id="my-table"></div>');
         $('#my-table')
@@ -36,8 +37,7 @@ describe('Render on scroll behaviour', function() {
             .height(300);
         this.tableContainer = $('#my-table').get()[0];
 
-        // make scrolling synchronous for easier testing
-        YAD.debounce = function (f) {return f};
+
     });
 
     it ('should calculate row height', function () {

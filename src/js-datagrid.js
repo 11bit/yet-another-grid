@@ -207,6 +207,22 @@
 	};
 
 	/**
+	  Returns a function that will be executed at most one time, no matter how
+	  often you call it. Useful for lazy initialization.
+	  Stolen from underscore.js
+	 */
+	var once = function(func) {
+		var ran = false, memo;
+		return function() {
+			if (ran) return memo;
+			ran = true;
+			memo = func.apply(this, arguments);
+			func = null;
+			return memo;
+		};
+	};
+
+	/**
 	 * Creates table
 	 * @param {string} tableClass specific css class for <table>
 	 * @return {Object} returns dictionary with table, head and body element
@@ -694,7 +710,6 @@
 		this.options = extend(Datagrid.options, options);
 
 		this.lastRenderedIndex  = 0;
-		this.lastScrollTop = 0;
 
 		if (this.options.takeAllHeight) {
 			this.options.loadOnScroll = false;
@@ -726,6 +741,8 @@
                     ordinalCols: {}
                 }
             }
+
+			this.appendVisibleRowsDebounced = YAD.debounce(this.appendVisibleRows, 30);
 
 			this
 				.buildStructure()
@@ -906,34 +923,13 @@
 			var self = this;
 			var rowHeight = this.getRowHeight();
 
-			var appendRows = YAD.debounce(function(){
-				var scrollDiff = self.bodyWrapper.scrollTop - self.lastScrollTop;
-
-				if (scrollDiff < 0)
-					return; // scroll to top
-
-				self.lastScrollTop = self.bodyWrapper.scrollTop;
-				var step = Math.ceil(scrollDiff/rowHeight);
-
-				if(step >= 1) {
-					//append more rows
-					var nextStep = self.lastRenderedIndex + step;
-
-					if (nextStep > self.datas.length)
-						nextStep = self.datas.length;
-
-					self.drawPortion(self.lastRenderedIndex, nextStep);
-				}
-			}, 30);
-
-
 			$(this.bodyWrapper).on('scroll', function scrollHandler() {
 				// perform load on scroll if
 				// on desktop platform &
 				// end of the dataprovider is not reached &
 				// scrolling down
 				if(self.options.loadOnScroll && self.lastRenderedIndex<self.datas.length){
-					appendRows();
+					self.appendVisibleRowsDebounced();
 				}
 
 				self.headWrapper.scrollLeft = this.scrollLeft;
@@ -1394,7 +1390,6 @@
 
 			if(this.options.loadOnScroll){
 				renderTo = this.getRowsToFitCount();
-				this.lastScrollTop = this.bodyWrapper.scrollTop;
 			} else  {
 				renderTo = this.datas.length;
 			}
@@ -1403,6 +1398,16 @@
 			this.drawPortion(0, renderTo);
 			this.checkVisibility = false;
 			return this;
+		},
+
+		appendVisibleRows: function () {
+			var rowsToFit = this.getRowsToFitCount();
+
+			if(rowsToFit>this.lastRenderedIndex) {
+				if (rowsToFit > this.datas.length)
+					rowsToFit = this.datas.length;
+				this.drawPortion(this.lastRenderedIndex, rowsToFit);
+			}
 		},
 
 		/**
@@ -1648,15 +1653,7 @@
 
             if (heightChanged) {
 				if(this.options.loadOnScroll && this.lastRenderedIndex<this.datas.length) {
-					var rowsToFit = this.getRowsToFitCount();
-
-					if (rowsToFit<this.lastRenderedIndex)
-						return this;
-
-					if (rowsToFit > this.datas.length)
-						rowsToFit = this.datas.length;
-
-					this.drawPortion(this.lastRenderedIndex, rowsToFit);
+					this.appendVisibleRowsDebounced();
 				}
 
                 this.ivalidateBodyWrapperHeight();
@@ -1875,7 +1872,7 @@
 	window.Datagrid = Datagrid;
 	window.YAD = {
 		GroupedColumnUtil: GroupedColumnUtil,
-        defer: defer,
+		defer: defer,
 		debounce: debounce
 	};
 })(window, document, void 0, window.jQuery);
