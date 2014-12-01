@@ -742,6 +742,9 @@
                 }
             }
 
+			this._cachedBodyHeight = -1;
+			this._heightIsChanged = true;
+
 			this.appendVisibleRowsDebounced = YAD.debounce(this.appendVisibleRows, 30);
 
 			this
@@ -895,7 +898,7 @@
 		 * @returns {number} number of rows to fill visible area including hidden space on top if container was scrolled.
 		 */
 		getRowsToFitCount: function(){
-			var visibleHeight = this.container.offsetHeight - this.headContainer.offsetHeight;
+			var visibleHeight = this.getBodyHeight();
 			return Math.ceil((this.bodyWrapper.scrollTop + visibleHeight) / this.getRowHeight());
 		},
 
@@ -1107,6 +1110,7 @@
 				appendChild(thead, tr);
 			}
 
+			this._heightIsChanged = true;
 			return this;
 		},
 
@@ -1637,6 +1641,19 @@
 			return td;
 		},
 
+		getBodyHeight: function() {
+			if (!this._heightIsChanged) {
+				this._heightIsChanged = false;
+				return this._cachedBodyHeight;
+			}
+
+			var fullHeight = this.container.offsetHeight,
+				headerHeight = this.headContainer.offsetHeight;
+
+			this._cachedBodyHeight = fullHeight - headerHeight;
+			return this._cachedBodyHeight;
+		},
+
 		/**
 		 * Changes the size of all internal elements than container is changing it's size
 		 * @return {Datagrid} this object.
@@ -1652,11 +1669,12 @@
 			}
 
             if (heightChanged) {
+				this._heightIsChanged = true;
+				this.ivalidateBodyWrapperHeight();
+
 				if(this.options.loadOnScroll && this.lastRenderedIndex<this.datas.length) {
 					this.appendVisibleRowsDebounced();
 				}
-
-                this.ivalidateBodyWrapperHeight();
             }
             
             return this;
@@ -1731,9 +1749,7 @@
                 return this;
             }
 
-			var fullHeight = this.container.offsetHeight,
-				headerHeight = this.headContainer.offsetHeight,
-				bodyHeight = fullHeight - headerHeight;
+			var bodyHeight = this.getBodyHeight();
 
 			this.bodyWrapper.style.height = bodyHeight + 'px';
 
