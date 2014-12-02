@@ -837,6 +837,33 @@
 				event.preventDefault();
 			}
 
+			function keyDownHandler(e) {
+				var needScroll = false;
+				if (e.which == 34) { // Page Down
+					needScroll = true;
+					scrollTop = Math.max(0, bodyWrapper.scrollTop + (10 * rowHeight));
+				} else if (e.which == 33) { // Page Up
+					needScroll = true;
+					scrollTop = Math.max(0, bodyWrapper.scrollTop - (10 * rowHeight));
+				} else if (e.which == 37) { // Left Arrow
+					needScroll = true;
+					scrollLeft = bodyWrapper.scrollLeft + 10;
+				} else if (e.which == 39) { // Right Arrow
+					needScroll = true;
+					scrollLeft = bodyWrapper.scrollLeft - 10;
+				} else if (e.which == 38) { // Up Arrow
+					needScroll = true;
+					scrollTop = Math.max(0, bodyWrapper.scrollTop - rowHeight);
+				} else if (e.which == 40) { // Down Arrow
+					needScroll = true;
+					scrollTop = Math.max(0, bodyWrapper.scrollTop + rowHeight);
+				}
+
+				if (needScroll) {
+					_scrollHandler(true);
+					e.preventDefault();
+				}
+			}
 			function scrollHandler() {
 				scrollTop = bodyWrapper.scrollTop;
 				scrollLeft = bodyWrapper.scrollLeft;
@@ -885,10 +912,11 @@
 				$(fBodyWrapper)
 					.on('mousewheel', mouseWheelHandler);
 			}
-			
+
 			$(bodyWrapper)
 				.on('mousewheel', mouseWheelHandler)
-				.on('scroll', scrollHandler);
+				.on('scroll', scrollHandler)
+				.on('keydown', keyDownHandler);
 
             return this;
 		},
