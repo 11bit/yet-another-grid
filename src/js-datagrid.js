@@ -902,45 +902,115 @@
 			return Math.ceil((this.bodyWrapper.scrollTop + visibleHeight) / this.getRowHeight());
 		},
 
-		getRowHeight:function(){
-			if (!this._rowHeight) {
-				var tr = createElement('tr'),
-					td = createElement('td');
-
-				td.appendChild(document.createTextNode('test'));
-				tr.appendChild(td);
-
-				this.body.tbody.appendChild(tr);
-				this._rowHeight = tr.offsetHeight;
-				this.body.tbody.removeChild(tr);
-			}
-			return this._rowHeight;
-		},
-
 		/**
 		 * Bind scroll events
 		 * @returns {Datagrid} this object.
 		 * @public
 		 */
 		bindScrollEvents: function() {
-			var self = this;
-			var rowHeight = this.getRowHeight();
+			var self = this,
+				bodyWrapper = this.bodyWrapper,
+				fBodyWrapper = this.frozenBodyWrapper;
 
-			$(this.bodyWrapper).on('scroll', function scrollHandler() {
-				// perform load on scroll if
-				// on desktop platform &
-				// end of the dataprovider is not reached &
-				// scrolling down
-				if(self.options.loadOnScroll && self.lastRenderedIndex<self.datas.length){
-					self.appendVisibleRowsDebounced();
+			var rowHeight = this.getRowHeight();
+			var scrollTop, scrollLeft, prevScrollTop = 0, prevScrollLeft =0;
+
+			function mouseWheelHandler(event, delta, deltaX, deltaY) {
+				scrollTop = Math.max(0, bodyWrapper.scrollTop - (deltaY * rowHeight));
+				scrollLeft = bodyWrapper.scrollLeft + (deltaX * 10);
+				_scrollHandler(true);
+				event.preventDefault();
+			}
+
+			function keyDownHandler(e) {
+				var needScroll = false;
+				if (e.which == 34) { // Page Down
+					needScroll = true;
+					scrollTop = Math.max(0, bodyWrapper.scrollTop + (10 * rowHeight));
+				} else if (e.which == 33) { // Page Up
+					needScroll = true;
+					scrollTop = Math.max(0, bodyWrapper.scrollTop - (10 * rowHeight));
+				} else if (e.which == 37) { // Left Arrow
+					needScroll = true;
+					scrollLeft = bodyWrapper.scrollLeft + 10;
+				} else if (e.which == 39) { // Right Arrow
+					needScroll = true;
+					scrollLeft = bodyWrapper.scrollLeft - 10;
+				} else if (e.which == 38) { // Up Arrow
+					needScroll = true;
+					scrollTop = Math.max(0, bodyWrapper.scrollTop - rowHeight);
+				} else if (e.which == 40) { // Down Arrow
+					needScroll = true;
+					scrollTop = Math.max(0, bodyWrapper.scrollTop + rowHeight);
 				}
 
-				self.headWrapper.scrollLeft = this.scrollLeft;
+				if (needScroll) {
+					_scrollHandler(true);
+					e.preventDefault();
+				}
+			}
+			function scrollHandler() {
+				scrollTop = bodyWrapper.scrollTop;
+				scrollLeft = bodyWrapper.scrollLeft;
+				_scrollHandler(false);
+			}
 
-                if (self.options.frozenColumnsNum>0) {
-                    self.frozenBodyWrapper.scrollTop = this.scrollTop;
-                }
-			});
+			function _scrollHandler(isMouseWheel) {
+				var maxScrollDistanceY = bodyWrapper.scrollHeight - bodyWrapper.clientHeight;
+				var maxScrollDistanceX = bodyWrapper.scrollWidth - bodyWrapper.clientWidth;
+
+				// Ceiling the max scroll values
+				if (scrollTop > maxScrollDistanceY) {
+					scrollTop = maxScrollDistanceY;
+				}
+				if (scrollLeft > maxScrollDistanceX) {
+					scrollLeft = maxScrollDistanceX;
+				}
+
+				var vScrollDist = Math.abs(scrollTop - prevScrollTop);
+				var hScrollDist = Math.abs(scrollLeft - prevScrollLeft);
+
+				if (vScrollDist) {
+					prevScrollTop = scrollTop;
+
+					if (isMouseWheel) {
+						bodyWrapper.scrollTop = scrollTop;
+					}
+
+					if (self.options.frozenColumnsNum > 0) {
+						fBodyWrapper.scrollTop = scrollTop;
+					}
+
+					// perform load on scroll if
+					// on desktop platform &
+					// end of the dataprovider is not reached &
+					// scrolling down
+					if(self.options.loadOnScroll && self.lastRenderedIndex<self.datas.length){
+						self.appendVisibleRowsDebounced();
+					}
+				}
+
+				if (hScrollDist) {
+					prevScrollLeft = scrollLeft;
+
+					if (isMouseWheel) {
+						bodyWrapper.scrollLeft = scrollLeft;
+					}
+
+					self.headWrapper.scrollLeft = scrollLeft;
+				}
+			}
+
+			if (self.options.frozenColumnsNum > 0) {
+				$(fBodyWrapper)
+					.on('mousewheel', mouseWheelHandler);
+			}
+
+			$(bodyWrapper)
+				.on('mousewheel', mouseWheelHandler)
+				.on('scroll', scrollHandler)
+				.on('keydown', keyDownHandler);
+
             return this;
 		},
 
@@ -1765,6 +1835,25 @@
             return this.bodyWrapper.clientWidth < this.bodyWrapper.scrollWidth;
         },
 
+
+		/**
+		 * Get height of one row
+		 * @returns {number|*}
+		 */
+		getRowHeight: function(){
+			if (!this._rowHeight) {
+				var tr = createElement('tr'),
+					td = createElement('td');
+
+				td.appendChild(document.createTextNode('test'));
+				tr.appendChild(td);
+
+				this.body.tbody.appendChild(tr);
+				this._rowHeight = tr.offsetHeight;
+				this.body.tbody.removeChild(tr);
+			}
+			return this._rowHeight;
+		},
 
         /*
             Data API
