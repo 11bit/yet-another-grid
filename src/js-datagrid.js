@@ -881,9 +881,11 @@
 				}
 			}
 
-			$(fBodyWrapper)
-				.on('mousewheel', mouseWheelHandler);
-
+			if (self.options.frozenColumnsNum > 0) {
+				$(fBodyWrapper)
+					.on('mousewheel', mouseWheelHandler);
+			}
+			
 			$(bodyWrapper)
 				.on('mousewheel', mouseWheelHandler)
 				.on('scroll', scrollHandler);
