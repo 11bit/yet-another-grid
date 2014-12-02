@@ -1590,6 +1590,25 @@
         },
 
 
+		/**
+		 * Get height of one row
+		 * @returns {number|*}
+		 */
+		getRowHeight: function(){
+			if (!this._rowHeight) {
+				var tr = createElement('tr'),
+					td = createElement('td');
+
+				td.appendChild(document.createTextNode('test'));
+				tr.appendChild(td);
+
+				this.body.tbody.appendChild(tr);
+				this._rowHeight = tr.offsetHeight;
+				this.body.tbody.removeChild(tr);
+			}
+			return this._rowHeight;
+		},
+
         /*
             Data API
          */
