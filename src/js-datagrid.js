@@ -823,14 +823,71 @@
 		 * @public
 		 */
 		bindScrollEvents: function() {
-			var self = this;
-			$(this.bodyWrapper).on('scroll', function scrollHandler() {
-				self.headWrapper.scrollLeft = this.scrollLeft;
+			var self = this,
+				bodyWrapper = this.bodyWrapper,
+				fBodyWrapper = this.frozenBodyWrapper;
 
-                if (self.options.frozenColumnsNum>0) {
-                    self.frozenBodyWrapper.scrollTop = this.scrollTop;
-                }
-			});
+			var rowHeight = this.getRowHeight();
+			var scrollTop, scrollLeft, prevScrollTop = 0, prevScrollLeft =0;
+
+			function mouseWheelHandler(event, delta, deltaX, deltaY) {
+				scrollTop = Math.max(0, bodyWrapper.scrollTop - (deltaY * rowHeight));
+				scrollLeft = bodyWrapper.scrollLeft + (deltaX * 10);
+				_scrollHandler(true);
+				event.preventDefault();
+			}
+
+			function scrollHandler() {
+				scrollTop = bodyWrapper.scrollTop;
+				scrollLeft = bodyWrapper.scrollLeft;
+				_scrollHandler(false);
+			}
+
+			function _scrollHandler(isMouseWheel) {
+				var maxScrollDistanceY = bodyWrapper.scrollHeight - bodyWrapper.clientHeight;
+				var maxScrollDistanceX = bodyWrapper.scrollWidth - bodyWrapper.clientWidth;
+
+				// Ceiling the max scroll values
+				if (scrollTop > maxScrollDistanceY) {
+					scrollTop = maxScrollDistanceY;
+				}
+				if (scrollLeft > maxScrollDistanceX) {
+					scrollLeft = maxScrollDistanceX;
+				}
+
+				var vScrollDist = Math.abs(scrollTop - prevScrollTop);
+				var hScrollDist = Math.abs(scrollLeft - prevScrollLeft);
+
+				if (vScrollDist) {
+					prevScrollTop = scrollTop;
+
+					if (isMouseWheel) {
+						bodyWrapper.scrollTop = scrollTop;
+					}
+
+					if (self.options.frozenColumnsNum > 0) {
+						fBodyWrapper.scrollTop = scrollTop;
+					}
+				}
+
+				if (hScrollDist) {
+					prevScrollLeft = scrollLeft;
+
+					if (isMouseWheel) {
+						bodyWrapper.scrollLeft = scrollLeft;
+					}
+
+					self.headWrapper.scrollLeft = scrollLeft;
+				}
+			}
+
+			$(fBodyWrapper)
+				.on('mousewheel', mouseWheelHandler);
+
+			$(bodyWrapper)
+				.on('mousewheel', mouseWheelHandler)
+				.on('scroll', scrollHandler);
+
             return this;
 		},
 
