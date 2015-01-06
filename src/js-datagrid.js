@@ -4,7 +4,7 @@
 
 'use strict';
 
-(function(window, document, undefined, $) {
+(function(window, document, navigator, undefined, $) {
 
 	// Save bytes in the minified
 	var arrayProto = Array.prototype,
@@ -17,6 +17,15 @@
 	var MIN_COL_WIDTH = 40; //px
 
     var NBSP = '\u00A0'; // non breaking space
+
+	var agent = '', IS_IE9;
+	if (navigator && navigator.userAgent) {
+		agent = navigator.userAgent;
+	}
+	var ie = /msie (\d+)/.exec(agent.toLowerCase()), ieVer;
+	if (ie && ie.length>1) {
+		IS_IE9 = parseInt(ie[1], 10) === 9;
+	}
 
 	/**
 	 * Check if a data is an array.
@@ -973,7 +982,9 @@
 				if (vScrollDist) {
 					prevScrollTop = scrollTop;
 
-					if (isMouseWheel) {
+					if (isMouseWheel || IS_IE9) {
+						// we should also do it for ie9 because it's smooth scroll functionality works far from perfect
+						// This leads to small 1 or 2 pixel difference btw frozen and common parts of a grid
 						bodyWrapper.scrollTop = scrollTop;
 					}
 
@@ -1980,4 +1991,4 @@
 		defer: defer,
 		debounce: debounce
 	};
-})(window, document, void 0, window.jQuery);
+})(window, document, navigator, void 0, window.jQuery);
