@@ -1,5 +1,6 @@
 .dt-head, .dt-body {
 	width: 100%;
+	position: relative;
 }
 .dt-frozen-head-wrapper, .dt-frozen-body-wrapper {
 	float: left;
@@ -90,4 +91,11 @@
 
 .dt-table td, .dt-table th {
     white-space: nowrap;
+}
+
+.dt-scroll-spacer {
+	position: absolute;
+	left:0;
+	bottom: 0;
+	background-color: #ededed;
 }

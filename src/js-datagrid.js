@@ -794,6 +794,11 @@
                 appendChild(this.bodyContainer, this.frozenBodyWrapper);
                 appendChild(this.frozenHeadWrapper, this.frozenHead.table);
                 appendChild(this.frozenBodyWrapper, this.frozenBody.table);
+
+				this.scrollSpacer = createElement('div', 'dt-scroll-spacer');
+				this.scrollSpacer.style.height = scrollBarSize.width + 'px';
+				console.log(this.scrollSpacer.style.height);
+				appendChild(this.bodyContainer, this.scrollSpacer);
             }
 
             this.headWrapper = createElement('div', 'dt-head-wrapper');
@@ -1837,6 +1842,15 @@
             if (this.options.frozenColumnsNum) {
                 var sb = this.hasHorizontalScroll() ? scrollBarSize.width : 0;
                 this.frozenBodyWrapper.style.height = bodyHeight - sb + 'px';
+
+				if (sb>0) {
+					this.scrollSpacer.style.display = 'block';
+					this.scrollSpacer.style.width = this.frozenBody.table.offsetWidth + 'px';
+				} else {
+					this.scrollSpacer.style.display = 'none';
+				}
+
+
             }
 
 			return this;
