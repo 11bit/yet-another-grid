@@ -1908,7 +1908,7 @@
 		},
 
         hasHorizontalScroll: function() {
-            return this.bodyWrapper.clientWidth < this.bodyWrapper.scrollWidth;
+            return this.bodyWrapper.clientHeight < this.bodyWrapper.offsetHeight;
         },
 
 
