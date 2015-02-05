@@ -1077,6 +1077,7 @@
 			var self = this,
 				column,
 				baseWidth,
+                maxWidth,
 				pos,
 				resizeHandlers = $(this.headContainer).find('.dt-resize-handle');
 
@@ -1085,6 +1086,11 @@
 				pos = e.pageX;
 				column = self.columns[col_id];
 				baseWidth = $(this.parentNode).width();
+
+                if (col_id<this.options.frozenColumnsNum) {
+                    // max total width of frozen columns should not be more than 70% of container
+                    maxWidth = self.getBodyWidth() * 0.7 - self.getFrozenColumnsWidth() + baseWidth;
+                }
 			});
 
 			resizeHandlers.drag(function (e) {
@@ -1093,6 +1099,10 @@
 					return;
 				}
 				var newWidth = Math.max(baseWidth + pageX - pos, column.minWidth);
+                if (newWidth>maxWidth) {
+                    newWidth = maxWidth;
+                }
+                
 				self.setColumnSize(column, newWidth);
 				self.invalidateRightFillerWidth();
 			});
@@ -1740,13 +1750,20 @@
 			return this._cachedBodyHeight;
 		},
 
+        getBodyWidth: function () {
+            return this.container.width;
+        },
+
+        getFrozenColumnsWidth: function() {
+            return this.frozenBody.width;
+        },
+
 		/**
 		 * Changes the size of all internal elements than container is changing it's size
 		 * @return {Datagrid} this object.
 		 * @public
 		 */
         invalidateSize: function() {
-			//todo: don't run all resize functions if only one dimension is changed
 			var heightChanged = true,
 				widthChanged = true;
 
