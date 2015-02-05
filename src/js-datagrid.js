@@ -300,6 +300,21 @@
         setTimeout(func, 10);
     };
 
+    /**
+     * Searchs for widest column in a collection
+     * @param {Array<Column>} columns
+     * @returns {Column}
+     */
+    var getWidestCol = function (columns) {
+        var widest = columns[columns.length-1];
+        for (var i=columns.length-1; i>=0; i--) {
+            if (widest.width<columns[i].width) {
+                widest = columns[i];
+            }
+        }
+        return widest;
+    }
+
 	/**
 	 * Utility code that helps to build html table headers from grouped columns defenitions
 	 * @type {Object}
@@ -1770,6 +1785,7 @@
 
 			if (widthChanged) {
 				this.invalidateRightFillerWidth();
+                this.adjustFrozenColumnsWidth();
 			}
 
             if (heightChanged) {
@@ -1842,6 +1858,23 @@
 			this.rightFillerHeadWrapper.style.left = margin;
 			return this;
 		},
+
+        /**
+         * adjustFrozenColumnsWidth makes the width of the widest frozen column smaller
+         * if frozen block width is wider than 70% of grid. It is used to automatically resize
+         * frozen block when whole grid is resized.
+         * @return {Datagrid} this object
+         */
+        adjustFrozenColumnsWidth: function() {
+            var maxFCWidth = this.getBodyWidth()*0.7;
+            if (this.getFrozenColumnsWidth() > maxFCWidth) {
+
+                var widestCol = getWidestCol(this.frozenColumns),
+                    newWid = maxFCWidth - this.getFrozenColumnsWidth() + widestCol.width;
+                this.setColumnSize(widestCol, newWid);
+            }
+            return this;
+        },
 
 		/**
 		 * Set up the height of bodyWrapper
