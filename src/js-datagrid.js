@@ -797,7 +797,6 @@
 
 				this.scrollSpacer = createElement('div', 'dt-scroll-spacer');
 				this.scrollSpacer.style.height = scrollBarSize.width + 'px';
-				console.log(this.scrollSpacer.style.height);
 				appendChild(this.bodyContainer, this.scrollSpacer);
             }
 
@@ -1077,7 +1076,7 @@
 			var self = this,
 				column,
 				baseWidth,
-                maxWidth,
+                maxWidth = -1,
 				pos,
 				resizeHandlers = $(this.headContainer).find('.dt-resize-handle');
 
@@ -1087,9 +1086,11 @@
 				column = self.columns[col_id];
 				baseWidth = $(this.parentNode).width();
 
-                if (col_id<this.options.frozenColumnsNum) {
+                if (col_id<self.options.frozenColumnsNum) {
                     // max total width of frozen columns should not be more than 70% of container
                     maxWidth = self.getBodyWidth() * 0.7 - self.getFrozenColumnsWidth() + baseWidth;
+                } else {
+                    maxWidth = -1;
                 }
 			});
 
@@ -1099,10 +1100,10 @@
 					return;
 				}
 				var newWidth = Math.max(baseWidth + pageX - pos, column.minWidth);
-                if (newWidth>maxWidth) {
+                if (maxWidth != -1 && newWidth>maxWidth) {
                     newWidth = maxWidth;
                 }
-                
+
 				self.setColumnSize(column, newWidth);
 				self.invalidateRightFillerWidth();
 			});
@@ -1751,11 +1752,11 @@
 		},
 
         getBodyWidth: function () {
-            return this.container.width;
+            return this.container.offsetWidth;
         },
 
         getFrozenColumnsWidth: function() {
-            return this.frozenBody.width;
+            return this.frozenBodyWrapper.offsetWidth;
         },
 
 		/**
