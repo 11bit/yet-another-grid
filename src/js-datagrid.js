@@ -808,8 +808,8 @@
 				var rows=$('[data-col-id='+col_id+']');
 				for(var i=0;i<rows.length;++i) {
 					var row = hTable.insertRow(i);
-					var cell = row.insertCell(0);
-					cell.innerHTML=rows[i].firstChild.textContent;
+					var cell=$(rows[i]).clone()[0];
+					row.appendChild(cell);
 				}
 				$(row).css('width','auto');
 				var column=self.columns[col_id];
