@@ -787,22 +787,18 @@
 			return this;
 		},
 
-		
+
 		/**
 		 * Bind double click events for autosize the column
 		 * @return {Datagrid} this object
 		 */
-
 		bindDblClickEvents: function(){
 			var self = this;
-
 			$(this.headContainer).on('dblclick','th',function(e){
 				var col_id;
-				var resizeHandlers = $(this.headContainer).find('.dt-resize-handle');
 				col_id = parseInt(getDataAttribute(this, ATTR_COLUMN_ID), 10);
-				column = self.columns[col_id];
 				var hTable=document.createElement('table');
-				$(hTable)[0].style.cssText = $(this.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode)[0].style.cssText
+				$(hTable)[0].style.cssText = $(self.body.table)[0].style.cssText
 				$(hTable).css('top','-1500px');
 				$(hTable).css('left','-1500px');
 				$(hTable).css('position','absolute');
@@ -810,18 +806,15 @@
 				var rows=$('[data-col-id='+col_id+']');
 				for(var i=0;i<rows.length;++i) {
 					var row = hTable.insertRow(i);
-					var cceell = row.insertCell(0);
-					cceell.innerHTML=rows[i].firstChild.textContent;
+					var cell = row.insertCell(0);
+					cell.innerHTML=rows[i].firstChild.textContent;
 				}
-				row.setAttribute('id','cell');
 				$(row).css('width','auto');
-				//$(hTable).css('display','none');
 				var column=self.columns[col_id];
-				self.setColumnSize(column,$(cceell).width());
+				self.setColumnSize(column,$(cell).width());
 			})
 		return this;
 		},
-
 
 		/**
 		 * Bind click events for table header to perform sort action
