@@ -799,9 +799,11 @@
 				col_id = parseInt(getDataAttribute(this, ATTR_COLUMN_ID), 10);
 				var hTable=document.createElement('table');
 				$(hTable)[0].style.cssText = $(self.body.table)[0].style.cssText
-				$(hTable).css('top','-1500px');
-				$(hTable).css('left','-1500px');
-				$(hTable).css('position','absolute');
+				$(hTable).css(
+					{'top':'-1500px',
+					'left':'-1500px',
+					'position':'absolute'
+					});
 				document.body.appendChild(hTable);
 				var rows=$('[data-col-id='+col_id+']');
 				for(var i=0;i<rows.length;++i) {
