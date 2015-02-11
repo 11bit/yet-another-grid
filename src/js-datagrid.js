@@ -1785,7 +1785,10 @@
 
 			if (widthChanged) {
 				this.invalidateRightFillerWidth();
-                this.adjustFrozenColumnsWidth();
+
+                if (this.options.frozenColumnsNum>0) {
+                    this.adjustFrozenColumnsWidth();
+                }
 			}
 
             if (heightChanged) {
