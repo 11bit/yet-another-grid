@@ -783,7 +783,7 @@
 				.bindSortEvents()
 				.bindExpandChildrenEvents()
 				.bindResizeColumnEvent()
-				.bindDblClickEvents();
+				.bindAutoResizeColumnEvents();
 			return this;
 		},
 
@@ -792,13 +792,13 @@
 		 * Bind double click events for autosize the column
 		 * @return {Datagrid} this object
 		 */
-		bindDblClickEvents: function(){
+		bindAutoResizeColumnEvents: function(){
 			var self = this;
 			$(this.headContainer).on('dblclick','th',function(e){
 				var col_id;
 				col_id = parseInt(getDataAttribute(this, ATTR_COLUMN_ID), 10);
 				var hTable=document.createElement('table');
-				$(hTable)[0].style.cssText = $(self.body.table)[0].style.cssText
+				hTable.style.cssText = self.body.table.style.cssText
 				$(hTable).css(
 					{'top':'-1500px',
 					'left':'-1500px',
@@ -814,6 +814,7 @@
 				$(row).css('width','auto');
 				var column=self.columns[col_id];
 				self.setColumnSize(column,$(cell).width());
+			document.body.removeChild(htable);
 			})
 		return this;
 		},
