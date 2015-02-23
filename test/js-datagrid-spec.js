@@ -785,7 +785,7 @@ describe('Yet another datagrid Test Suite', function() {
             }
 
             expect(rows().get().length).toBe(2);
-            
+
             dg.expandAll(dg.datas, true);
             dg.render();
             expect(rows().get().length).toBe(10);
@@ -976,4 +976,35 @@ describe('Yet another datagrid Test Suite', function() {
         })
 
     });
+	describe('autoResizeColumn',function(){
+		var container;
+		var datagrid
+			beforeEach(function(){
+				jasmine.getFixtures().set('<div id="my-table"></div>');
+				container=$('#my-table').get()[0];
+				var columns = [
+						{title: 'First Col blablablablabla' , width: 12, field: 'A2'},
+						{title: 'Hello' , width: 12, field: 'B2'}
+					],
+					data = [
+						{A2: 'Hello world',B2: "Hello world"}
+					];
+				datagrid= new Datagrid(container, {columns: columns, datas: data, frozenColumnsNum: 2});
+			});
+		it('should call autoResize on double click on header',function(){
+
+			spyOn(datagrid, 'autoResize');
+			$(datagrid.headContainer).find('[data-col-id]').trigger('dblclick');
+			expect(datagrid.autoResize).toHaveBeenCalledWith(0);
+		});
+		it('should resize the column that was tapped',function(){
+			$(datagrid.headContainer).find('[data-col-id]').trigger('dblclick');
+			var RowWidth1=$(datagrid.headContainer).find('tr [data-col-id=0]').width();
+			var RowWidth2=$(datagrid.headContainer).find('tr [data-col-id=1]').width();
+			expect(RowWidth1>RowWidth2).toBeTruthy();
+		});
+		it('auxiliary table should be deleeted from document',function(){
+			expect($('#mytable')).not.toExist();
+		});
+	});
 });

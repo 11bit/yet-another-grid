@@ -786,7 +786,29 @@
 				.bindAutoResizeColumnEvents();
 			return this;
 		},
+		 autoResize: function(col_id){
+			 var hTable=document.createElement('table');
+			 hTable.style.cssText = this.body.table.style.cssText;
+			 $(hTable).css({
+				 'top':'-1500px',
+				 'left':'-1500px',
+				 'position':'absolute'
+			 });
+			 document.body.appendChild(hTable);
+			 var rows=$('[data-col-id='+col_id+']');
+			 for(var i=0;i<rows.length;++i) {
+				 var row = hTable.insertRow(i);
+				 var cell=(rows[i]).cloneNode(true);
+				 row.appendChild(cell);
+			 }
+			 $(row).css('width','auto');
+			 var column=this.columns[col_id];
+			 this.setColumnSize(column,$(cell).width());
+			 document.body.removeChild(hTable);
 
+
+
+	},
 
 		/**
 		 * Bind double click events for autosize the column
@@ -797,24 +819,8 @@
 			$(this.headContainer).on('dblclick','th',function(e){
 				var col_id;
 				col_id = parseInt(getDataAttribute(this, ATTR_COLUMN_ID), 10);
-				var hTable=document.createElement('table');
-				hTable.style.cssText = self.body.table.style.cssText
-				$(hTable).css({
-					'top':'-1500px',
-					'left':'-1500px',
-					'position':'absolute'
-					});
-				document.body.appendChild(hTable);
-				var rows=$('[data-col-id='+col_id+']');
-				for(var i=0;i<rows.length;++i) {
-					var row = hTable.insertRow(i);
-					var cell=(rows[i]).cloneNode(true);
-					row.appendChild(cell);
-				}
-				$(row).css('width','auto');
-				var column=self.columns[col_id];
-				self.setColumnSize(column,$(cell).width());
-				document.body.removeChild(htable);
+				self.autoResize(col_id);
+
 			})
 			return this;
 		},
