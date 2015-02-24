@@ -57,6 +57,14 @@
 	text-overflow: ellipsis;
 }
 
+.dt-table td {
+    -webkit-user-select: none;
+}
+
+.dt-table .selected-row td {
+    background-color: rgba(0, 129, 194, .4) !important;
+}
+
 .dt-table th {
 	position: relative;
 }
