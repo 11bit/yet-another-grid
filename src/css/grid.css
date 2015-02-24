@@ -59,6 +59,8 @@
 
 .dt-table td {
     -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .dt-table .selected-row td {

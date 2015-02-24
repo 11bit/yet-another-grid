@@ -1776,6 +1776,9 @@
                 }
             }
 
+            // IE<10 workaround to disable select
+            this.container.onselectstart = function() {return false};
+
             $(this.container).on('mousedown', 'tr', function (e) {
                 unselectAll();
                 from = getRowId(e.currentTarget);
