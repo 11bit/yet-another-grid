@@ -994,11 +994,11 @@ describe('Yet another datagrid Test Suite', function() {
 		it('should call autoResize on double click on header',function(){
 
 			spyOn(datagrid, 'autoResize');
-			$(datagrid.headContainer).find('[data-col-id]').trigger('dblclick');
+			$(datagrid.headContainer).find('.dt-resize-handle').trigger('dblclick');
 			expect(datagrid.autoResize).toHaveBeenCalledWith(0);
 		});
 		it('should resize the column that was tapped',function(){
-			$(datagrid.headContainer).find('[data-col-id]').trigger('dblclick');
+			$(datagrid.headContainer).find('.dt-resize-handle').trigger('dblclick');
 			var RowWidth1=$(datagrid.headContainer).find('tr [data-col-id=0]').width();
 			var RowWidth2=$(datagrid.headContainer).find('tr [data-col-id=1]').width();
 			expect(RowWidth1>RowWidth2).toBeTruthy();

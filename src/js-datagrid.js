@@ -813,7 +813,7 @@
 		 */
 		bindAutoResizeColumnEvents: function(){
 			var self = this;
-				$(this.headContainer).on('dblclick','[class=dt-resize-handle]',function(e){
+				$(this.headContainer).on('dblclick','.dt-resize-handle',function(e){
 				var col_id;
 				col_id = parseInt(getDataAttribute(this.parentNode, ATTR_COLUMN_ID), 10);
 				self.autoResize(col_id);
