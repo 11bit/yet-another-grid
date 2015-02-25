@@ -886,7 +886,13 @@
 				.bindSortEvents()
 				.bindExpandChildrenEvents()
 				.bindResizeColumnEvent()
-				.bindAutoResizeColumnEvents();
+				.bindAutoResizeColumnEvents()
+
+            if(this.options.clipboardEnabled) {
+                this
+                    .bindCopyToClipboardEvent()
+                    .bindSelectRowEvent();
+            }
 			return this;
 		},
 
@@ -1967,9 +1973,124 @@
 			return this._rowHeight;
 		},
 
-        /*
-            Data API
+
+        /** Copy To Clipboard **/
+        bindSelectRowEvent: function() {
+            var self = this;
+            var from, to, selectionMode = false;
+
+            function getRowId(row) {
+                return getDataAttribute(row, ATTR_DATA_ID)
+            }
+
+            function getRowsBtw(from, to) {
+                var btw = $(from)
+                    .nextUntil(to)
+
+                return $(from).add(btw).add(to);
+            }
+
+            function getRowById(row_id) {
+                return $(self.container).find('[data-data-id=' + row_id + ']')
+            }
+
+            function unselectAll() {
+                $(self.container).find('tr').removeClass('selected-row');
+            }
+
+            function selectRowRange(from, to) {
+                var a = getRowById(from),
+                    b = getRowById(to);
+
+                if (a.first().index() > b.first().index()) {
+                    var tmp = a; a = b; b = tmp;
+                }
+
+                var rows = getRowsBtw(a.first(), b.first()).addClass('selected-row').get();
+                self.selectedRowIds = rows.map(function(row) {
+                    return getRowId(row);
+                });
+
+                //for frozen cols
+                for (var i = 1; i< a.length; i++) {
+                    getRowsBtw(a.get(i), b.get(i)).addClass('selected-row');
+                }
+            }
+
+            // IE<10 workaround to disable select
+            //this.container.onselectstart = function() {return false};
+
+            $(this.container).on('mousedown', 'tr', function (e) {
+                unselectAll();
+                from = getRowId(e.currentTarget);
+                selectionMode = true;
+            });
+
+            $(this.container).on('mouseover', 'tr', function (e) {
+                if (selectionMode) {
+                    to = getRowId(e.currentTarget);
+
+                    unselectAll();
+
+                    if (from === to) {
+                        getRowById(from).addClass('selected-row');
+                        self.selectedRowIds = [from];
+                    } else {
+                        selectRowRange(from, to);
+                    }
+                }
+            });
+
+            $(this.container).on('mouseup', 'td', function(e) {
+                var ids = [];
+                if (selectionMode) {
+                    selectionMode = false;
+                }
+
+            });
+            return this;
+        },
+
+        bindCopyToClipboardEvent: function() {
+            var self = this;
+            this.container.addEventListener('copy', function(e) {
+                var spData = self.getSpreadsheetData(self.selectedRowIds);
+                if (e.clipboardData) {
+                    e.preventDefault();
+                    e.clipboardData.setData('text/plain', spData)
+                }
+
+                if (window.clipboardData) {
+                    event.returnValue = false;
+                    window.clipboardData.setData('Text', spData)
+                }
+            })
+            return this;
+        },
+
+        /**
+         * Get tab seprated row data (ready for pasting to Excel or other spreadsheets.
+         * @param {Array<String>} row_ids Ids of rows to get data for.
+         * @returns {string}
          */
+        getSpreadsheetData: function(row_ids) {
+            var self = this;
+
+            var rows_data = row_ids.map(function(row_id) {
+                return self.getRowDataByIds(self.datas, [row_id]);
+            })
+
+            var rendered = rows_data.map(function(row_data) {
+                return (self.columns.map(function(col) {
+                    return col.getCellValue(row_data);
+                })).join('\t');
+            });
+
+            return rendered.join('\n');
+        },
+
+
+        /** Data API */
 
         /**
          * Get row data by list of ids. Each id represents a row in a level of hierarchical data
@@ -2082,7 +2203,8 @@
         expandChildrenButtonOffset: 30, // clickable area in the first cell that will expand children
 
         childrenPadding: 10,
-        takeAllHeight: false            // take all height or use vertical scrolling
+        takeAllHeight: false,            // take all height or use vertical scrolling
+        clipboardEnabled: false
     };
 
 	// Expose to global object
