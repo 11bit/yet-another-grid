@@ -1777,7 +1777,7 @@
             }
 
             // IE<10 workaround to disable select
-            this.container.onselectstart = function() {return false};
+            //this.container.onselectstart = function() {return false};
 
             $(this.container).on('mousedown', 'tr', function (e) {
                 unselectAll();
@@ -1813,8 +1813,16 @@
         bindCopyToClipboardEvent: function() {
             var self = this;
             this.container.addEventListener('copy', function(e) {
-                e.preventDefault();
-                e.clipboardData.setData('text/plain', self.getSpreadsheetData(self.selectedRowIds))
+                var spData = self.getSpreadsheetData(self.selectedRowIds);
+                if (e.clipboardData) {
+                    e.preventDefault();
+                    e.clipboardData.setData('text/plain', spData)
+                }
+
+                if (window.clipboardData) {
+                    event.returnValue = false;
+                    window.clipboardData.setData('Text', spData)
+                }
             })
             return this;
         },
