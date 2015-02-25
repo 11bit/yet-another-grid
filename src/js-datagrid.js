@@ -785,8 +785,11 @@
 				.bindResizeColumnEvent()
 				.bindAutoResizeColumnEvents()
 
-                .bindCopyToClipboardEvent()
-                .bindSelectRowEvent();
+            if(this.options.clipboardEnabled) {
+                this
+                    .bindCopyToClipboardEvent()
+                    .bindSelectRowEvent();
+            }
 			return this;
 		},
 
@@ -1962,7 +1965,8 @@
         expandChildrenButtonOffset: 30, // clickable area in the first cell that will expand children
 
         childrenPadding: 10,
-        takeAllHeight: false            // take all height or use vertical scrolling
+        takeAllHeight: false,            // take all height or use vertical scrolling
+        clipboardEnabled: false
     };
 
 	// Expose to global object
