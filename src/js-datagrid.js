@@ -705,6 +705,10 @@
 			}
 		},
 
+        getRawValue: function(row) {
+            return row.get(this.field);
+        },
+
         getHeader: function() {
             if (this.headerRenderFunction) {
                 return this.headerRenderFunction(this.title);
@@ -890,7 +894,7 @@
 
             if(this.options.clipboardEnabled) {
                 this
-                    .bindCopyToClipboardEvent()
+                    //.bindCopyToClipboardEvent()
                     .bindSelectRowEvent();
             }
 			return this;
@@ -2017,6 +2021,33 @@
                 }
             }
 
+            function selectText(element) {
+                var doc = document
+                    , range, selection;
+
+                if (doc.body.createTextRange) {
+                    range = document.body.createTextRange();
+                    range.moveToElementText(element)
+                    range.select();
+                } else if (window.getSelection) {
+                    selection = window.getSelection();
+                    range = document.createRange();
+                    range.selectNodeContents(element);
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                }
+            }
+
+            self.selectionHelper = $('<div>&nbsp;</div>')
+                .appendTo(self.container)
+                .css({
+                    position: 'absolute',
+                    left: '-1000px',
+                    top: '-10000px',
+                    '-webkit-user-select': 'text',
+                    'user-select': 'text'
+                })[0];
+
             // IE<10 workaround to disable select
             //this.container.onselectstart = function() {return false};
 
@@ -2045,15 +2076,17 @@
                 var ids = [];
                 if (selectionMode) {
                     selectionMode = false;
+                    selectText(self.selectionHelper);
                 }
 
             });
+            this.bindCopyToClipboardEvent();
             return this;
         },
 
         bindCopyToClipboardEvent: function() {
             var self = this;
-            this.container.addEventListener('copy', function(e) {
+            this.selectionHelper.addEventListener('copy', function(e) {
                 var spData = self.getSpreadsheetData(self.selectedRowIds);
                 if (e.clipboardData) {
                     e.preventDefault();
@@ -2064,7 +2097,7 @@
                     event.returnValue = false;
                     window.clipboardData.setData('Text', spData)
                 }
-            })
+            });
             return this;
         },
 
@@ -2082,7 +2115,11 @@
 
             var rendered = rows_data.map(function(row_data) {
                 return (self.columns.map(function(col) {
-                    return col.getCellValue(row_data);
+                    if (col.isHTML) {
+                        return '';
+                    } else {
+                        return col.getRawValue(row_data);
+                    }
                 })).join('\t');
             });
 
