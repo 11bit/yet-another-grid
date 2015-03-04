@@ -817,8 +817,9 @@
 				var col_id;
 				col_id = parseInt(getDataAttribute(this.parentNode, ATTR_COLUMN_ID), 10);
 				self.autoResize(col_id);
-
+					self.invalidateRightFillerWidth();
 			})
+
 			return this;
 		},
 
