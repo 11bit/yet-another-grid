@@ -813,12 +813,13 @@
 		 */
 		bindAutoResizeColumnEvents: function(){
 			var self = this;
-				$(this.headContainer).on('dblclick','.dt-resize-handle',function(e){
+				$(this.headContainer).on(this.options.doubleClickEvent,'.dt-resize-handle',function(e){
 				var col_id;
 				col_id = parseInt(getDataAttribute(this.parentNode, ATTR_COLUMN_ID), 10);
 				self.autoResize(col_id);
 					self.invalidateRightFillerWidth();
 			})
+
 
 			return this;
 		},
@@ -1848,7 +1849,8 @@
         expandChildrenButtonOffset: 30, // clickable area in the first cell that will expand children
 
         childrenPadding: 10,
-        takeAllHeight: false            // take all height or use vertical scrolling
+        takeAllHeight: false,            // take all height or use vertical scrolling
+		doubleClickEvent: 'dblclick'
     };
 
 	// Expose to global object
