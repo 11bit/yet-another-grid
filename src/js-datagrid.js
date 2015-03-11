@@ -1133,23 +1133,7 @@
 		 * Bind event to resize handle for resizing
 		 * @return {Datagrid} this object.
 		 */
-		dragInit:function(e,pos,col_id,column,baseWidth,maxWidth){
-			pos = e.pageX;
-			column = this.columns[col_id];
-			baseWidth =column.width>0?column.width : getCellWidth(column.headSizer);
-			if (col_id<this.options.frozenColumnsNum) {
-				// max total width of frozen columns should not be more than 70% of container
-				maxWidth = this.getBodyWidth() * 0.7 - this.getFrozenColumnsWidth() + baseWidth;
-			} else {
-				maxWidth = -1;
-			}
-			return {
-				column: column,
-				maxWidth: maxWidth,
-				baseWidth:baseWidth,
-				pos:pos
-			}
-		},
+
 
 		bindResizeColumnEvent: function() {
 			var self = this,
@@ -1158,6 +1142,19 @@
 				maxWidth = -1,
 				pos,
 				resizeHandlers = $(this.headContainer).find('.dt-resize-handle-right');
+			var col_id;
+			function dragInit(e){
+				pos = e.pageX;
+				column = self.columns[col_id];
+				baseWidth =column.width>0?column.width : getCellWidth(column.headSizer);
+				if (col_id<self.options.frozenColumnsNum) {
+					// max total width of frozen columns should not be more than 70% of container
+					maxWidth = self.getBodyWidth() * 0.7 - self.getFrozenColumnsWidth() + baseWidth;
+				} else {
+					maxWidth = -1;
+				}
+				return function(){};
+			}
 			function dragEvent(e) {
 				var pageX = e.pageX;
 				if (pageX === 0) {
@@ -1171,12 +1168,9 @@
 				self.invalidateRightFillerWidth();
 			};
 			resizeHandlers.drag('dragstart', function (e) {
-				var col_id = parseInt(getDataAttribute(this.parentNode, ATTR_COLUMN_ID), 10);
-				var result=self.dragInit(e,pos,col_id,column,baseWidth,maxWidth);
-				column=result.column;
-				maxWidth=result.maxWidth;
-				baseWidth=result.baseWidth;
-				pos=result.pos;
+				col_id = parseInt(getDataAttribute(this.parentNode, ATTR_COLUMN_ID), 10);
+				dragInit(e);
+
 			});
 			resizeHandlers.drag(function(e){
 					dragEvent(e);
@@ -1184,22 +1178,13 @@
 			);
 			resizeHandlers = $(this.headContainer).find('.dt-resize-handle-left');
 			resizeHandlers.drag('dragstart', function (e) {
-				var col_id = parseInt(getDataAttribute(this.parentNode, ATTR_COLUMN_ID), 10)-1;
-				var result=self.dragInit(e,pos,col_id,column,baseWidth,maxWidth);
-				column=result.column;
-				maxWidth=result.maxWidth;
-				baseWidth=result.baseWidth;
-				pos=result.pos;
+				 col_id = parseInt(getDataAttribute(this.parentNode, ATTR_COLUMN_ID), 10)-1;
+				dragInit(e);
 			});
 			resizeHandlers.drag(function(e){
 					dragEvent(e);
 				}
 			);
-
-
-
-
-
 			return this;
 		},
 
