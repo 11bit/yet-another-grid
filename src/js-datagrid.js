@@ -926,7 +926,13 @@
 		 */
 		bindAutoResizeColumnEvents: function(){
 			var self = this;
-				$(this.headContainer).on('dblclick','.dt-resize-handle',function(e){
+				$(this.headContainer).on('dblclick','.dt-resize-handle-left',function(e){
+				var col_id;
+				col_id = parseInt(getDataAttribute(this.parentNode, ATTR_COLUMN_ID), 10)-1;
+				self.autoResize(col_id);
+
+			})
+			$(this.headContainer).on('dblclick','.dt-resize-handle-right',function(e){
 				var col_id;
 				col_id = parseInt(getDataAttribute(this.parentNode, ATTR_COLUMN_ID), 10);
 				self.autoResize(col_id);
@@ -1141,7 +1147,8 @@
 				baseWidth,
 				maxWidth = -1,
 				pos,
-				resizeHandlers = $(this.headContainer).find('.dt-resize-handle-right');
+				resizeHandlersRight = $(this.headContainer).find('.dt-resize-handle-right'),
+				resizeHandlersLeft = $(this.headContainer).find('.dt-resize-handle-left');
 			var col_id;
 			function dragInit(e){
 				pos = e.pageX;
@@ -1167,21 +1174,21 @@
 				self.setColumnSize(column, newWidth);
 				self.invalidateRightFillerWidth();
 			};
-			resizeHandlers.drag('dragstart', function (e) {
+			resizeHandlersRight.drag('dragstart', function (e) {
 				col_id = parseInt(getDataAttribute(this.parentNode, ATTR_COLUMN_ID), 10);
 				dragInit(e);
 
 			});
-			resizeHandlers.drag(function(e){
+			resizeHandlersRight.drag(function(e){
 					dragEvent(e);
 				}
 			);
-			resizeHandlers = $(this.headContainer).find('.dt-resize-handle-left');
-			resizeHandlers.drag('dragstart', function (e) {
+
+			resizeHandlersLeft.drag('dragstart', function (e) {
 				 col_id = parseInt(getDataAttribute(this.parentNode, ATTR_COLUMN_ID), 10)-1;
 				dragInit(e);
 			});
-			resizeHandlers.drag(function(e){
+			resizeHandlersLeft.drag(function(e){
 					dragEvent(e);
 				}
 			);
