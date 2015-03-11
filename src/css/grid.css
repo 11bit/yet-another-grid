@@ -84,9 +84,16 @@
 	display: block;
 	cursor: col-resize;
 	width: 10px;
-	right: 0px;
 	top: 0;
 	height: 100%;
+}
+
+.dt-resize-handle-right{
+	right:0;
+}
+
+.dt-resize-handle-left{
+	left:0;
 }
 
 .dt-right-filler-wrapper {

@@ -1133,41 +1133,72 @@
 		 * Bind event to resize handle for resizing
 		 * @return {Datagrid} this object.
 		 */
+		dragInit:function(e,pos,col_id,column,baseWidth,maxWidth){
+			pos = e.pageX;
+			column = this.columns[col_id];
+			baseWidth =column.width>0?column.width : getCellWidth(column.headSizer);
+			if (col_id<this.options.frozenColumnsNum) {
+				// max total width of frozen columns should not be more than 70% of container
+				maxWidth = this.getBodyWidth() * 0.7 - this.getFrozenColumnsWidth() + baseWidth;
+			} else {
+				maxWidth = -1;
+			}
+			return {
+				column: column,
+				maxWidth: maxWidth,
+				baseWidth:baseWidth,
+				pos:pos
+			}
+		},
+
 		bindResizeColumnEvent: function() {
 			var self = this,
 				column,
 				baseWidth,
-                maxWidth = -1,
+				maxWidth = -1,
 				pos,
-				resizeHandlers = $(this.headContainer).find('.dt-resize-handle');
-
-			resizeHandlers.drag('dragstart', function (e) {
-				var col_id = parseInt(getDataAttribute(this.parentNode, ATTR_COLUMN_ID), 10);
-				pos = e.pageX;
-				column = self.columns[col_id];
-				baseWidth = $(this.parentNode).width();
-
-                if (col_id<self.options.frozenColumnsNum) {
-                    // max total width of frozen columns should not be more than 70% of container
-                    maxWidth = self.getBodyWidth() * 0.7 - self.getFrozenColumnsWidth() + baseWidth;
-                } else {
-                    maxWidth = -1;
-                }
-			});
-
-			resizeHandlers.drag(function (e) {
+				resizeHandlers = $(this.headContainer).find('.dt-resize-handle-right');
+			function dragEvent(e) {
 				var pageX = e.pageX;
 				if (pageX === 0) {
 					return;
 				}
 				var newWidth = Math.max(baseWidth + pageX - pos, column.minWidth);
-                if (maxWidth != -1 && newWidth>maxWidth) {
-                    newWidth = maxWidth;
-                }
-
+				if (maxWidth != -1 && newWidth>maxWidth) {
+					newWidth = maxWidth;
+				}
 				self.setColumnSize(column, newWidth);
 				self.invalidateRightFillerWidth();
+			};
+			resizeHandlers.drag('dragstart', function (e) {
+				var col_id = parseInt(getDataAttribute(this.parentNode, ATTR_COLUMN_ID), 10);
+				var result=self.dragInit(e,pos,col_id,column,baseWidth,maxWidth);
+				column=result.column;
+				maxWidth=result.maxWidth;
+				baseWidth=result.baseWidth;
+				pos=result.pos;
 			});
+			resizeHandlers.drag(function(e){
+					dragEvent(e);
+				}
+			);
+			resizeHandlers = $(this.headContainer).find('.dt-resize-handle-left');
+			resizeHandlers.drag('dragstart', function (e) {
+				var col_id = parseInt(getDataAttribute(this.parentNode, ATTR_COLUMN_ID), 10)-1;
+				var result=self.dragInit(e,pos,col_id,column,baseWidth,maxWidth);
+				column=result.column;
+				maxWidth=result.maxWidth;
+				baseWidth=result.baseWidth;
+				pos=result.pos;
+			});
+			resizeHandlers.drag(function(e){
+					dragEvent(e);
+				}
+			);
+
+
+
+
 
 			return this;
 		},
@@ -1291,7 +1322,7 @@
 				}
 				if (column.column) {
                     if (column.column.resizable) {
-                        txt += '<div class="dt-resize-handle"></div>';
+                        txt='<div class="dt-resize-handle dt-resize-handle-left"></div>'+txt+'<div class="dt-resize-handle dt-resize-handle-right"></div>';
                         setDataAttribute(th, ATTR_COLUMN_ID, column.column.idx);
                     }
 					if(column.column.sortable !== false) {
