@@ -1150,18 +1150,18 @@
 				resizeHandlersRight = $(this.headContainer).find('.dt-resize-handle-right'),
 				resizeHandlersLeft = $(this.headContainer).find('.dt-resize-handle-left');
 			var col_id;
+
 			function dragInit(e){
 				pos = e.pageX;
-				column = self.columns[col_id];
-				baseWidth =column.width>0?column.width : getCellWidth(column.headSizer);
+				baseWidth = column.width>0?column.width : getCellWidth(column.headSizer);
 				if (col_id<self.options.frozenColumnsNum) {
 					// max total width of frozen columns should not be more than 70% of container
 					maxWidth = self.getBodyWidth() * 0.7 - self.getFrozenColumnsWidth() + baseWidth;
 				} else {
 					maxWidth = -1;
 				}
-				return function(){};
 			}
+
 			function dragEvent(e) {
 				var pageX = e.pageX;
 				if (pageX === 0) {
@@ -1174,24 +1174,22 @@
 				self.setColumnSize(column, newWidth);
 				self.invalidateRightFillerWidth();
 			};
-			resizeHandlersRight.drag('dragstart', function (e) {
-				col_id = parseInt(getDataAttribute(this.parentNode, ATTR_COLUMN_ID), 10);
-				dragInit(e);
 
+			resizeHandlersRight.drag('dragstart', function (e) {
+				var col_id = parseInt(getDataAttribute(this.parentNode, ATTR_COLUMN_ID), 10);
+                column = self.columns[col_id];
+                dragInit(e);
 			});
-			resizeHandlersRight.drag(function(e){
-					dragEvent(e);
-				}
-			);
 
 			resizeHandlersLeft.drag('dragstart', function (e) {
-				 col_id = parseInt(getDataAttribute(this.parentNode, ATTR_COLUMN_ID), 10)-1;
+				var col_id = parseInt(getDataAttribute(this.parentNode, ATTR_COLUMN_ID), 10) - 1;
+                column = self.columns[col_id]
 				dragInit(e);
 			});
-			resizeHandlersLeft.drag(function(e){
-					dragEvent(e);
-				}
-			);
+
+			resizeHandlersLeft.drag(dragEvent);
+            resizeHandlersRight.drag(dragEvent);
+
 			return this;
 		},
 
