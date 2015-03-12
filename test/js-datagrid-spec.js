@@ -998,7 +998,13 @@ describe('Yet another datagrid Test Suite', function() {
 			expect(datagrid.autoResize).toHaveBeenCalledWith(0);
 		});
 		it('should resize the column that was tapped',function(){
-			$(datagrid.headContainer).find('.dt-resize-handle').trigger('dblclick');
+			$(datagrid.headContainer).find('.dt-resize-handle-right').trigger('dblclick');
+			var RowWidth1=$(datagrid.headContainer).find('tr [data-col-id=0]').width();
+			var RowWidth2=$(datagrid.headContainer).find('tr [data-col-id=1]').width();
+			expect(RowWidth1>RowWidth2).toBeTruthy();
+		});
+		it('should resize the neighboring column of column that was tapped',function(){
+			$(datagrid.headContainer).find('.dt-resize-handle-left').trigger('dblclick');
 			var RowWidth1=$(datagrid.headContainer).find('tr [data-col-id=0]').width();
 			var RowWidth2=$(datagrid.headContainer).find('tr [data-col-id=1]').width();
 			expect(RowWidth1>RowWidth2).toBeTruthy();
