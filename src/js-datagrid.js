@@ -1295,9 +1295,10 @@
 			return this;
 		},
 
+
 		createHeadRow: function(columns) {
 			var tr = createElement('tr'), th, column, txt;
-			var myi=0;
+
 			for (var i = 0, ln = columns.length; i < ln; ++i) {
 				column = columns[i];
     
@@ -1316,9 +1317,9 @@
 				if (column.column) {
 					setDataAttribute(th, ATTR_COLUMN_ID, column.column.idx);
                     if (column.column.resizable) {
-						console.log(this.columns[i]);
-						if(this.columns[i-1])
-                        txt=this.columns[i-1].resizable?'<div class="dt-resize-handle dt-resize-handle-left"></div>'+txt+'<div class="dt-resize-handle dt-resize-handle-right"></div>':txt+'<div class="dt-resize-handle dt-resize-handle-right"></div>';
+
+						if(this.columns[column.column.idx-1])
+                        txt=this.columns[column.column.idx-1].resizable?'<div class="dt-resize-handle dt-resize-handle-left"></div>'+txt+'<div class="dt-resize-handle dt-resize-handle-right"></div>':txt+'<div class="dt-resize-handle dt-resize-handle-right"></div>';
                     	else
 						txt=txt+'<div class="dt-resize-handle dt-resize-handle-right"></div>';
 					}
@@ -1333,7 +1334,7 @@
 
 				innerHTML(th, txt);
 				appendChild(tr, th);
-				++myi;
+				
 			}
 			return tr;
 		},
