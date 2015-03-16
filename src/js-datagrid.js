@@ -1314,7 +1314,6 @@
 				if (column.column) {
 					setDataAttribute(th, ATTR_COLUMN_ID, column.column.idx);
                     if (column.column.resizable) {
-						console.log(this.columns[i]);
 						if(this.columns[i-1])
                         txt=this.columns[i-1].resizable?'<div class="dt-resize-handle dt-resize-handle-left"></div>'+txt+'<div class="dt-resize-handle dt-resize-handle-right"></div>':txt+'<div class="dt-resize-handle dt-resize-handle-right"></div>';
                     	else
