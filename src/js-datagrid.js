@@ -15,6 +15,7 @@
 	var ATTR_DATA_ID = 'data-id';
 	var ATTR_PARENTS = 'parents';
 	var MIN_COL_WIDTH = 40; //px
+	var resizeFlag=false;
 
     var NBSP = '\u00A0'; // non breaking space
 
@@ -947,29 +948,36 @@
 		 */
 		bindSortEvents: function() {
 			var self = this;
-			$(this.headContainer).on('click', 'th.sortable', function (e) {
-				var srcElement = e.originalEvent.srcElement || e.originalEvent.target;
-				if ($(srcElement).hasClass('dt-resize-handle')) {
-					return;
-				}
 
-				var col_id = parseInt(getDataAttribute(srcElement, ATTR_COLUMN_ID), 10);
+				$(this.headContainer).on('mousedown','th.sortable',function(e){
+					resizeFlag=false;
+				})
+				$(this.headContainer).on('click', 'th.sortable', function (e) {
+					if(!resizeFlag) {
+						var srcElement = e.originalEvent.srcElement || e.originalEvent.target;
+						if ($(srcElement).hasClass('dt-resize-handle')) {
+							return;
+						}
 
-				if (isNaN(col_id)) {
-					return;
-				}
+						var col_id = parseInt(getDataAttribute(srcElement, ATTR_COLUMN_ID), 10);
 
-				var	column = self.columns[col_id];
+						if (isNaN(col_id)) {
+							return;
+						}
 
-				if (self.sortColumns.indexOf(col_id)!==-1) {
-					column.sortAsc = !column.sortAsc;
-				} else {
-					self.sortColumns = [col_id];
-				}
+						var column = self.columns[col_id];
 
-				self.sort(self.sortColumns);
-			});
-			return this;
+						if (self.sortColumns.indexOf(col_id) !== -1) {
+							column.sortAsc = !column.sortAsc;
+						} else {
+							self.sortColumns = [col_id];
+						}
+
+						self.sort(self.sortColumns);
+					}
+					});
+				return this;
+
 		},
 
 
@@ -1151,6 +1159,7 @@
 				resizeHandlersLeft = $(this.headContainer).find('.dt-resize-handle-left');
 			var col_id;
 			function dragInit(e){
+				resizeFlag=true;
 				pos = e.pageX;
 				column = self.columns[col_id];
 				baseWidth =column.width>0?column.width : getCellWidth(column.headSizer);
