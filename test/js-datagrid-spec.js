@@ -156,7 +156,7 @@ describe('Yet another datagrid Test Suite', function() {
                 columns: [
                     { field: 'default', title: 'Resizable By Default' },
                     { field: 'sortable', title: 'Resizable Column', resizable: true },
-                    { field: 'notsortable', title: 'Not Resizable Column', resizable: false }
+                    { field: 'notsortable', title: 'Not Resizable Column', resizable: false}
                 ]
             };
 
@@ -164,13 +164,13 @@ describe('Yet another datagrid Test Suite', function() {
             var tableHead = $('#my-table').find('.dt-head-wrapper thead').eq(1);
 
             var $th0 = tableHead.find('tr th').eq(0);
-            expect($th0).toContain('.dt-resize-handle');
+            expect($th0).toContain('.dt-resize-handle-right');
 
             var $th1 = tableHead.find('tr th').eq(1);
-            expect($th1).toContain('.dt-resize-handle');
+            expect($th1).toContain('.dt-resize-handle-right');
 
             var $th2 = tableHead.find('tr th').eq(2);
-            expect($th2).not.toContain('.dt-resize-handle');
+            expect($th2).not.toContain('.dt-resize-handle-right');
         });
 
         it('should initialize and add datas', function() {
@@ -983,8 +983,8 @@ describe('Yet another datagrid Test Suite', function() {
 				jasmine.getFixtures().set('<div id="my-table"></div>');
 				container=$('#my-table').get()[0];
 				var columns = [
-						{title: 'First Col blablablablabla' , width: 12, field: 'A2'},
-						{title: 'Hello' , width: 12, field: 'B2'}
+						{title: 'First Col blablablablabla' , width: 12, field: 'A2',resizable: true },
+						{title: 'Hello' , width: 12, field: 'B2',resizable: true }
 					],
 					data = [
 						{A2: 'Hello world',B2: "Hello world"}
