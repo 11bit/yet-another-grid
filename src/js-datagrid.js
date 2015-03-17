@@ -15,7 +15,6 @@
 	var ATTR_DATA_ID = 'data-id';
 	var ATTR_PARENTS = 'parents';
 	var MIN_COL_WIDTH = 40; //px
-	var resizeFlag=false;
 
     var NBSP = '\u00A0'; // non breaking space
 
@@ -736,6 +735,7 @@
 
 		// Internal flags
 		this.checkVisibility = false;
+        this.resizeFlag = false;
 		this.options = extend(Datagrid.options, options);
 
 		this.lastRenderedIndex  = 0;
@@ -950,32 +950,34 @@
 			var self = this;
 
 				$(this.headContainer).on('mousedown','th.sortable',function(e){
-					resizeFlag=false;
+					self.resizeFlag=false;
 				})
 				$(this.headContainer).on('click', 'th.sortable', function (e) {
-					if(!resizeFlag) {
-						var srcElement = e.originalEvent.srcElement || e.originalEvent.target;
-						if ($(srcElement).hasClass('dt-resize-handle')) {
-							return;
-						}
+                    if (self.resizeFlag) {
+                        return;
+                    }
 
-						var col_id = parseInt(getDataAttribute(srcElement, ATTR_COLUMN_ID), 10);
+                    var srcElement = e.originalEvent.srcElement || e.originalEvent.target;
+                    if ($(srcElement).hasClass('dt-resize-handle')) {
+                        return;
+                    }
 
-						if (isNaN(col_id)) {
-							return;
-						}
+                    var col_id = parseInt(getDataAttribute(srcElement, ATTR_COLUMN_ID), 10);
 
-						var column = self.columns[col_id];
+                    if (isNaN(col_id)) {
+                        return;
+                    }
 
-						if (self.sortColumns.indexOf(col_id) !== -1) {
-							column.sortAsc = !column.sortAsc;
-						} else {
-							self.sortColumns = [col_id];
-						}
+                    var column = self.columns[col_id];
 
-						self.sort(self.sortColumns);
-					}
-					});
+                    if (self.sortColumns.indexOf(col_id) !== -1) {
+                        column.sortAsc = !column.sortAsc;
+                    } else {
+                        self.sortColumns = [col_id];
+                    }
+
+                    self.sort(self.sortColumns);
+                });
 				return this;
 
 		},
@@ -1160,7 +1162,7 @@
 			var col_id;
 
 			function dragInit(e){
-				resizeFlag=true;
+				self.resizeFlag=true;
 				pos = e.pageX;
 				baseWidth = column.width>0?column.width : getCellWidth(column.headSizer);
 				if (col_id<self.options.frozenColumnsNum) {
