@@ -22,7 +22,7 @@
 	if (navigator && navigator.userAgent) {
 		agent = navigator.userAgent;
 	}
-	var ie = /msie (\d+)/.exec(agent.toLowerCase()), ieVer;
+	var ie = /msie (\d+)/.exec(agent.toLowerCase());
 	if (ie && ie.length>1) {
 		IS_IE9 = parseInt(ie[1], 10) === 9;
 	}
@@ -189,7 +189,7 @@
 	/**
 	 * Append an html element child to a parent.
 	 * @param {HTMLElement|DocumentFragment} parent Parent element.
-	 * @param {HTMLElement|DocumentFragment} child Chid element to append.
+	 * @param {HTMLElement|DocumentFragment} child Child element to append.
 	 * @private
 	 */
 	var appendChild = function(parent, child) {
@@ -258,7 +258,7 @@
 	};
 
     /**
-     * Create span block with specidied padding
+     * Create span block with specified padding
      * @param padding
      * @returns {HTMLElement}
      */
@@ -280,7 +280,7 @@
 	};
 
 	/**
-	 * Get width of a scroll bar (jquery dependecy).
+	 * Get width of a scroll bar (jquery dependency).
 	 * @returns {{width: number, height: number}} Width and height of an element.
 	 * @private
 	 */
@@ -301,7 +301,7 @@
     };
 
     /**
-     * Searchs for widest column in a collection
+     * Searches for widest column in a collection
      * @param {Array<Column>} columns
      * @returns {Column}
      */
@@ -313,10 +313,10 @@
             }
         }
         return widest;
-    }
+    };
 
 	/**
-	 * Utility code that helps to build html table headers from grouped columns defenitions
+	 * Utility code that helps to build html table headers from grouped columns definitions
 	 * @type {Object}
 	 */
 	var GroupedColumnUtil = {
@@ -379,11 +379,11 @@
 		},
 
 		/**
-		 * Build template object representing header's html structure for given hierarhical columns.
+		 * Build template object representing header's html structure for given hierarchical columns.
 		 * buildHeadStructure adds colspans for column groups and rowspans for columns without grouping
-		 * @param  {Array<Object>} columnGroups Array of hierarhical columns. 
+		 * @param  {Array<Object>} columnGroups Array of hierarchical columns.
 		 * @return {Array<Array>} Array of rows. Each row is an array of objects with proper colspans and rowspans.
-		 *     Row is renderend into tr block
+		 *     Row is rendered into tr block
 		 *     Object is rendered into th
 		 */
 		buildHeadStructure: function(columnGroups) {
@@ -394,8 +394,8 @@
 		},
 
 		/**
-		 * Get flat list of real columns from hierarhical columnGroup objects.
-		 * @param  {Array<Object>} columnGroups array of hierarhical columnGroups
+		 * Get flat list of real columns from hierarchical columnGroup objects.
+		 * @param  {Array<Object>} columnGroups array of hierarchical columnGroups
 		 * @return {Array<Object>} Array of columns
 		 */
 		getColumns: function(columnGroups) {
@@ -891,7 +891,7 @@
 				.bindSortEvents()
 				.bindExpandChildrenEvents()
 				.bindResizeColumnEvent()
-				.bindAutoResizeColumnEvents()
+				.bindAutoResizeColumnEvents();
 
             if(this.options.clipboardEnabled) {
                 this
@@ -922,25 +922,25 @@
 		 },
 
 		/**
-		 * Bind double click events for autosize the column
+		 * Bind double click events for auto size the column
 		 * @return {Datagrid} this object
 		 */
 		bindAutoResizeColumnEvents: function(){
 			var self = this;
 
-            $(this.headContainer).on(this.options.doubleClickEvent,'.dt-resize-handle-left',function(e){
+            $(this.headContainer).on(this.options.doubleClickEvent,'.dt-resize-handle-left',function(){
 				var col_id;
 				col_id = parseInt(getDataAttribute(this.parentNode, ATTR_COLUMN_ID), 10)-1;
 				self.autoResize(col_id);
 
 			});
 
-			$(this.headContainer).on(this.options.doubleClickEvent,'.dt-resize-handle-right',function(e){
+			$(this.headContainer).on(this.options.doubleClickEvent,'.dt-resize-handle-right',function(){
 				var col_id;
 				col_id = parseInt(getDataAttribute(this.parentNode, ATTR_COLUMN_ID), 10);
 				self.autoResize(col_id);
-					self.invalidateRightFillerWidth();
-			})
+				self.invalidateRightFillerWidth();
+			});
 
 
 			return this;
@@ -955,7 +955,7 @@
 
 				$(this.headContainer).on('mousedown','th.sortable',function(e){
 					self.resizeFlag=false;
-				})
+				});
 				$(this.headContainer).on('click', 'th.sortable', function (e) {
                     if (self.resizeFlag) {
                         return;
@@ -1188,9 +1188,8 @@
 				}
 				self.setColumnSize(column, newWidth);
 				self.invalidateRightFillerWidth();
-			};
-
-			resizeHandlersRight.drag('dragstart', function (e) {
+            }
+            resizeHandlersRight.drag('dragstart', function (e) {
 				var col_id = parseInt(getDataAttribute(this.parentNode, ATTR_COLUMN_ID), 10);
                 column = self.columns[col_id];
                 dragInit(e);
@@ -1198,7 +1197,7 @@
 
 			resizeHandlersLeft.drag('dragstart', function (e) {
 				var col_id = parseInt(getDataAttribute(this.parentNode, ATTR_COLUMN_ID), 10) - 1;
-                column = self.columns[col_id]
+                column = self.columns[col_id];
 				dragInit(e);
 			});
 
@@ -1589,7 +1588,7 @@
 		},
 
 		/**
-		 * Rerender full datagrid.
+		 * Re-render full datagrid.
 		 * @return {Datagrid} this object.
 		 * @public
 		 */
@@ -1654,7 +1653,7 @@
 		},
 
         /**
-         * Create docuemnt fragment with table rows for given data and columns
+         * Create document fragment with table rows for given data and columns
          * @param  {Array<Data>} datas   Data to render
          * @param  {Array<Column>} columns Columns to render
          * @param {Object} domCache Dictionary with cached DOM nodes
@@ -1896,7 +1895,7 @@
 		},
 
 		/**
-		 * Invalidates and synchonize column sizes and header sizes
+		 * Invalidates and synchronize column sizes and header sizes
 		 * @returns {Datagrid} this object.
 		 * @public
 		 */
@@ -1923,9 +1922,9 @@
 		},
 
 		syncHeaderAndBodyWidths: function(head_ths, body_ths, columns) {
-			var colnum = columns.length;
+			var colNum = columns.length;
 
-			for (var i=0; i<colnum; i++) {
+			for (var i=0; i<colNum; i++) {
 				var column = columns[i],
 					head_col_width = getCellWidth(head_ths[i]),
 					body_col_width = getCellWidth(body_ths[i]),
@@ -1942,7 +1941,7 @@
 		},
 
 		/**
-		 * Cacluates appropriate margin for right filler
+		 * Calculates appropriate margin for right filler
 		 * @return {Datagrid} this object.
 		 */
 		invalidateRightFillerWidth: function() {
@@ -2038,7 +2037,7 @@
 
             function getRowsBtw(from, to) {
                 var btw = $(from)
-                    .nextUntil(to)
+                    .nextUntil(to);
 
                 return $(from).add(btw).add(to);
             }
@@ -2071,12 +2070,11 @@
             }
 
             function selectText(element) {
-                var doc = document
-                    , range, selection;
+                var doc = document, range, selection;
 
                 if (doc.body.createTextRange) {
                     range = document.body.createTextRange();
-                    range.moveToElementText(element)
+                    range.moveToElementText(element);
                     range.select();
                 } else if (window.getSelection) {
                     selection = window.getSelection();
@@ -2121,8 +2119,7 @@
                 }
             });
 
-            $(this.container).on('mouseup', 'td', function(e) {
-                var ids = [];
+            $(this.container).on('mouseup', 'td', function() {
                 if (selectionMode) {
                     selectionMode = false;
                     selectText(self.selectionHelper);
@@ -2151,7 +2148,7 @@
         },
 
         /**
-         * Get tab seprated row data (ready for pasting to Excel or other spreadsheets.
+         * Get tab separated row data (ready for pasting to Excel or other spreadsheets.
          * @param {Array<String>} row_ids Ids of rows to get data for.
          * @returns {string}
          */
@@ -2160,7 +2157,7 @@
 
             var rows_data = row_ids.map(function(row_id) {
                 return self.getRowDataByIds(self.datas, [row_id]);
-            })
+            });
 
             var rendered = rows_data.map(function(row_data) {
                 return (self.columns.map(function(col) {
