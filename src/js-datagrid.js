@@ -927,18 +927,22 @@
 		 */
 		bindAutoResizeColumnEvents: function(){
 			var self = this;
-				$(this.headContainer).on('dblclick','.dt-resize-handle-left',function(e){
+
+            $(this.headContainer).on(this.options.doubleClickEvent,'.dt-resize-handle-left',function(e){
 				var col_id;
 				col_id = parseInt(getDataAttribute(this.parentNode, ATTR_COLUMN_ID), 10)-1;
 				self.autoResize(col_id);
 
-			})
-			$(this.headContainer).on('dblclick','.dt-resize-handle-right',function(e){
+			});
+
+			$(this.headContainer).on(this.options.doubleClickEvent,'.dt-resize-handle-right',function(e){
 				var col_id;
 				col_id = parseInt(getDataAttribute(this.parentNode, ATTR_COLUMN_ID), 10);
 				self.autoResize(col_id);
-
+					self.invalidateRightFillerWidth();
 			})
+
+
 			return this;
 		},
 
@@ -2286,7 +2290,8 @@
 
         childrenPadding: 10,
         takeAllHeight: false,            // take all height or use vertical scrolling
-        clipboardEnabled: false
+        clipboardEnabled: false,
+		doubleClickEvent: 'dblclick'
     };
 
 	// Expose to global object
