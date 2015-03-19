@@ -956,7 +956,7 @@
 				$(this.headContainer).on('mousedown','th.sortable',function(e){
 					self.resizeFlag=false;
 				});
-				$(this.headContainer).on(this.options.sortEvent, 'th.sortable', function (e) {
+				$(this.headContainer).on(this.options.clickEvent, 'th.sortable', function (e) {
                     if (self.resizeFlag) {
                         return;
                     }
@@ -2289,7 +2289,7 @@
         takeAllHeight: false,            // take all height or use vertical scrolling
         clipboardEnabled: false,
 		doubleClickEvent: 'dblclick',
-		sortEvent:'click'
+		clickEvent:'click'
     };
 
 	// Expose to global object
