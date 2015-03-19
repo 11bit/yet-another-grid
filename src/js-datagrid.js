@@ -961,10 +961,7 @@
                         return;
                     }
 
-                    var srcElement = e.originalEvent.srcElement || e.originalEvent.target;
-                    if ($(srcElement).hasClass('dt-resize-handle')) {
-                        return;
-                    }
+                    var srcElement = e.target;
 
                     var col_id = parseInt(getDataAttribute(srcElement, ATTR_COLUMN_ID), 10);
 
