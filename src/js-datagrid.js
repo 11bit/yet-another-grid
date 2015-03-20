@@ -2169,6 +2169,23 @@
             return rendered.join('\n');
         },
 
+        /**
+         * Get tab separated row data (ready for pasting to Excel or other spreadsheets for all dataset.
+         * @returns {string}
+         */
+        getAllSpreadSheetData: function() {
+            var self = this;
+            return self.datas.map(function(row_data) {
+                return (self.columns.map(function(col) {
+                    if (col.isHTML) {
+                        return '';
+                    } else {
+                        return col.getRawValue(row_data);
+                    }
+                })).join('\t');
+            }).join('\n')
+        },
+
 
         /** Data API */
 
