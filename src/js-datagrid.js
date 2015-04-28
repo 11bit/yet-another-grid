@@ -1174,7 +1174,7 @@
 				}
 			}
 
-			function dragEvent(e) {
+			function dragEventHandler(e) {
 				var pageX = e.pageX;
 				if (pageX === 0) {
 					return;
@@ -1198,8 +1198,8 @@
 				dragInit(e);
 			});
 
-			resizeHandlersLeft.drag(dragEvent);
-            resizeHandlersRight.drag(dragEvent);
+			resizeHandlersLeft.drag(dragEventHandler);
+            resizeHandlersRight.drag(dragEventHandler);
 
 			return this;
 		},
