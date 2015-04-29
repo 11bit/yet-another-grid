@@ -1147,11 +1147,37 @@
 		},
 
 		/**
+		 * @private
+		 * Adds a 'resize-mode' class to a column that is resized and column next to it
+		 * This class changes cursor on columns to resize sign so it doesn't blink than
+		 * mouse slightly hovers it.
+		 * @param {Column} column Column that is resized
+		 */
+		_setResizeMode: function (column) {
+			$(this.head.table).addClass('resize-mode');
+			$(column.th).addClass('resize-mode');
+			if (this.columns.length>column.idx+1) {
+				$(this.columns[column.idx+1].th).addClass('resize-mode');
+			}
+		},
+
+		/**
+		 * @private
+		 * Switches off resize mode for column that is resized and column next to it
+		 * @param {Column} column Column that is resized
+		 */
+		_removeResizeMode: function (column) {
+			$(this.head.table).removeClass('resize-mode');
+			$(column.th).removeClass('resize-mode');
+			if (this.columns.length>column.idx+1) {
+				$(this.columns[column.idx+1].th).removeClass('resize-mode');
+			}
+		},
+
+		/**
 		 * Bind event to resize handle for resizing
 		 * @return {Datagrid} this object.
 		 */
-
-
 		bindResizeColumnEvent: function() {
 			var self = this,
 				column,
@@ -1172,23 +1198,7 @@
 				} else {
 					maxWidth = -1;
 				}
-				setDragMode(column);
-			}
-
-			function setDragMode(column) {
-				$(self.head.table).addClass('resize-mode');
-				$(column.th).addClass('resize-mode');
-				if (self.columns.length>column.idx+1) {
-					$(self.columns[column.idx+1].th).addClass('resize-mode');
-				}
-			}
-
-			function removeDragMode(column) {
-				$(self.head.table).removeClass('resize-mode');
-				$(column.th).removeClass('resize-mode');
-				if (self.columns.length>column.idx+1) {
-					$(self.columns[column.idx+1].th).removeClass('resize-mode');
-				}
+				self._setResizeMode(column);
 			}
 
 			function dragEventHandler(e) {
@@ -1205,7 +1215,7 @@
             }
 
 			function dragStopHandler() {
-				removeDragMode(column);
+				self._removeResizeMode(column);
 			}
 
             resizeHandlersRight.drag('dragstart', function (e) {
