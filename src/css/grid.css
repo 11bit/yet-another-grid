@@ -96,6 +96,13 @@
 	left:0;
 }
 
+.dt-head th.resize-mode {
+	cursor: col-resize !important;
+}
+.dt-head.resize-mode {
+	cursor: col-resize;
+}
+
 .dt-right-filler-wrapper {
 	position: absolute;
 	top: 0;

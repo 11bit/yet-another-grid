@@ -1172,6 +1172,23 @@
 				} else {
 					maxWidth = -1;
 				}
+				setDragMode(column);
+			}
+
+			function setDragMode(column) {
+				$(self.head.table).addClass('resize-mode');
+				$(column.th).addClass('resize-mode');
+				if (self.columns.length>column.idx+1) {
+					$(self.columns[column.idx+1].th).addClass('resize-mode');
+				}
+			}
+
+			function removeDragMode(column) {
+				$(self.head.table).removeClass('resize-mode');
+				$(column.th).removeClass('resize-mode');
+				if (self.columns.length>column.idx+1) {
+					$(self.columns[column.idx+1].th).removeClass('resize-mode');
+				}
 			}
 
 			function dragEventHandler(e) {
@@ -1186,6 +1203,11 @@
 				self.setColumnSize(column, newWidth);
 				self.invalidateRightFillerWidth();
             }
+
+			function dragStopHandler() {
+				removeDragMode(column);
+			}
+
             resizeHandlersRight.drag('dragstart', function (e) {
 				var col_id = parseInt(getDataAttribute(this.parentNode, ATTR_COLUMN_ID), 10);
                 column = self.columns[col_id];
@@ -1199,7 +1221,10 @@
 			});
 
 			resizeHandlersLeft.drag(dragEventHandler);
-            resizeHandlersRight.drag(dragEventHandler);
+			resizeHandlersRight.drag(dragEventHandler);
+
+			resizeHandlersLeft.drag('dragend', dragStopHandler);
+			resizeHandlersRight.drag('dragend', dragStopHandler);
 
 			return this;
 		},
