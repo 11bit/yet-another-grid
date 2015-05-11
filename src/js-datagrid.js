@@ -10,6 +10,8 @@
 	var arrayProto = Array.prototype,
 		slice = arrayProto.slice;
 
+	var noop = function(){}
+
 	// Constants
 	var ATTR_COLUMN_ID = 'col-id';
 	var ATTR_DATA_ID = 'data-id';
@@ -693,6 +695,7 @@
 		this.renderFunction = obj.renderFunction;
         this.headerRenderFunction = obj.headerRenderFunction;
 		this.postRenderFunction = obj.postRenderFunction;
+		this.resizeEndFunction = obj.resizeEndFunction || noop;
 	};
 
 
@@ -1210,12 +1213,13 @@
 				if (maxWidth != -1 && newWidth>maxWidth) {
 					newWidth = maxWidth;
 				}
-				self.setColumnSize(column, newWidth);
+				self._resizeColumn(column, newWidth);
 				self.invalidateRightFillerWidth();
             }
 
 			function dragStopHandler() {
 				self._removeResizeMode(column);
+				column.resizeEndFunction(self.container);
 			}
 
             resizeHandlersRight.drag('dragstart', function (e) {
@@ -1239,12 +1243,17 @@
 			return this;
 		},
 
-		setColumnSize: function(column, width) {
+		_resizeColumn: function(column, width) {
 			//noinspection JSUnresolvedVariable
-            column.headSizer.style.width = width + 'px';
+			column.headSizer.style.width = width + 'px';
 			//noinspection JSUnresolvedVariable
-            column.bodySizer.style.width = width + 'px';
+			column.bodySizer.style.width = width + 'px';
 			column.width = width;
+		},
+
+		setColumnSize: function(column, width) {
+			this._resizeColumn(column, width);
+			column.resizeEndFunction(this.container);
 		},
 
         /**
