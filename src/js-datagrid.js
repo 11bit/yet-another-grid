@@ -1117,6 +1117,7 @@
 		bindExpandChildrenEvents: function() {
 			var self = this;
 
+
 			$(this.container).on('mouseup', '.expand-children-cell', function expandChildrenHandler(event) {
                 if (event.offsetX>self.options.expandChildrenButtonOffset) {
                     return true;
@@ -1125,7 +1126,7 @@
                 var cell = $(this).closest('td');
                 var data = self.getRowDataByCell(cell[0]);
     
-                if (event.shiftKey) {
+                if (event.altKey) {
                     self.expandAll(self.datas, !data.expanded);
                     self.render();
                     self.ivalidateBodyWrapperHeight();
