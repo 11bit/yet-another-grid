@@ -1866,7 +1866,7 @@
                 }
 			}
 
-            if (column.idx === 0 && data.level>0 && this.options.childrenPadding>0) {
+            if (column.idx === this.options.columnWithPadding && data.level>0 && this.options.childrenPadding>0) {
                 td.insertBefore(createIndentBlock(this.options.childrenPadding * data.level), td.firstChild);
             }
 
@@ -2344,7 +2344,9 @@
 		collapseChildrenButton: '⊟',
         expandChildrenButtonOffset: 30, // clickable area in the first cell that will expand children
 
-        childrenPadding: 10,
+        childrenPadding: 10,            // padding for a content of children rows
+        columnWithPadding: 0,			// padded column (usually it is first or second column)
+
         takeAllHeight: false,            // take all height or use vertical scrolling
         clipboardEnabled: false,
 		doubleClickEvent: 'dblclick',
