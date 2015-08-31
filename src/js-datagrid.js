@@ -801,7 +801,9 @@
 		 * @public
 		 */
 		buildStructure: function() {
-			this.headContainer = createElement('div', 'dt-head');
+			this.headContainer = createElement('div',
+				'dt-head' + (this.options.wrapColumnTitles ? ' dt-head-multiline' : ''));
+
 			this.bodyContainer = createElement('div', 'dt-body');
 
 			appendChild(this.container, this.headContainer);
@@ -1125,7 +1127,7 @@
 
                 var cell = $(this).closest('td');
                 var data = self.getRowDataByCell(cell[0]);
-    
+
                 if (event.altKey) {
                     self.expandAll(self.datas, !data.expanded);
                     self.render();
@@ -1331,7 +1333,7 @@
 
 		/**
 		 * Render header of datagrid - separate table in head wrapper.
-		 * @param {HTMLElement} thead Thead element in which we will create 
+		 * @param {HTMLElement} thead Thead element in which we will create
 		 * @param {Array<Array>} headLayers head layers which should be rendered into trs
 		 * @returns {Datagrid} this object.
 		 * @public
@@ -1355,13 +1357,16 @@
 
 			for (var i = 0, ln = columns.length; i < ln; ++i) {
 				column = columns[i];
-    
+
 				txt = column.column && column.column.getHeader() || column.title;
 				if (this.options.fixEmptyCell && !txt) {
 					txt = ' ';
 				}
 
+				txt = '<div class="dt-header-cell-wrapper">' + txt + '</div>';
+
 				th = createElement('th');
+
 				if (column.colspan) {
 					setAttribute(th, 'colspan', column.colspan);
 				}
@@ -1472,13 +1477,13 @@
 				var col = columns[i],
 					className = col.th.className;
 				if (className.indexOf('sorted')!==-1) {
-					
+
 					className = className
 						.replace('sorted', '')
 						.replace('sort-asc', '')
 						.replace('sort-desc', '')
 						.replace('  ', ' ');
-						
+
 					col.th.className = className;
 				}
 			}
@@ -1719,7 +1724,7 @@
 		/**
 		 * Create document fragment with one column with empty content
 		 * @param  {Array<object>} datas Array of data which need an empty ow
-		 * @return {DocumentFragment}    DocumentFragment with `tr` rows       
+		 * @return {DocumentFragment}    DocumentFragment with `tr` rows
 		 */
 		createEmptyTableFragment: function(datas) {
 
@@ -1932,7 +1937,7 @@
 					this.appendVisibleRowsDebounced();
 				}
             }
-            
+
             return this;
 		},
 
@@ -2350,7 +2355,9 @@
         takeAllHeight: false,            // take all height or use vertical scrolling
         clipboardEnabled: false,
 		doubleClickEvent: 'dblclick',
-		clickEvent:'click'
+		clickEvent:'click',
+
+		wrapColumnTitles: true
     };
 
 	// Expose to global object

@@ -45,6 +45,11 @@
 	padding-bottom: 0;
 }
 
+.dt-head-multiline .dt-header-cell-wrapper {
+	overflow: hidden;
+	white-space: normal;
+}
+
 .dt-table {
 	border: 0;
 	width: 1px; /* for proper work of fixed layout */
