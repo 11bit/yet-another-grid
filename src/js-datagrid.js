@@ -788,7 +788,7 @@
 				.bindEventHandlers()
 				.invalidateColumnSizes()
 				.invalidateRightFillerWidth()
-                .ivalidateBodyWrapperHeight();
+                .invalidateBodyWrapperHeight();
 
 			delete this.options.datas;
 			delete this.options.columns;
@@ -1131,7 +1131,7 @@
                 if (event.altKey) {
                     self.expandAll(self.datas, !data.expanded);
                     self.render();
-                    self.ivalidateBodyWrapperHeight();
+                    self.invalidateBodyWrapperHeight();
                 } else {
                     data.expanded = !data.expanded;
                     var button = $(cell).find('.expand-children-button')[0];
@@ -1144,7 +1144,7 @@
                         } else {
                             self.collapseThat(data);
                         }
-                        self.ivalidateBodyWrapperHeight();
+                        self.invalidateBodyWrapperHeight();
                     });
                 }
             });
@@ -1462,7 +1462,7 @@
 
 		 		if (maxHeight != Math.min.apply(null, heights)) {
 		 			this._heightIsChanged = true;
-		 			this.ivalidateBodyWrapperHeight()
+		 			this.invalidateBodyWrapperHeight()
 		 		}
 
 
@@ -1958,7 +1958,7 @@
 
             if (heightChanged) {
 				this._heightIsChanged = true;
-				this.ivalidateBodyWrapperHeight();
+				this.invalidateBodyWrapperHeight();
 
 				if(this.options.loadOnScroll && this.lastRenderedIndex<this.datas.length) {
 					this.appendVisibleRowsDebounced();
@@ -2049,7 +2049,7 @@
 		 * @returns {Datagrid} this object.
 		 * @public
 		 */
-		ivalidateBodyWrapperHeight: function() {
+		invalidateBodyWrapperHeight: function() {
             if (this.options.takeAllHeight) {
                 return this;
             }
