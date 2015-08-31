@@ -22,6 +22,11 @@
 	overflow: scroll;
     overflow-x: auto;
 	position: relative;
+
+}
+
+.dt-head-table {
+	height: 100%;
 }
 
 .dt-head-table, .dt-body-table {

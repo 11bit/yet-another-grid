@@ -1252,6 +1252,9 @@
 			//noinspection JSUnresolvedVariable
 			column.bodySizer.style.width = width + 'px';
 			column.width = width;
+
+			this.alignHeadHeights();
+
 		},
 
 		setColumnSize: function(column, width) {
@@ -1326,7 +1329,9 @@
 
 			// draw right filler
 			var maxRows = Math.max(frozenColsStructure.length, ordinalColsStructure.length);
-			this .setEmptyThead(this.rightHeadFiller.thead, maxRows);
+			this.setEmptyThead(this.rightHeadFiller.thead, maxRows);
+
+			this.alignHeadHeights();
 
 			return this;
 		},
@@ -1439,6 +1444,29 @@
 			}
 			appendChild(thead, tr);
 			return this;
+		 },
+
+		 alignHeadHeights: function() {
+		 	if (this.options.frozenColumnsNum>0 && this.options.wrapColumnTitles) {
+
+		 		this.frozenHeadWrapper.style.height = 'auto';
+		 		this.headWrapper.style.height = 'auto';
+
+		 		var heights = [this.frozenHeadWrapper.offsetHeight,
+		 				this.headWrapper.offsetHeight]
+		 		var maxHeight = Math.max.apply(null, heights)
+
+
+		 		this.frozenHeadWrapper.style.height = maxHeight + 'px';
+		 		this.headWrapper.style.height = maxHeight + 'px';
+
+		 		if (maxHeight != Math.min.apply(null, heights)) {
+		 			this._heightIsChanged = true;
+		 			this.ivalidateBodyWrapperHeight()
+		 		}
+
+
+		 	}
 		 },
 
 		/**
@@ -1893,7 +1921,6 @@
 
 		getBodyHeight: function() {
 			if (!this._heightIsChanged) {
-				this._heightIsChanged = false;
 				return this._cachedBodyHeight;
 			}
 
