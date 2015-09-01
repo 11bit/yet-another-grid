@@ -1459,6 +1459,7 @@
 
 		 		this.frozenHeadWrapper.style.height = maxHeight + 'px';
 		 		this.headWrapper.style.height = maxHeight + 'px';
+		 		this.rightFillerHeadWrapper.style.height = maxHeight + 'px';
 
 		 		if (maxHeight != Math.min.apply(null, heights)) {
 		 			this._heightIsChanged = true;
