@@ -607,7 +607,7 @@ describe('Yet another datagrid Test Suite', function() {
 			expect(dg.headWrapper.scrollWidth).toEqual(dg.bodyWrapper.scrollWidth);
 		});
 
-		it('should have equal srollWidth for head wrapper and body wrapper with big number of columns', function() {
+		it('should have equal scrollWidth for head wrapper and body wrapper with big number of columns', function() {
 			var opts = {
 				columns: [
 					{ field: 'id', title: 'Identifier' },
