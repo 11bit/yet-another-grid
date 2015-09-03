@@ -2385,7 +2385,7 @@
 		doubleClickEvent: 'dblclick',
 		clickEvent:'click',
 
-		wrapColumnTitles: true
+		wrapColumnTitles: false
     };
 
 	// Expose to global object
