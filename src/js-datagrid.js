@@ -788,7 +788,9 @@
 				.bindEventHandlers()
 				.invalidateColumnSizes()
 				.invalidateRightFillerWidth()
-                .invalidateBodyWrapperHeight();
+                .invalidateBodyWrapperHeight()
+                .alignHeadHeights();
+
 
 			delete this.options.datas;
 			delete this.options.columns;
@@ -1331,8 +1333,6 @@
 			var maxRows = Math.max(frozenColsStructure.length, ordinalColsStructure.length);
 			this.setEmptyThead(this.rightHeadFiller.thead, maxRows);
 
-			this.alignHeadHeights();
-
 			return this;
 		},
 
@@ -1465,9 +1465,9 @@
 		 			this._heightIsChanged = true;
 		 			this.invalidateBodyWrapperHeight()
 		 		}
-
-
 		 	}
+
+		 	return this;
 		 },
 
 		/**
