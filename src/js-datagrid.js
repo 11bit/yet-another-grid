@@ -968,7 +968,7 @@
                         return;
                     }
 
-                    var srcElement = e.target;
+                    var srcElement = e.currentTarget;
 
                     var col_id = parseInt(getDataAttribute(srcElement, ATTR_COLUMN_ID), 10);
 
