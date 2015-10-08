@@ -14,12 +14,12 @@ And then install dependencies:
 Building
 --------
 
-    `gulp build` command will build a minified version and css into `dist` folder
+    gulp build   # build a minified version and css into `dist` folder
 
 Testing
 -------
 
-    `gulp test` command runs unit tests.
+    gulp test   # command runs unit tests.
 
 
 TODO
@@ -27,3 +27,4 @@ TODO
 
 - Get rid of jQuery dependency
 - Add modularity
+- Add js and css linters
