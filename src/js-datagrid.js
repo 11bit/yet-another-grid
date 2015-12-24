@@ -14,6 +14,9 @@
 
 	// Constants
 	var ATTR_COLUMN_ID = 'col-id';
+	var ATTR_IS_COLUMN_GROUP = 'is-col-group';
+	var ATTR_COLUMN_GROUP_FIRST = 'col-group-first';
+	var ATTR_COLUMN_GROUP_LAST = 'col-group-last';
 	var ATTR_DATA_ID = 'data-id';
 	var ATTR_PARENTS = 'parents';
 	var MIN_COL_WIDTH = 40; //px
@@ -342,10 +345,21 @@
 				this.validateColumn(column);
 
 				if (column.columns) {
+                    column.columnGroup = true;
 					colspan = this.buildRow(column.columns, rows, depth+1);
 					delete column.columns;
 				} else {
 					column.isColumn = true;
+
+                    // add references to this column in a column group object
+                    // this information is later used for bind sort handlers for column group's left and right edges
+                    if (i === 0 && depth > 0) {
+                        this.setFirstColInGroup(column, rows, depth)
+                    }
+
+                    if (i === columns.length - 1 && depth > 0) {
+                        this.setLastColInGroup(column, rows, depth)
+                    }
 				}
 				if (colspan>1){
 					column.colspan = colspan;
@@ -354,6 +368,20 @@
 			}
 			return block_colspan;
 		},
+
+        setFirstColInGroup: function(column, parentRows, depth) {
+            for (var j = 0; j<=depth-1;j++) {
+                var parentRow = parentRows[j]
+                parentRow[parentRow.length - 1].firstColInGroup = column
+            }
+        },
+
+        setLastColInGroup: function(column, parentRows, depth) {
+            for (var j = 0; j<=depth-1;j++) {
+                var parentRow = parentRows[j]
+                parentRow[parentRow.length - 1].lastColInGroup = column
+            }
+        },
 
 		setRowSpans: function(columns) {
 			var maxRowNum = 1;
@@ -1227,14 +1255,31 @@
 				column.resizeEndFunction(self.container);
 			}
 
+            function getResizableColId(el, isLeftEdge) {
+                // if user resizes column group then we get col id of the first or last column in column group
+                if (getDataAttribute(el, ATTR_IS_COLUMN_GROUP) === 'true') {
+                    if (isLeftEdge) {
+                        return parseInt(getDataAttribute(el, ATTR_COLUMN_GROUP_FIRST), 10) - 1
+                    } else {
+                        return parseInt(getDataAttribute(el, ATTR_COLUMN_GROUP_LAST), 10)
+                    }
+                } else {
+                    if (isLeftEdge) {
+                        return parseInt(getDataAttribute(el, ATTR_COLUMN_ID), 10) - 1
+                    } else {
+                        return parseInt(getDataAttribute(el, ATTR_COLUMN_ID), 10)
+                    }
+                }
+            }
+
             resizeHandlersRight.drag('dragstart', function (e) {
-				var col_id = parseInt(getDataAttribute(this.parentNode, ATTR_COLUMN_ID), 10);
+				var col_id = getResizableColId(this.parentNode, false);
                 column = self.columns[col_id];
                 dragInit(e);
 			});
 
 			resizeHandlersLeft.drag('dragstart', function (e) {
-				var col_id = parseInt(getDataAttribute(this.parentNode, ATTR_COLUMN_ID), 10) - 1;
+				var col_id = getResizableColId(this.parentNode, true);
                 column = self.columns[col_id];
 				dragInit(e);
 			});
@@ -1380,6 +1425,7 @@
 				}
 				if (column.column) {
 					setDataAttribute(th, ATTR_COLUMN_ID, column.column.idx);
+                    setDataAttribute(th, ATTR_IS_COLUMN_GROUP, false);
 
 					if(column.column.idx>0 && this.columns[column.column.idx-1].resizable) {
                         txt = '<div class="dt-resize-handle dt-resize-handle-left"></div>'+txt;
@@ -1397,6 +1443,22 @@
                         th.className += ' ' + column.column.cssClass;
                     }
                     column.column.th = th;
+                } else if (column.columnGroup) {
+                    // if it is column group when add resize handlers that will actually resize first and last columns in column group
+
+                    var first = column.firstColInGroup;
+                    var last = column.lastColInGroup;
+                    setDataAttribute(th, ATTR_IS_COLUMN_GROUP, true);
+                    setDataAttribute(th, ATTR_COLUMN_GROUP_FIRST, first.column.idx);
+                    setDataAttribute(th, ATTR_COLUMN_GROUP_LAST, last.column.idx);
+
+                    if(first.column.idx>0 && this.columns[first.column.idx-1].resizable) {
+                        txt = '<div class="dt-resize-handle dt-resize-handle-left"></div>'+txt;
+                    }
+
+                    if (last.column.resizable) {
+                        txt += '<div class="dt-resize-handle dt-resize-handle-right"></div>';
+                    }
                 }
 
 				innerHTML(th, txt);
