@@ -2313,9 +2313,17 @@
          * Get tab separated row data (ready for pasting to Excel or other spreadsheets for all dataset.
          * @returns {string}
          */
-        getAllSpreadSheetData: function() {
+        getAllSpreadSheetData: function(includeHeaders) {
             var self = this;
-            return self.datas.map(function(row_data) {
+			var headers = '';
+
+			if (includeHeaders) {
+				headers = this.columns.map(function(column) {
+					return column.title;
+				}).join('\t') + '\n'
+			}
+
+            var data = self.datas.map(function(row_data) {
                 return (self.columns.map(function(col) {
                     if (col.isHTML) {
                         return '';
@@ -2324,6 +2332,8 @@
                     }
                 })).join('\t');
             }).join('\n')
+
+			return headers + data;
         },
 
 
