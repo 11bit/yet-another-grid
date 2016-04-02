@@ -1,5 +1,15 @@
 Flexible grid with frozen columns, resizing sorting and etc.
 
+Examples
+--------
+
+With nodejs webserver
+
+    npm install
+    npm run
+
+And open `http://localhost:6789/examples/` in your browser
+
 Requirements
 ------------
 

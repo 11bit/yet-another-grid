@@ -1,18 +1,23 @@
 {
-	"name": "js-datagrid",
-	"version": "0.1.0",
-	"devDependencies": {
-		"karma": "~0.10.2",
-		"karma-chrome-launcher": "~0.1.0",
-		"gulp": "*",
-		"gulp-util": "*",
-		"gulp-karma": "*",
-		"gulp-uglify": "*",
-		"gulp-concat": "*",
-		"gulp-rename": "*",
-		"gulp-csso": "*"
-	},
-	"engines": {
-		"node": ">=0.9.0"
-	}
+  "name": "js-datagrid",
+  "version": "0.1.0",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "devDependencies": {
+    "connect": "^3.4.1",
+    "gulp": "*",
+    "gulp-concat": "*",
+    "gulp-csso": "*",
+    "gulp-karma": "*",
+    "gulp-rename": "*",
+    "gulp-uglify": "*",
+    "gulp-util": "*",
+    "karma": "~0.10.2",
+    "karma-chrome-launcher": "~0.1.0",
+    "serve-static": "^1.10.2"
+  },
+  "engines": {
+    "node": ">=0.9.0"
+  }
 }
