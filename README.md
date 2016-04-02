@@ -8,7 +8,7 @@ With nodejs webserver
     npm install
     npm run
 
-And open `http://localhost:6789/examples/` in your browser
+Then open `http://localhost:6789/examples/` in your browser
 
 Requirements
 ------------
@@ -30,11 +30,3 @@ Testing
 -------
 
     gulp test   # command runs unit tests.
-
-
-TODO
-----
-
-- Get rid of jQuery dependency
-- Add modularity
-- Add js and css linters
