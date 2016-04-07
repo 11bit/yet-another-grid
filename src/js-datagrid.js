@@ -1150,7 +1150,7 @@
 			var self = this;
 
 
-			$(this.container).on('mouseup', '.expand-children-cell', function expandChildrenHandler(event) {
+			$(this.container).on('click', '.expand-children-cell', function expandChildrenHandler(event) {
                 if (event.offsetX>self.options.expandChildrenButtonOffset) {
                     return true;
                 }
