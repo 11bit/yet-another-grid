@@ -1081,6 +1081,11 @@
 				_scrollHandler(false);
 			}
 
+			function frozenBodyScrollHandler() {
+				scrollTop = fBodyWrapper.scrollTop
+				_scrollHandler(true)
+			}
+
 			function _scrollHandler(isMouseWheel) {
 				var maxScrollDistanceY = bodyWrapper.scrollHeight - bodyWrapper.clientHeight;
 				var maxScrollDistanceX = bodyWrapper.scrollWidth - bodyWrapper.clientWidth;
@@ -1131,7 +1136,14 @@
 
 			if (self.options.frozenColumnsNum > 0) {
 				$(fBodyWrapper)
-					.on('mousewheel', mouseWheelHandler);
+					.on('mousewheel', mouseWheelHandler)
+
+				/* For touch interfaces without scroll bars we can safely enable scrolling for frozen columns too */
+				if (scrollBarSize.width === 0) {
+					$(fBodyWrapper)
+						.css('overflow-y', 'scroll')
+						.on('scroll', frozenBodyScrollHandler)
+				}
 			}
 
 			$(bodyWrapper)
