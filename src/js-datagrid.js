@@ -967,7 +967,8 @@
 				var col_id;
 				col_id = parseInt(getDataAttribute(this.parentNode, ATTR_COLUMN_ID), 10)-1;
 				self.autoResize(col_id);
-
+				self.invalidateRightFillerWidth();
+				self.invalidateBodyWrapperHeight();
 			});
 
 			$(this.headContainer).on(this.options.doubleClickEvent,'.dt-resize-handle-right',function(){
@@ -975,6 +976,7 @@
 				col_id = parseInt(getDataAttribute(this.parentNode, ATTR_COLUMN_ID), 10);
 				self.autoResize(col_id);
 				self.invalidateRightFillerWidth();
+				self.invalidateBodyWrapperHeight();
 			});
 
 
@@ -1260,7 +1262,8 @@
 				}
 				self._resizeColumn(column, newWidth);
 				self.invalidateRightFillerWidth();
-            }
+				self.invalidateBodyWrapperHeight();
+			}
 
 			function dragStopHandler() {
 				self._removeResizeMode(column);
